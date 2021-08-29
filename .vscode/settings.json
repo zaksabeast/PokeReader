@@ -1,0 +1,5 @@
+{
+  "rust-analyzer.cargo.target": "3ds.json",
+  "rust-analyzer.checkOnSave.allTargets": false,
+  "rust-analyzer.inlayHints.enable": true,
+}

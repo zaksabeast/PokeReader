@@ -24,6 +24,7 @@ pub struct Gsp {
     context: GspContext,
 }
 
+// Thanks to NTR for the draw functions - https://github.com/44670/ntr_overlay_samples/blob/5fee35f160190fbcf0eddb54143c1bfd27b2586f/fps/source/ov.c
 impl Gsp {
     pub fn new() -> CtrResult<Self> {
         let debug = DebugProcess::new(0x0004013000001C02)?;

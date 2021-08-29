@@ -66,4 +66,5 @@ Thanks to these projects, teams, and individuals for being great resources:
 - [3dbrew](https://www.3dbrew.org/) for documentation about how different parts of the 3ds works
 - [The rust3ds team](https://github.com/rust3ds) for the 3ds.json, initial ctru_sys, and code references to help get rust working on the 3ds
 - [devkitPro](https://github.com/devkitPro/) for their toolchain
+- [NTR](https://github.com/44670/NTR) for the inspiration and draw functions
 - All 3ds researchers

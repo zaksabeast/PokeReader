@@ -1,0 +1,130 @@
+BasicInfo:
+  Title                   : pkrd
+  CompanyCode             : "00"
+  ProductCode             : pkrd
+  ContentType             : Application
+  Logo                    : None
+
+TitleInfo:
+  UniqueId                : 0xCB
+  Category                : Base
+  Version                 : 2
+
+Option:
+  UseOnSD                 : false
+  FreeProductCode         : true # Removes limitations on ProductCode
+  MediaFootPadding        : false # If true CCI files are created with padding
+  EnableCrypt             : false # Enables encryption for NCCH and CIA
+  EnableCompress          : false # Compresses exefs code
+
+AccessControlInfo:
+  IdealProcessor                : 1
+  AffinityMask                  : 2
+
+  Priority                      : 28
+
+  DisableDebug                  : true
+  EnableForceDebug              : false
+  CanWriteSharedPage            : false
+  CanUsePrivilegedPriority      : false
+  CanUseNonAlphabetAndNumber    : false
+  PermitMainFunctionArgument    : false
+  CanShareDeviceMemory          : false
+  RunnableOnSleep               : true
+  SpecialMemoryArrange          : false
+  ResourceLimitCategory         : Other
+
+  CoreVersion                   : 2
+  DescVersion                   : 2
+
+  MemoryType                    : Base # Application / System / Base
+  HandleTableSize: 0
+  SystemSaveDataId1: 0x10032
+  SystemCallAccess:
+    ControlMemory: 0x01
+    QueryMemory: 0x02
+    ExitProcess: 0x03
+    GetProcessIdealProcessor: 0x06
+    CreateThread: 0x08
+    ExitThread: 0x09
+    SleepThread: 0x0A
+    GetThreadPriority: 0x0B
+    SetThreadPriority: 0x0C
+    GetThreadIdealProcessor: 0x0F
+    GetCurrentProcessorNumber: 0x11
+    CreateMutex: 0x13
+    ReleaseMutex: 0x14
+    CreateSemaphore: 0x15
+    ReleaseSemaphore: 0x16
+    CreateEvent: 0x17
+    SignalEvent: 0x18
+    ClearEvent: 0x19
+    CreateTimer: 0x1A
+    SetTimer: 0x1B
+    CancelTimer: 0x1C
+    ClearTimer: 0x1D
+    CreateMemoryBlock: 0x1E
+    MapMemoryBlock: 0x1F
+    UnmapMemoryBlock: 0x20
+    CreateAddressArbiter: 0x21
+    ArbitrateAddress: 0x22
+    CloseHandle: 0x23
+    WaitSynchronization1: 0x24
+    WaitSynchronizationN: 0x25
+    DuplicateHandle: 0x27
+    GetSystemTick: 0x28
+    GetHandleInfo: 0x29
+    GetSystemInfo: 0x2A
+    GetProcessInfo: 0x2B
+    GetThreadInfo: 0x2C
+    ConnectToPort: 0x2D
+    SendSyncRequest1: 0x2E
+    SendSyncRequest2: 0x2F
+    SendSyncRequest3: 0x30
+    SendSyncRequest4: 0x31
+    SendSyncRequest: 0x32
+    GetProcessId: 0x35
+    GetProcessIdOfThread: 0x36
+    GetThreadId: 0x37
+    GetResourceLimit: 0x38
+    GetResourceLimitLimitValues: 0x39
+    GetResourceLimitCurrentValues: 0x3A
+    GetThreadContext: 0x3B
+    Break: 0x3C
+    OutputDebugString: 0x3D
+    CreatePort: 0x47
+    CreateSessionToPort: 0x48
+    AcceptSession: 0x4A
+    ReplyAndReceive1: 0x4B
+    ReplyAndReceive2: 0x4C
+    ReplyAndReceive3: 0x4D
+    ReplyAndReceive4: 0x4E
+    ReplyAndReceive: 0x4F
+  InterruptNumbers:
+  ServiceAccessControl:
+    - ac:u
+    - soc:U
+    - http:C
+    - fs:USER
+    - cfg:s
+    - ptm:s
+    - ps:ps
+    - ptm:sets
+    - APT:U
+    - nwm::EXT
+  FileSystemAccess:
+    - CategorySystemApplication
+
+SystemControlInfo:
+  SaveDataSize: 0KB # It doesn't use any save data.
+  RemasterVersion: 0
+  StackSize: 0x4000
+  Dependency: 
+    ac: 0x0004013000002402
+    cfg: 0x0004013000001702
+    http: 0x0004013000002902
+    nwm: 0x0004013000002d02
+    ps: 0x0004013000003102
+    ptm: 0x0004013000002202
+    socket: 0x0004013000002e02
+    ssl: 0x0004013000002f02

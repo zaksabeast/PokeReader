@@ -44,13 +44,13 @@ Below are the steps of launching PokeReader to running code with game access:
 1. The launcher runs the setup command, which moves `pkrd:game`'s session handle to PokeReader
 1. When a game launches, PokeReader checks to see if it's a known game and patches the same function NTR patches. The patch runs `pkrd:game`'s game hook command with a copy of the `pkrd:game` session handle
 1. The game runs the patched function and behaves the same as normal, except it also runs `pkrd:game`'s game hook command
-1. PokeReader receives the stack pointer as an argument, opens a debug session with the game and the `gsp` module, and runs whatever code we want for that game
+1. PokeReader receives the stack pointer as an argument, opens a debug session with the game, and runs whatever code we want for that game
 
 The `pkrd:game` session handle is given to PokeReader so games don't need to open a session, which means smaller patches.
 
 Debug sessions are closed after they're used so other tools (like Rosalina) can freely open debug sessions as well, provided the sessions are cleaned up after use. This also prevents locks between PokeReader, the game, and the home menu.
 
-PokeReader doesn't patch system modules, so it's more resiliant to updates and less prone to patching incorrectly. It uses debug sessions to have read/write access to the game, and also requires a debug session with `gsp` to be able to draw to the screen.
+PokeReader doesn't patch system modules, so it's more resiliant to updates and less prone to patching incorrectly. It uses debug sessions to have read/write access to the game.
 
 Since PokeReader's game hook command only runs when the game calls it and the game is only patched when launched, closing and reopening games should not cause crashes, which is another NTR limit.
 
@@ -60,7 +60,7 @@ Interestingly, Rosalina also seems to frequently open and close debug sessions, 
 
 Thanks to these projects, teams, and individuals for being great resources:
 
-- [Luma3DS](https://github.com/LumaTeam/Luma3DS) and [Wumiibo](https://github.com/hax0kartik/wumiibo) for being great references (build processes, double check my reverse engineering, etc.)
+- [Luma3DS](https://github.com/LumaTeam/Luma3DS) and [Wumiibo](https://github.com/hax0kartik/wumiibo) for being great references (build processes, double check my reverse engineering, vram memory map, etc.)
 - [libctru](https://github.com/devkitPro/libctru/) for being a great reference and providing an easy way to make open source homebrew
 - [PKSM](https://github.com/FlagBrew/PKSM) for providing an example of svcControlService
 - [3dbrew](https://www.3dbrew.org/) for documentation about how different parts of the 3ds works

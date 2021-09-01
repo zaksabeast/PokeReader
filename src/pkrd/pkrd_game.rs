@@ -1,4 +1,4 @@
-use super::{context::PkrdServiceContext, game_hook, gsp};
+use super::{context::PkrdServiceContext, game_hook};
 use alloc::format;
 use core::sync::atomic::{AtomicU32, Ordering};
 use ctr::{
@@ -35,7 +35,7 @@ impl From<u16> for PkrdGameCommand {
 }
 
 pub fn handle_pkrd_game_request(
-    _context: &mut PkrdServiceContext,
+    context: &mut PkrdServiceContext,
     mut command_parser: ThreadCommandParser,
     _session_index: usize,
 ) -> RequestHandlerResult {
@@ -67,14 +67,15 @@ pub fn handle_pkrd_game_request(
                 game.read::<[u32; 6]>(stack_pointer - 16)?;
             let is_top_screen = screen_id == 0;
 
-            let mut screen = gsp::Gsp::new()?;
-            screen.set_context(is_top_screen, frame_buffer_a, stride, format);
+            context
+                .screen
+                .set_context(is_top_screen, frame_buffer_a, stride, format)?;
 
             #[allow(unused_must_use)]
             {
                 // Ignore the result since the game ignores it anyways
                 // and we don't want an error to prevent the game from running
-                game_hook::run_hook(screen);
+                game_hook::run_hook(&mut context.screen);
             }
 
             // Eat events after writing to the screen

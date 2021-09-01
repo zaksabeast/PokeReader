@@ -1,10 +1,16 @@
 use ctr::{res::CtrResult, sysmodule::server::ServiceContext};
 
-pub struct PkrdServiceContext {}
+use super::display::Screen;
+
+pub struct PkrdServiceContext {
+    pub screen: Screen,
+}
 
 impl PkrdServiceContext {
     pub fn new() -> CtrResult<Self> {
-        Ok(Self {})
+        Ok(Self {
+            screen: Screen::new(),
+        })
     }
 }
 

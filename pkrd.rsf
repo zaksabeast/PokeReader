@@ -39,6 +39,8 @@ AccessControlInfo:
 
   MemoryType                    : Base # Application / System / Base
   HandleTableSize: 0
+  MemoryMapping:
+    - 0x1F000000 - 0x1F5FFFFF # VRAM (cached)
   SystemSaveDataId1: 0x10032
   SystemCallAccess:
     ControlMemory: 0x01

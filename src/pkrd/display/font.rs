@@ -1,3 +1,6 @@
+pub const CHAR_WIDTH: u32 = 8;
+pub const CHAR_HEGHT: u32 = 8;
+
 pub type FontLetterLine = u8;
 pub type FontLetter = [FontLetterLine; 8];
 

@@ -1,35 +1,58 @@
 use super::{context, font, Color};
-use ctr::res::{CtrResult, GenericResultCode};
+use ctr::res::{CtrResult, GenericResultCode, ResultCode};
 
 const SCREEN_WIDTH_TOP: u32 = 400;
 const SCREEN_WIDTH_BOTTOM: u32 = 320;
 const SCREEN_HEIGHT: u32 = 240;
 
-pub struct Screen {
+pub struct DirectWriteScreen {
     context: context::ScreenContext,
 }
 
-// Thanks to NTR for the draw functions - https://github.com/44670/ntr_overlay_samples/blob/5fee35f160190fbcf0eddb54143c1bfd27b2586f/fps/source/ov.c
-impl Screen {
-    pub fn new() -> Self {
+impl Screen for DirectWriteScreen {
+    fn new() -> Self {
         Self {
             context: context::ScreenContext::default(),
         }
     }
 
-    pub fn set_context(
+    fn get_context(&self) -> &context::ScreenContext {
+        &self.context
+    }
+
+    fn set_context(
         &mut self,
         is_top_screen: bool,
         addr: u32,
         stride: u32,
         format: u32,
     ) -> CtrResult<()> {
-        self.context = context::ScreenContext::new(is_top_screen, addr, stride, format)?;
+        let writable_addr = match addr & 0xff000000 {
+            0x1f000000 => Ok(addr),
+            0x33000000 => Ok(addr + 0x70000000),
+            _ => Err(ResultCode::from(GenericResultCode::InvalidPointer)),
+        }?;
+        self.context = context::ScreenContext::new(is_top_screen, writable_addr, stride, format)?;
         Ok(())
     }
+}
 
-    pub fn get_is_top_screen(&self) -> bool {
-        self.context.is_top_screen
+// Thanks to NTR for the draw functions - https://github.com/44670/ntr_overlay_samples/blob/5fee35f160190fbcf0eddb54143c1bfd27b2586f/fps/source/ov.c
+pub trait Screen {
+    fn new() -> Self;
+
+    fn get_context(&self) -> &context::ScreenContext;
+
+    fn set_context(
+        &mut self,
+        is_top_screen: bool,
+        addr: u32,
+        stride: u32,
+        format: u32,
+    ) -> CtrResult<()>;
+
+    fn get_is_top_screen(&self) -> bool {
+        self.get_context().is_top_screen
     }
 
     /// # Safety
@@ -38,9 +61,10 @@ impl Screen {
     /// - The x is never above 340 for a top screen
     /// - The y is never above 240
     unsafe fn draw_pixel(&mut self, color: &Color, x: u32, y: u32) -> CtrResult<()> {
-        let format = self.context.format;
-        let addr = self.context.addr;
-        let stride = self.context.stride;
+        let context = self.get_context();
+        let format = context.format;
+        let addr = context.addr;
+        let stride = context.stride;
 
         if (format & 0xf) == 2 {
             let pixel = ((color.r as u32) << 11) | ((color.g as u32) << 5) | (color.b as u32);
@@ -102,7 +126,7 @@ impl Screen {
         Ok(())
     }
 
-    pub fn draw_string(&mut self, color: &Color, text: &str, x: u32, y: u32) -> CtrResult<()> {
+    fn draw_string(&mut self, color: &Color, text: &str, x: u32, y: u32) -> CtrResult<()> {
         let text_len = text.len() as u32;
         if !self.is_safe_pixel_range(
             x,
@@ -121,7 +145,7 @@ impl Screen {
         Ok(())
     }
 
-    pub fn paint_square(
+    fn paint_square(
         &mut self,
         color: &Color,
         x: u32,
@@ -156,7 +180,7 @@ mod test {
 
         #[test]
         fn should_return_false_if_the_y_is_too_large() {
-            let mut screen = Screen::new();
+            let mut screen = DirectWriteScreen::new();
             screen.set_context(true, 0x1F000000, 0, 0).unwrap();
 
             let result = screen.is_safe_pixel(0, SCREEN_HEIGHT + 1);
@@ -165,7 +189,7 @@ mod test {
 
         #[test]
         fn should_return_false_if_the_x_is_too_large_for_the_top_screen() {
-            let mut screen = Screen::new();
+            let mut screen = DirectWriteScreen::new();
             screen.set_context(true, 0x1F000000, 0, 0).unwrap();
 
             let result = screen.is_safe_pixel(SCREEN_WIDTH_TOP + 1, 0);
@@ -174,7 +198,7 @@ mod test {
 
         #[test]
         fn should_return_false_if_the_x_is_too_large_for_the_bottom_screen() {
-            let mut screen = Screen::new();
+            let mut screen = DirectWriteScreen::new();
             screen.set_context(false, 0x1F000000, 0, 0).unwrap();
 
             let result = screen.is_safe_pixel(SCREEN_WIDTH_BOTTOM + 1, 0);
@@ -183,7 +207,7 @@ mod test {
 
         #[test]
         fn should_return_true_if_the_coordinates_are_under_the_max_sizes_for_the_top_screen() {
-            let mut screen = Screen::new();
+            let mut screen = DirectWriteScreen::new();
             screen.set_context(true, 0x1F000000, 0, 0).unwrap();
 
             let result = screen.is_safe_pixel(SCREEN_WIDTH_TOP, SCREEN_HEIGHT);
@@ -192,7 +216,7 @@ mod test {
 
         #[test]
         fn should_return_true_if_the_coordinates_are_under_the_max_sizes_for_the_bottom_screen() {
-            let mut screen = Screen::new();
+            let mut screen = DirectWriteScreen::new();
             screen.set_context(false, 0x1F000000, 0, 0).unwrap();
 
             let result = screen.is_safe_pixel(SCREEN_WIDTH_BOTTOM, SCREEN_HEIGHT);

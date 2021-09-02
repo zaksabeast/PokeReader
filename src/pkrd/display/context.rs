@@ -1,7 +1,10 @@
 use ctr::res::{CtrResult, GenericResultCode};
 
-const SCREEN_ADDRESS_MIN: u32 = 0x1F000000;
-const SCREEN_ADDRESS_MAX: u32 = 0x1F5FFFFF;
+const VRAM_ADDRESS_MIN: u32 = 0x1F000000;
+const VRAM_ADDRESS_MAX: u32 = 0x1F5FFFFF;
+
+const FCRAM_ADDRESS_MIN: u32 = 0xA0000000; // Uncached FCRAM
+const FCRAM_ADDRESS_MAX: u32 = 0xAFFFFFFF; // Uncached FCRAM
 
 #[derive(Debug)]
 pub struct ScreenContext {
@@ -13,7 +16,9 @@ pub struct ScreenContext {
 
 impl ScreenContext {
     pub fn new(is_top_screen: bool, addr: u32, stride: u32, format: u32) -> CtrResult<Self> {
-        if !(SCREEN_ADDRESS_MIN..=SCREEN_ADDRESS_MAX).contains(&addr) {
+        if !(VRAM_ADDRESS_MIN..=VRAM_ADDRESS_MAX).contains(&addr)
+            && !(FCRAM_ADDRESS_MIN..=FCRAM_ADDRESS_MAX).contains(&addr)
+        {
             return Err(GenericResultCode::InvalidPointer.into());
         }
 
@@ -40,26 +45,44 @@ mod test {
         use super::*;
 
         #[test]
-        fn should_error_if_the_address_is_below_screen_address_min() {
-            ScreenContext::new(true, SCREEN_ADDRESS_MIN - 1, 0, 0)
-                .expect_err("ScreenContext address should have been too low");
-        }
-
-        #[test]
-        fn should_error_if_the_address_is_above_screen_address_max() {
-            ScreenContext::new(true, SCREEN_ADDRESS_MAX + 1, 0, 0)
+        fn should_error_if_the_address_is_above_fcram_address_max() {
+            ScreenContext::new(true, FCRAM_ADDRESS_MAX + 1, 0, 0)
                 .expect_err("ScreenContext address should have been too high");
         }
 
         #[test]
-        fn should_succeed_if_the_address_is_screen_address_min() {
-            ScreenContext::new(true, SCREEN_ADDRESS_MIN, 0, 0)
+        fn should_error_if_the_address_is_below_vram_address_min() {
+            ScreenContext::new(true, VRAM_ADDRESS_MIN - 1, 0, 0)
+                .expect_err("ScreenContext address should have been too low");
+        }
+
+        #[test]
+        fn should_error_if_the_address_is_above_vram_address_max_and_below_fcram_address_min() {
+            ScreenContext::new(true, VRAM_ADDRESS_MAX + 1, 0, 0)
+                .expect_err("ScreenContext address is in an invalid range");
+        }
+
+        #[test]
+        fn should_succeed_if_the_address_is_vram_address_min() {
+            ScreenContext::new(true, VRAM_ADDRESS_MIN, 0, 0)
                 .expect("ScreenContext address should have been in a good range");
         }
 
         #[test]
-        fn should_succeed_if_the_address_is_screen_address_max() {
-            ScreenContext::new(true, SCREEN_ADDRESS_MAX, 0, 0)
+        fn should_succeed_if_the_address_is_vram_address_max() {
+            ScreenContext::new(true, VRAM_ADDRESS_MAX, 0, 0)
+                .expect("ScreenContext address should have been in a good range");
+        }
+
+        #[test]
+        fn should_succeed_if_the_address_is_fcram_address_min() {
+            ScreenContext::new(true, FCRAM_ADDRESS_MIN, 0, 0)
+                .expect("ScreenContext address should have been in a good range");
+        }
+
+        #[test]
+        fn should_succeed_if_the_address_is_fcram_address_max() {
+            ScreenContext::new(true, FCRAM_ADDRESS_MAX, 0, 0)
                 .expect("ScreenContext address should have been in a good range");
         }
     }

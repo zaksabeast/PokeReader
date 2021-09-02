@@ -1,19 +1,20 @@
-use super::{context::PkrdServiceContext, game_hook};
+use super::{context::PkrdServiceContext, display::Screen, game};
 use alloc::format;
-use core::sync::atomic::{AtomicU32, Ordering};
-use ctr::{
-    ipc::{ThreadCommandBuilder, ThreadCommandParser},
-    log,
-    res::GenericResultCode,
-    sysmodule::server::RequestHandlerResult,
-    DebugProcess,
+use core::{
+    mem, slice,
+    sync::atomic::{AtomicU32, Ordering},
 };
+use ctr::{ipc, log, res::GenericResultCode, svc, sysmodule::server, Handle};
 use num_enum::IntoPrimitive;
 
 static PKRD_HANDLE: AtomicU32 = AtomicU32::new(0);
 
-pub fn get_raw_pkrd_handle() -> u32 {
-    PKRD_HANDLE.load(Ordering::Relaxed)
+/// Returns a pkrd:game session handle.
+/// This is manually dropped to avoid closing the session handle.
+pub fn get_pkrd_session_handle() -> mem::ManuallyDrop<Handle> {
+    let raw_handle = PKRD_HANDLE.load(Ordering::Relaxed);
+    let handle = raw_handle.into();
+    mem::ManuallyDrop::new(handle)
 }
 
 #[derive(IntoPrimitive)]
@@ -36,9 +37,9 @@ impl From<u16> for PkrdGameCommand {
 
 pub fn handle_pkrd_game_request(
     context: &mut PkrdServiceContext,
-    mut command_parser: ThreadCommandParser,
+    mut command_parser: ipc::ThreadCommandParser,
     _session_index: usize,
-) -> RequestHandlerResult {
+) -> server::RequestHandlerResult {
     let command_id = command_parser.get_command_id();
 
     log(&format!(
@@ -53,40 +54,50 @@ pub fn handle_pkrd_game_request(
             let raw_handle = command_parser.pop();
             PKRD_HANDLE.store(raw_handle, Ordering::Relaxed);
 
-            let mut command = ThreadCommandBuilder::new(command_id);
+            let mut command = ipc::ThreadCommandBuilder::new(command_id);
             command.push(GenericResultCode::Success);
             Ok(command.build())
         }
         PkrdGameCommand::RunGameHook => {
-            let stack_pointer = command_parser.pop();
+            // Check to make sure we're getting what we're expecting
+            command_parser.validate_header(PkrdGameCommand::RunGameHook, 6, 0)?;
 
-            // The game debug session needs to start and end in this scope so rosalina can obtain one too
-            let game = DebugProcess::new(0x0004000000055E00)?;
-
-            let [screen_id, _swap, frame_buffer_a, _frame_buffer_b, stride, format] =
-                game.read::<[u32; 6]>(stack_pointer - 16)?;
+            // Get screen props
+            let frame_buffer = command_parser.pop();
+            let screen_id = command_parser.pop();
+            let stride = command_parser.pop();
+            let format = command_parser.pop();
             let is_top_screen = screen_id == 0;
 
-            context
-                .screen
-                .set_context(is_top_screen, frame_buffer_a, stride, format)?;
+            // Get heap
+            let heap_ptr = command_parser.pop() as *mut u8;
+            let heap_len = command_parser.pop_usize();
 
-            #[allow(unused_must_use)]
+            // We're trusting our patch works and nothing else is using this command
+            let physical_heap_ptr = svc::convert_pa_to_uncached_pa(heap_ptr)?;
+            let heap = unsafe { slice::from_raw_parts_mut(physical_heap_ptr, heap_len) };
+            let reader = game::Reader::new(heap);
+
+            let (game, screen) = context.get_or_initialize_game_and_screen()?;
+
+            if let Err(result_code) =
+                screen.set_context(is_top_screen, frame_buffer, stride, format)
             {
-                // Ignore the result since the game ignores it anyways
-                // and we don't want an error to prevent the game from running
-                game_hook::run_hook(&mut context.screen);
+                log(&alloc::format!("Failed screen context {:x}", result_code));
             }
 
-            // Eat events after writing to the screen
-            game.eat_events()?;
+            // The game ignores the result of this, and there's not much we can
+            // do to handle the error aside from logging.
+            if let Err(result_code) = game.run_hook(reader, screen) {
+                log(&alloc::format!("Failed run_hook: {:x}", result_code));
+            }
 
-            let mut command = ThreadCommandBuilder::new(command_id);
+            let mut command = ipc::ThreadCommandBuilder::new(command_id);
             command.push(GenericResultCode::Success);
             Ok(command.build())
         }
         _ => {
-            let mut command = ThreadCommandBuilder::new(PkrdGameCommand::InvalidCommand);
+            let mut command = ipc::ThreadCommandBuilder::new(PkrdGameCommand::InvalidCommand);
             command.push(GenericResultCode::InvalidCommand);
             Ok(command.build())
         }

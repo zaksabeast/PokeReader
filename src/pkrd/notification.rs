@@ -1,4 +1,5 @@
-use ctr::{ptm, sysmodule::notification::NotificationHandlerResult};
+use super::game;
+use ctr::{log, ptm, res::CtrResult, sysmodule::notification::NotificationHandlerResult};
 
 /// The notification Id is currently a u32 to avoid assumptions about the notifications that might be sent.
 ///
@@ -20,5 +21,22 @@ pub fn handle_sleep_notification(notification_id: u32) -> NotificationHandlerRes
     }
 
     ptm::sysm_exit();
+    Ok(())
+}
+
+pub fn handle_launch_title_notification(_notification_id: u32) -> CtrResult<()> {
+    if let Some(title) = game::SupportedTitle::from_running_app() {
+        let hook_result = game::install_hook(title);
+
+        if hook_result.is_err() {
+            log(&alloc::format!(
+                "Failed to hook title {:x}",
+                u64::from(title)
+            ));
+        }
+
+        return hook_result;
+    }
+
     Ok(())
 }

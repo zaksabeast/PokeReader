@@ -9,9 +9,11 @@ extern crate alloc;
 
 mod heap_allocator;
 mod pkrd;
+mod utils;
 
 use crate::pkrd::{
-    context::PkrdServiceContext, game_hook, notification::handle_sleep_notification,
+    context::PkrdServiceContext,
+    notification::{handle_launch_title_notification, handle_sleep_notification},
     pkrd_game::handle_pkrd_game_request,
 };
 use alloc::{boxed::Box, vec};
@@ -112,9 +114,10 @@ fn main(_argc: isize, _argv: *const *const u8) -> isize {
         )
         .unwrap();
     notification_manger
-        .subscribe(ptm::NotificationId::LaunchApp, |_notification_id: u32| {
-            game_hook::patch::patch_game()
-        })
+        .subscribe(
+            ptm::NotificationId::LaunchApp,
+            handle_launch_title_notification,
+        )
         .unwrap();
 
     log("Setting up service manager");

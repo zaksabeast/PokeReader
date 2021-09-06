@@ -1,7 +1,7 @@
 use super::{frame, reader};
 use crate::pkrd::{
     display,
-    hook::{HookableProcess, HookedProcess, SupportedTitle},
+    hook::{HookableProcess, HookedProcess, PatchPresentFramebufferConfig, SupportedTitle},
     reader::Reader,
 };
 use alloc::boxed::Box;
@@ -28,14 +28,12 @@ impl HookableProcess for PokemonSM {
     }
 
     fn install_hook(process: &DebugProcess, pkrd_handle: Handle) -> CtrResult<()> {
-        Self::patch_present_framebuffer(
-            process,
-            pkrd_handle,
-            0x30000000,
-            0x34a8d84,
-            0x278540,
-            0x600000,
-            0x2794c4,
-        )
+        let config = PatchPresentFramebufferConfig {
+            is_extended_memory: true,
+            get_screen_addr: 0x2794c4,
+            present_framebuffer_addr: 0x278540,
+            hook_vars_addr: 0x600000,
+        };
+        Self::patch_present_framebuffer(process, pkrd_handle, config)
     }
 }

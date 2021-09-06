@@ -106,7 +106,13 @@ pub fn get_hooked_process() -> Option<Box<dyn HookedProcess>> {
     let running_app = SupportedTitle::from_running_app().unwrap();
 
     let hookable_process: Box<dyn HookedProcess> = match running_app {
+        SupportedTitle::PokemonX => super::PokemonXY::new_from_supported_title(running_app),
         SupportedTitle::PokemonY => super::PokemonXY::new_from_supported_title(running_app),
+        SupportedTitle::PokemonOR => super::PokemonORAS::new_from_supported_title(running_app),
+        SupportedTitle::PokemonAS => super::PokemonORAS::new_from_supported_title(running_app),
+        SupportedTitle::PokemonS => super::PokemonSM::new_from_supported_title(running_app),
+        SupportedTitle::PokemonM => super::PokemonSM::new_from_supported_title(running_app),
+        SupportedTitle::PokemonUS => super::PokemonUSUM::new_from_supported_title(running_app),
         SupportedTitle::PokemonUM => super::PokemonUSUM::new_from_supported_title(running_app),
     };
 
@@ -122,7 +128,13 @@ pub fn install_hook(title: SupportedTitle) -> CtrResult<()> {
         .unwrap();
 
     match title {
+        SupportedTitle::PokemonX => super::PokemonXY::install_hook(&debug, handle_copy),
         SupportedTitle::PokemonY => super::PokemonXY::install_hook(&debug, handle_copy),
+        SupportedTitle::PokemonOR => super::PokemonORAS::install_hook(&debug, handle_copy),
+        SupportedTitle::PokemonAS => super::PokemonORAS::install_hook(&debug, handle_copy),
+        SupportedTitle::PokemonS => super::PokemonSM::install_hook(&debug, handle_copy),
+        SupportedTitle::PokemonM => super::PokemonSM::install_hook(&debug, handle_copy),
+        SupportedTitle::PokemonUS => super::PokemonUSUM::install_hook(&debug, handle_copy),
         SupportedTitle::PokemonUM => super::PokemonUSUM::install_hook(&debug, handle_copy),
     }
     .unwrap();

@@ -4,6 +4,7 @@
 #![feature(asm)]
 #![feature(start)]
 #![feature(if_let_guard)]
+#![allow(dead_code)]
 
 extern crate alloc;
 

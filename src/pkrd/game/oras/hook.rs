@@ -1,7 +1,8 @@
 use super::{frame, reader};
 use crate::pkrd::{
     display,
-    game::{HookableProcess, HookedProcess, Reader, SupportedTitle},
+    hook::{HookableProcess, HookedProcess, SupportedTitle},
+    reader::Reader,
 };
 use alloc::boxed::Box;
 use ctr::{res::CtrResult, DebugProcess, Handle};

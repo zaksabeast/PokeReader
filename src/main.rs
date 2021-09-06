@@ -15,7 +15,7 @@ mod utils;
 use crate::pkrd::{
     context::PkrdServiceContext,
     notification::{handle_launch_title_notification, handle_sleep_notification},
-    pkrd_game::handle_pkrd_game_request,
+    request_handler::handle_pkrd_game_request,
 };
 use alloc::{boxed::Box, vec};
 #[cfg(not(test))]

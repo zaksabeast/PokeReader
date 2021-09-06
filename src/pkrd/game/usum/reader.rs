@@ -1,4 +1,4 @@
-use crate::pkrd::game::Reader;
+use crate::pkrd::reader::Reader;
 use ctr::res::CtrResult;
 
 pub(super) struct PokemonUSUMReader<'a> {

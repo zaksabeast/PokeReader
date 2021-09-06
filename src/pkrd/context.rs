@@ -1,6 +1,6 @@
 use super::{
     display::{DirectWriteScreen, Screen},
-    game,
+    hook,
 };
 use alloc::boxed::Box;
 use ctr::{
@@ -11,7 +11,7 @@ use ctr::{
 
 pub struct PkrdServiceContext {
     pub screen: DirectWriteScreen,
-    pub game: Option<Box<dyn game::HookedProcess>>,
+    pub game: Option<Box<dyn hook::HookedProcess>>,
 }
 
 impl PkrdServiceContext {
@@ -23,12 +23,12 @@ impl PkrdServiceContext {
     }
 
     fn initialize_game(&mut self) {
-        self.game = game::get_hooked_process();
+        self.game = hook::get_hooked_process();
     }
 
     pub fn get_or_initialize_game_and_screen(
         &mut self,
-    ) -> CtrResult<(&mut Box<dyn game::HookedProcess>, &mut DirectWriteScreen)> {
+    ) -> CtrResult<(&mut Box<dyn hook::HookedProcess>, &mut DirectWriteScreen)> {
         let running_title_id = pm_dbg::get_current_app_info()?.program_info.program_id;
 
         match &self.game {

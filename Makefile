@@ -25,7 +25,7 @@ DEBUG_CIA	= $(DEBUG_DIR)/$(CRATE_NAME).cia
 RELEASE_EXHEADER = $(RELEASE_TITLE_DIR)/exheader.bin
 DEBUG_EXHEADER = $(DEBUG_TITLE_DIR)/exheader.bin
 
-SOURCES = $(wildcard src/*.rs) $(wildcard src/**/*.rs) $(wildcard src/**/**/*.rs) $(wildcard src/**/**/**/*.rs)
+SOURCES = $(wildcard src/*.rs) $(wildcard src/**/*.rs) $(wildcard src/**/**/*.rs) $(wildcard src/**/**/**/*.rs) $(wildcard src/**/**/**/**/*.rs)
 
 .PHONY: all clean test docs lint
 

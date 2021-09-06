@@ -1,13 +1,13 @@
-use super::{Reader, SupportedTitle};
+use super::SupportedTitle;
 use crate::{
-    pkrd::{display, pkrd_game},
+    pkrd::{display, game, reader, request_handler::get_pkrd_session_handle},
     utils,
 };
 use alloc::boxed::Box;
 use ctr::{res::CtrResult, DebugProcess, Handle};
 
 /// A process that has the ability to be hooked.
-pub(super) trait HookableProcess: HookedProcess {
+pub trait HookableProcess: HookedProcess {
     fn new_from_supported_title(title: SupportedTitle) -> Box<Self>;
 
     fn install_hook(process: &DebugProcess, pkrd_handle: Handle) -> CtrResult<()>;
@@ -97,7 +97,11 @@ pub(super) trait HookableProcess: HookedProcess {
 /// This is separate from HookableProcess so it can have a vtable
 /// and be used as `dyn HookedProcess`.
 pub trait HookedProcess {
-    fn run_hook(&self, heap: Reader, screen: &mut display::DirectWriteScreen) -> CtrResult<()>;
+    fn run_hook(
+        &self,
+        heap: reader::Reader,
+        screen: &mut display::DirectWriteScreen,
+    ) -> CtrResult<()>;
 
     fn get_title(&self) -> SupportedTitle;
 }
@@ -106,14 +110,14 @@ pub fn get_hooked_process() -> Option<Box<dyn HookedProcess>> {
     let running_app = SupportedTitle::from_running_app().unwrap();
 
     let hookable_process: Box<dyn HookedProcess> = match running_app {
-        SupportedTitle::PokemonX => super::PokemonXY::new_from_supported_title(running_app),
-        SupportedTitle::PokemonY => super::PokemonXY::new_from_supported_title(running_app),
-        SupportedTitle::PokemonOR => super::PokemonORAS::new_from_supported_title(running_app),
-        SupportedTitle::PokemonAS => super::PokemonORAS::new_from_supported_title(running_app),
-        SupportedTitle::PokemonS => super::PokemonSM::new_from_supported_title(running_app),
-        SupportedTitle::PokemonM => super::PokemonSM::new_from_supported_title(running_app),
-        SupportedTitle::PokemonUS => super::PokemonUSUM::new_from_supported_title(running_app),
-        SupportedTitle::PokemonUM => super::PokemonUSUM::new_from_supported_title(running_app),
+        SupportedTitle::PokemonX => game::PokemonXY::new_from_supported_title(running_app),
+        SupportedTitle::PokemonY => game::PokemonXY::new_from_supported_title(running_app),
+        SupportedTitle::PokemonOR => game::PokemonORAS::new_from_supported_title(running_app),
+        SupportedTitle::PokemonAS => game::PokemonORAS::new_from_supported_title(running_app),
+        SupportedTitle::PokemonS => game::PokemonSM::new_from_supported_title(running_app),
+        SupportedTitle::PokemonM => game::PokemonSM::new_from_supported_title(running_app),
+        SupportedTitle::PokemonUS => game::PokemonUSUM::new_from_supported_title(running_app),
+        SupportedTitle::PokemonUM => game::PokemonUSUM::new_from_supported_title(running_app),
     };
 
     Some(hookable_process)
@@ -122,20 +126,20 @@ pub fn get_hooked_process() -> Option<Box<dyn HookedProcess>> {
 pub fn install_hook(title: SupportedTitle) -> CtrResult<()> {
     let debug = DebugProcess::new(title.into()).unwrap();
     let process = debug.get_process();
-    let pkrd_session_handle = pkrd_game::get_pkrd_session_handle();
+    let pkrd_session_handle = get_pkrd_session_handle();
     let handle_copy = process
         .copy_handle_to_process(&pkrd_session_handle)
         .unwrap();
 
     match title {
-        SupportedTitle::PokemonX => super::PokemonXY::install_hook(&debug, handle_copy),
-        SupportedTitle::PokemonY => super::PokemonXY::install_hook(&debug, handle_copy),
-        SupportedTitle::PokemonOR => super::PokemonORAS::install_hook(&debug, handle_copy),
-        SupportedTitle::PokemonAS => super::PokemonORAS::install_hook(&debug, handle_copy),
-        SupportedTitle::PokemonS => super::PokemonSM::install_hook(&debug, handle_copy),
-        SupportedTitle::PokemonM => super::PokemonSM::install_hook(&debug, handle_copy),
-        SupportedTitle::PokemonUS => super::PokemonUSUM::install_hook(&debug, handle_copy),
-        SupportedTitle::PokemonUM => super::PokemonUSUM::install_hook(&debug, handle_copy),
+        SupportedTitle::PokemonX => game::PokemonXY::install_hook(&debug, handle_copy),
+        SupportedTitle::PokemonY => game::PokemonXY::install_hook(&debug, handle_copy),
+        SupportedTitle::PokemonOR => game::PokemonORAS::install_hook(&debug, handle_copy),
+        SupportedTitle::PokemonAS => game::PokemonORAS::install_hook(&debug, handle_copy),
+        SupportedTitle::PokemonS => game::PokemonSM::install_hook(&debug, handle_copy),
+        SupportedTitle::PokemonM => game::PokemonSM::install_hook(&debug, handle_copy),
+        SupportedTitle::PokemonUS => game::PokemonUSUM::install_hook(&debug, handle_copy),
+        SupportedTitle::PokemonUM => game::PokemonUSUM::install_hook(&debug, handle_copy),
     }
     .unwrap();
 

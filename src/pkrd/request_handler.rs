@@ -1,4 +1,4 @@
-use super::{context::PkrdServiceContext, display::Screen, game};
+use super::{context::PkrdServiceContext, display::Screen, reader};
 use alloc::format;
 use core::{
     mem, slice,
@@ -76,7 +76,7 @@ pub fn handle_pkrd_game_request(
             // We're trusting our patch works and nothing else is using this command
             let physical_heap_ptr = svc::convert_pa_to_uncached_pa(heap_ptr)?;
             let heap = unsafe { slice::from_raw_parts_mut(physical_heap_ptr, heap_len) };
-            let reader = game::Reader::new(heap);
+            let reader = reader::Reader::new(heap);
 
             let (game, screen) = context.get_or_initialize_game_and_screen()?;
 

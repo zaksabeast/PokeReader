@@ -127,6 +127,9 @@ fn main(_argc: isize, _argv: *const *const u8) -> isize {
 
     match result {
         Ok(result) => result as isize,
-        Err(_) => panic!(),
+        Err(result_code) => {
+            log(&alloc::format!("manager.run error {:x}", result_code));
+            result_code as isize
+        }
     }
 }

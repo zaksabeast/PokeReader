@@ -6,7 +6,7 @@ PokeReader is a 3ds sysmodule that currently doesn't do anything, and is just a 
 
 ## Building, installing, and running
 
-1. Install make, rust, devkitarm, and devkitpro's 3ds libs
+1. Install make, rust, makerom, ctrtool, devkitarm, and devkitpro's 3ds libs
 1. Run `make` to build the debug and release builds
 1. Run `make` in the `launcher` directory to build the launcher
 1. Copy `launcher/out/pkrd-launcher.3dsx` to your console's `/3ds` directory

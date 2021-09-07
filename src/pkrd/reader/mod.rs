@@ -1,3 +1,9 @@
+mod gen_6;
+pub use gen_6::*;
+
+mod gen_7;
+pub use gen_7::*;
+
 use core::mem;
 use ctr::{
     res::{CtrResult, GenericResultCode},

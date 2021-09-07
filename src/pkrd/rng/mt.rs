@@ -19,7 +19,9 @@ impl MT {
 
         let mut seed = seed;
         for i in 1..624 {
-            seed = 0x6c078965u32.wrapping_mul(seed ^ (seed >> 30)).wrapping_add(i);
+            seed = (seed ^ (seed >> 30))
+                .wrapping_mul(0x6c078965)
+                .wrapping_add(i);
             self.mt[i as usize] = seed;
         }
     }
@@ -42,25 +44,25 @@ impl MT {
 
     fn shuffle(&mut self) {
         for i in 0..227 {
-            let y = (self.mt[i] & 0x80000000) | (self.mt[i+1] & 0x7fffffff);
+            let y = (self.mt[i] & 0x80000000) | (self.mt[i + 1] & 0x7fffffff);
 
             let mut y1 = y >> 1;
             if (y & 1) == 1 {
                 y1 ^= 0x9908b0df;
             }
 
-            self.mt[i] = y ^ self.mt[i+397];
+            self.mt[i] = y1 ^ self.mt[i + 397];
         }
 
         for i in 227..623 {
-            let y = (self.mt[i] & 0x80000000) | (self.mt[i+1] & 0x7fffffff);
+            let y = (self.mt[i] & 0x80000000) | (self.mt[i + 1] & 0x7fffffff);
 
             let mut y1 = y >> 1;
             if (y & 1) == 1 {
                 y1 ^= 0x9908b0df;
             }
 
-            self.mt[i] = y ^ self.mt[i-227];
+            self.mt[i] = y1 ^ self.mt[i - 227];
         }
 
         let y = (self.mt[623] & 0x80000000) | (self.mt[0] & 0x7fffffff);
@@ -73,5 +75,21 @@ impl MT {
         self.mt[623] = y1 ^ self.mt[396];
 
         self.index = 0;
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_shuffle() {
+        let mut rng = MT::new(0xaabbccdd);
+        for _ in 0..624 {
+            rng.next();
+        }
+
+        let result = rng.next();
+        assert_eq!(result, 0x796d251a);
     }
 }

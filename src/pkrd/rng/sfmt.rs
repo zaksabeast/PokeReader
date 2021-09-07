@@ -20,8 +20,8 @@ impl SFMT {
 
         let mut seed = seed;
         for i in 1..624 {
-            seed = 0x6c078965u32
-                .wrapping_mul(seed ^ (seed >> 30))
+            seed = (seed ^ (seed >> 30))
+                .wrapping_mul(0x6c078965)
                 .wrapping_add(i);
             self.sfmt[i as usize] = seed;
         }
@@ -54,20 +54,53 @@ impl SFMT {
         let mut d = 620;
 
         for a in (0..624).step_by(4) {
-            self.sfmt[a + 3] ^= (self.sfmt[a + 3] << 8) ^ (self.sfmt[a + 2] >> 24) ^ (self.sfmt[c + 3] >> 8) ^ ((self.sfmt[b + 3] >> 11) & 0xbffffff6) ^ (self.sfmt[d + 3] << 18);
-            self.sfmt[a + 2] ^= (self.sfmt[a + 2] << 8) ^ (self.sfmt[a + 1] >> 24) ^ (self.sfmt[c + 3] << 24) ^ (self.sfmt[c + 2] >> 8) ^ ((self.sfmt[b + 2] >> 11) & 0xbffaffff) ^ (self.sfmt[d + 2] << 18);
-            self.sfmt[a + 1] ^= (self.sfmt[a + 1] << 8) ^ (self.sfmt[a] >> 24) ^ (self.sfmt[c + 2] << 24) ^ (self.sfmt[c + 1] >> 8) ^ ((self.sfmt[b + 1] >> 11) & 0xddfecb7f) ^ (self.sfmt[d + 1] << 18);
-            self.sfmt[a] ^= (self.sfmt[a] << 8) ^ (self.sfmt[c + 1] << 24) ^ (self.sfmt[c] >> 8) ^ ((self.sfmt[b] >> 11) & 0xdfffffef) ^ (self.sfmt[d] << 18);
+            self.sfmt[a + 3] ^= (self.sfmt[a + 3] << 8)
+                ^ (self.sfmt[a + 2] >> 24)
+                ^ (self.sfmt[c + 3] >> 8)
+                ^ ((self.sfmt[b + 3] >> 11) & 0xbffffff6)
+                ^ (self.sfmt[d + 3] << 18);
+            self.sfmt[a + 2] ^= (self.sfmt[a + 2] << 8)
+                ^ (self.sfmt[a + 1] >> 24)
+                ^ (self.sfmt[c + 3] << 24)
+                ^ (self.sfmt[c + 2] >> 8)
+                ^ ((self.sfmt[b + 2] >> 11) & 0xbffaffff)
+                ^ (self.sfmt[d + 2] << 18);
+            self.sfmt[a + 1] ^= (self.sfmt[a + 1] << 8)
+                ^ (self.sfmt[a] >> 24)
+                ^ (self.sfmt[c + 2] << 24)
+                ^ (self.sfmt[c + 1] >> 8)
+                ^ ((self.sfmt[b + 1] >> 11) & 0xddfecb7f)
+                ^ (self.sfmt[d + 1] << 18);
+            self.sfmt[a] ^= (self.sfmt[a] << 8)
+                ^ (self.sfmt[c + 1] << 24)
+                ^ (self.sfmt[c] >> 8)
+                ^ ((self.sfmt[b] >> 11) & 0xdfffffef)
+                ^ (self.sfmt[d] << 18);
 
             c = d;
             d = a;
             b += 4;
-            if b == 624
-            {
+            if b == 624 {
                 b = 0;
             }
         }
 
         self.index = 0;
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_shuffle() {
+        let mut rng = SFMT::new(0xaabbccdd);
+        for _ in 0..624 {
+            rng.next();
+        }
+
+        let result = rng.next();
+        assert_eq!(result, 0xC3A87073C81F87B6);
     }
 }

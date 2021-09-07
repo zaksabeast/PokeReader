@@ -5,3 +5,4 @@ pub mod hook;
 pub mod notification;
 pub mod reader;
 pub mod request_handler;
+pub mod rng;

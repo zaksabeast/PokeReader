@@ -1,5 +1,5 @@
 use super::reader;
-use crate::pkrd::{display, display::Screen};
+use crate::pkrd::{display, display::Screen, reader::Gen6Reader};
 use ctr::res::CtrResult;
 
 pub(super) fn run(

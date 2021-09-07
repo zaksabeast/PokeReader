@@ -1,10 +1,13 @@
-use super::SupportedTitle;
+use super::config;
 use crate::{
-    pkrd::{display, game, reader, request_handler::get_pkrd_session_handle},
+    pkrd::{display, game, hook::SupportedTitle, reader, request_handler::get_pkrd_session_handle},
     utils,
 };
 use alloc::boxed::Box;
-use ctr::{res::CtrResult, DebugProcess, Handle};
+use ctr::{
+    res::{CtrResult, GenericResultCode},
+    DebugProcess, Handle,
+};
 
 /// A process that has the ability to be hooked.
 pub trait HookableProcess: HookedProcess {
@@ -16,16 +19,18 @@ pub trait HookableProcess: HookedProcess {
     fn patch_present_framebuffer(
         process: &DebugProcess,
         pkrd_handle: Handle,
-        heap_addr: u32,
-        heap_size: u32,
-        present_framebuffer_addr: u32,
-        hook_vars_addr: u32,
-        get_screen_addr: u32,
+        config: config::PatchPresentFramebufferConfig,
     ) -> CtrResult<()> {
+        if (config.hook_vars_addr & 0xFFFF) != 0 || config.hook_vars_addr == 0 {
+            return Err(GenericResultCode::InvalidPointer.into());
+        }
+
         let cmd_header = 0x20180;
-        let load_hook_vars_into_lr = 0xe3a0e800 | (hook_vars_addr >> 16);
-        let get_screen_branch =
-            utils::make_arm_branch(present_framebuffer_addr + (14 * 4), get_screen_addr);
+        let load_hook_vars_into_lr = 0xe3a0e800 | (config.hook_vars_addr >> 16);
+        let get_screen_branch = utils::make_arm_branch(
+            config.present_framebuffer_addr + (14 * 4),
+            config.get_screen_addr,
+        );
 
         let hook_code: [u32; 37] = [
             0xe92d5fff,             // stmdb      sp!,{r0-lr}
@@ -68,23 +73,23 @@ pub trait HookableProcess: HookedProcess {
         ];
 
         let hook_vars: [u32; 6] = [
-            heap_addr,                        // Heap
+            config.get_heap_addr(),           // Heap
             1,                                // svc::convert_va_to_pa write_check
             unsafe { pkrd_handle.get_raw() }, // Session handle
             cmd_header,                       // Command header
             0,                                // Needed for data sync
-            heap_size,                        // Heap size
+            config.get_heap_size(),           // Heap size
         ];
 
         process
             .write_bytes(
-                present_framebuffer_addr,
+                config.present_framebuffer_addr,
                 safe_transmute::transmute_to_bytes(&hook_code),
             )
             .unwrap();
         process
             .write_bytes(
-                hook_vars_addr,
+                config.hook_vars_addr,
                 safe_transmute::transmute_to_bytes(&hook_vars),
             )
             .unwrap();
@@ -146,4 +151,97 @@ pub fn install_hook(title: SupportedTitle) -> CtrResult<()> {
     debug.eat_events().unwrap();
 
     Ok(())
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    struct MockGame {}
+
+    impl HookableProcess for MockGame {
+        fn new_from_supported_title(_title: SupportedTitle) -> Box<Self> {
+            Box::new(Self {})
+        }
+
+        fn install_hook(_process: &DebugProcess, _pkrd_handle: Handle) -> CtrResult<()> {
+            Ok(())
+        }
+    }
+
+    impl HookedProcess for MockGame {
+        fn run_hook(
+            &self,
+            _heap: reader::Reader,
+            _screen: &mut display::DirectWriteScreen,
+        ) -> CtrResult<()> {
+            Ok(())
+        }
+
+        fn get_title(&self) -> SupportedTitle {
+            SupportedTitle::PokemonUM
+        }
+    }
+
+    mod hookable_process {
+        use super::*;
+        use crate::pkrd::hook;
+
+        #[test]
+        fn should_return_error_if_the_config_hook_vars_addr_is_not_0x10000_aligned() {
+            let debug_process = DebugProcess::new(0).unwrap();
+            let session_handle = 0.into();
+            let config = hook::PatchPresentFramebufferConfig {
+                is_extended_memory: true,
+                get_screen_addr: 0x27ab38,
+                present_framebuffer_addr: 0x279bb4,
+                hook_vars_addr: 0x6300FF,
+            };
+
+            let result =
+                MockGame::patch_present_framebuffer(&debug_process, session_handle, config)
+                    .expect_err(
+                        "Patching framebuffer should have failed for unaligned hook var address",
+                    );
+
+            assert_eq!(result, GenericResultCode::InvalidPointer.into());
+        }
+
+        #[test]
+        fn should_return_error_if_the_config_hook_vars_addr_is_0() {
+            let debug_process = DebugProcess::new(0).unwrap();
+            let session_handle = 0.into();
+            let config = hook::PatchPresentFramebufferConfig {
+                is_extended_memory: true,
+                get_screen_addr: 0x27ab38,
+                present_framebuffer_addr: 0x279bb4,
+                hook_vars_addr: 0,
+            };
+
+            let result =
+                MockGame::patch_present_framebuffer(&debug_process, session_handle, config)
+                    .expect_err(
+                        "Patching framebuffer should have failed for null hook var address",
+                    );
+
+            assert_eq!(result, GenericResultCode::InvalidPointer.into());
+        }
+
+        #[test]
+        fn should_succeed_if_the_config_hook_vars_addr_is_not_0_or_is_0x10000_aligned() {
+            let debug_process = DebugProcess::new(0).unwrap();
+            let session_handle = 0.into();
+            let config = hook::PatchPresentFramebufferConfig {
+                is_extended_memory: true,
+                get_screen_addr: 0x27ab38,
+                present_framebuffer_addr: 0x279bb4,
+                hook_vars_addr: 0x630000,
+            };
+
+            let result =
+                MockGame::patch_present_framebuffer(&debug_process, session_handle, config);
+
+            assert_eq!(result, Ok(()));
+        }
+    }
 }

@@ -4,7 +4,9 @@ use core::{
     mem, slice,
     sync::atomic::{AtomicU32, Ordering},
 };
-use ctr::{ipc, log, res::GenericResultCode, svc, sysmodule::server, Handle};
+use ctr::{
+    hid, hid::InterfaceDevice, ipc, log, res::GenericResultCode, svc, sysmodule::server, Handle,
+};
 use num_enum::IntoPrimitive;
 
 static PKRD_HANDLE: AtomicU32 = AtomicU32::new(0);
@@ -85,6 +87,8 @@ pub fn handle_pkrd_game_request(
             {
                 log(&alloc::format!("Failed screen context {:x}", result_code));
             }
+
+            hid::Global::scan_input();
 
             // The game ignores the result of this, and there's not much we can
             // do to handle the error aside from logging.

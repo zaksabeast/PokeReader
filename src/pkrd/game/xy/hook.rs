@@ -7,14 +7,19 @@ use crate::pkrd::{
 use alloc::boxed::Box;
 use ctr::{res::CtrResult, DebugProcess, Handle};
 
+pub(super) struct Views {
+    pub main: bool,
+}
+
 pub struct PokemonXY {
     title: SupportedTitle,
+    pub(super) views: Views,
 }
 
 impl HookedProcess for PokemonXY {
-    fn run_hook(&self, heap: Reader, screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
+    fn run_hook(&mut self, heap: Reader, screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
         let game_reader = reader::PokemonXYReader::new(heap);
-        frame::run(game_reader, screen)
+        frame::run(self, game_reader, screen)
     }
 
     fn get_title(&self) -> SupportedTitle {
@@ -24,7 +29,10 @@ impl HookedProcess for PokemonXY {
 
 impl HookableProcess for PokemonXY {
     fn new_from_supported_title(title: SupportedTitle) -> Box<Self> {
-        Box::new(Self { title })
+        Box::new(Self {
+            title,
+            views: Views { main: false },
+        })
     }
 
     fn install_hook(process: &DebugProcess, pkrd_handle: Handle) -> CtrResult<()> {

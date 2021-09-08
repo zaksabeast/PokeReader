@@ -103,7 +103,7 @@ pub trait HookableProcess: HookedProcess {
 /// and be used as `dyn HookedProcess`.
 pub trait HookedProcess {
     fn run_hook(
-        &self,
+        &mut self,
         heap: reader::Reader,
         screen: &mut display::DirectWriteScreen,
     ) -> CtrResult<()>;
@@ -171,7 +171,7 @@ mod test {
 
     impl HookedProcess for MockGame {
         fn run_hook(
-            &self,
+            &mut self,
             _heap: reader::Reader,
             _screen: &mut display::DirectWriteScreen,
         ) -> CtrResult<()> {

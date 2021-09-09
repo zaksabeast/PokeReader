@@ -1,6 +1,6 @@
 use super::config;
 use crate::{
-    pkrd::{display, game, hook::SupportedTitle, reader, request_handler::get_pkrd_session_handle},
+    pkrd::{display, game, hook::SupportedTitle, request_handler::get_pkrd_session_handle},
     utils,
 };
 use alloc::boxed::Box;
@@ -102,11 +102,7 @@ pub trait HookableProcess: HookedProcess {
 /// This is separate from HookableProcess so it can have a vtable
 /// and be used as `dyn HookedProcess`.
 pub trait HookedProcess {
-    fn run_hook(
-        &mut self,
-        heap: reader::Reader,
-        screen: &mut display::DirectWriteScreen,
-    ) -> CtrResult<()>;
+    fn run_hook(&mut self, heap: &[u8], screen: &mut display::DirectWriteScreen) -> CtrResult<()>;
 
     fn get_title(&self) -> SupportedTitle;
 }
@@ -172,7 +168,7 @@ mod test {
     impl HookedProcess for MockGame {
         fn run_hook(
             &mut self,
-            _heap: reader::Reader,
+            _heap: &[u8],
             _screen: &mut display::DirectWriteScreen,
         ) -> CtrResult<()> {
             Ok(())

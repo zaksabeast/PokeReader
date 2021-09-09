@@ -2,7 +2,6 @@ use super::{frame, reader};
 use crate::pkrd::{
     display,
     hook::{HookableProcess, HookedProcess, PatchPresentFramebufferConfig, SupportedTitle},
-    reader::Reader,
 };
 use alloc::boxed::Box;
 use ctr::{res::CtrResult, DebugProcess, Handle};
@@ -17,7 +16,7 @@ pub struct PokemonORAS {
 }
 
 impl HookedProcess for PokemonORAS {
-    fn run_hook(&mut self, heap: Reader, screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
+    fn run_hook(&mut self, heap: &[u8], screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
         let game_reader = reader::PokemonORASReader::new(heap);
         frame::run(self, game_reader, screen)
     }

@@ -11,22 +11,17 @@ use ctr::{
 };
 use safe_transmute::TriviallyTransmutable;
 
-pub struct Reader<'a> {
-    data: &'a [u8],
-}
+pub trait Reader {
+    fn get_data(&self) -> &[u8];
 
-impl<'a> Reader<'a> {
-    pub fn new(data: &'a [u8]) -> Self {
-        Self { data }
-    }
-
-    pub fn read<T: TriviallyTransmutable>(&self, offset: usize) -> CtrResult<T> {
+    fn read<T: TriviallyTransmutable>(&self, offset: usize) -> CtrResult<T> {
+        let data = self.get_data();
         let offset_end = offset + mem::size_of::<T>();
 
-        if self.data.len() < offset_end {
+        if data.len() < offset_end {
             return Err(GenericResultCode::InvalidSize.into());
         }
 
-        transmute_one_pedantic(&self.data[offset..offset_end])
+        transmute_one_pedantic(&data[offset..offset_end])
     }
 }

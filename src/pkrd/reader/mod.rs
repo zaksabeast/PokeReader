@@ -6,6 +6,7 @@ pub use gen_6::*;
 mod gen_7;
 pub use gen_7::*;
 
+use alloc::{vec, vec::Vec};
 use core::mem;
 use ctr::{
     log,
@@ -22,15 +23,21 @@ pub trait Reader {
 
     /// Safely reads any `TriviallyTransmutable` type.
     /// Errors will be returned if the offset does not have enough data for the target type.
+    ///
+    /// All data read is copied, so anything returned from this can be manipualted without fear
+    /// of corrupting the data source.
     fn read<T: TriviallyTransmutable>(&self, offset: usize) -> CtrResult<T> {
         let data = self.get_data();
-        let offset_end = offset + mem::size_of::<T>();
+        let result_size = mem::size_of::<T>();
+        let offset_end = offset + result_size;
 
         if data.len() < offset_end {
             return Err(GenericResultCode::InvalidSize.into());
         }
 
-        transmute_one_pedantic(&data[offset..offset_end])
+        let mut copy: Vec<u8> = vec![0; result_size];
+        copy.copy_from_slice(&data[offset..offset_end]);
+        transmute_one_pedantic(&copy)
     }
 
     /// Same as `read`, but returns a default value if the read is invalid.

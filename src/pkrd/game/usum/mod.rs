@@ -1,4 +1,3 @@
-mod frame;
 mod reader;
 
 mod hook;

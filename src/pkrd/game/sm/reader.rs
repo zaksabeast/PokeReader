@@ -18,4 +18,5 @@ impl<'a> Reader for PokemonSMReader<'a> {
 
 impl<'a> Gen7Reader for PokemonSMReader<'a> {
     const INITIAL_SEED_OFFSET: usize = 0x25A3878;
+    const PARTY_OFFSET: usize = 0x4195E10;
 }

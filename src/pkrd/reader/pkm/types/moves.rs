@@ -1,7 +1,5 @@
-use alloc::{
-    format,
-    string::{String, ToString},
-};
+use alloc::{format, string::ToString};
+use core::fmt;
 use num_enum::FromPrimitive;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, FromPrimitive)]
@@ -837,9 +835,9 @@ pub enum Move {
     EerieSpell = 826,
 }
 
-impl ToString for Move {
-    fn to_string(&self) -> String {
-        match self {
+impl fmt::Display for Move {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let display = match self {
             Self::KarateChop => "Karate Chop".to_string(),
             Self::DoubleSlap => "Double Slap".to_string(),
             Self::CometPunch => "Comet Punch".to_string(),
@@ -1440,6 +1438,8 @@ impl ToString for Move {
             Self::AstralBarrage => "Astral Barrage".to_string(),
             Self::EerieSpell => "Eerie Spell".to_string(),
             _ => format!("{:?}", self),
-        }
+        };
+
+        write!(f, "{}", display)
     }
 }

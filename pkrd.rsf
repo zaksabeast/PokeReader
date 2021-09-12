@@ -143,7 +143,7 @@ AccessControlInfo:
 SystemControlInfo:
   SaveDataSize: 0KB # It doesn't use any save data.
   RemasterVersion: 0
-  StackSize: 0x4000
+  StackSize: 0x8000 # The larger stack size is for debug builds
   Dependency: 
     ac: 0x0004013000002402
     am: 0x0004013000001502

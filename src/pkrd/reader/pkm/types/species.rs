@@ -1,7 +1,5 @@
-use alloc::{
-    format,
-    string::{String, ToString},
-};
+use alloc::{format, string::ToString};
+use core::fmt;
 use num_enum::FromPrimitive;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, FromPrimitive)]
@@ -909,9 +907,9 @@ pub enum Species {
     Calyrex = 898,
 }
 
-impl ToString for Species {
-    fn to_string(&self) -> String {
-        match self {
+impl fmt::Display for Species {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let display = match self {
             Self::FarfetchD => "Farfetch'd".to_string(),
             Self::MrMime => "Mr. Mime".to_string(),
             Self::HoOh => "Ho-Oh".to_string(),
@@ -929,6 +927,8 @@ impl ToString for Species {
             Self::SirfetchD => "Sirfetch'd".to_string(),
             Self::MrRime => "Mr. Rime".to_string(),
             _ => format!("{:?}", self),
-        }
+        };
+
+        write!(f, "{}", display)
     }
 }

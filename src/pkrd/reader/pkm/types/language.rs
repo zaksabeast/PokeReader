@@ -1,7 +1,4 @@
-use alloc::{
-    format,
-    string::{String, ToString},
-};
+use core::fmt;
 use num_enum::FromPrimitive;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, FromPrimitive)]
@@ -20,8 +17,8 @@ pub enum Language {
     ChineseT = 10,
 }
 
-impl ToString for Language {
-    fn to_string(&self) -> String {
-        format!("{:?}", self)
+impl fmt::Display for Language {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
     }
 }

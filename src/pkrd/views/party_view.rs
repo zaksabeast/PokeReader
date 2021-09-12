@@ -1,5 +1,4 @@
 use crate::pkrd::{display, reader::pkm};
-use alloc::string::ToString;
 use ctr::{
     hid,
     hid::{Button, InterfaceDevice},
@@ -31,7 +30,7 @@ impl PartyView {
         }
 
         if self.show {
-            let title = &alloc::format!("Party {}", self.slot.to_string());
+            let title = &alloc::format!("Party {}", self.slot);
             super::pkx::run_view(title, party_pkx, screen)?;
         }
 

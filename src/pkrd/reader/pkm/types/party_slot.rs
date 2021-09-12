@@ -1,4 +1,4 @@
-use alloc::string::{String, ToString};
+use core::fmt;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 #[repr(usize)]
@@ -35,9 +35,9 @@ impl PartySlot {
     }
 }
 
-impl ToString for PartySlot {
-    fn to_string(&self) -> String {
-        let res = match self {
+impl fmt::Display for PartySlot {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let display = match self {
             Self::Slot1 => "1",
             Self::Slot2 => "2",
             Self::Slot3 => "3",
@@ -46,7 +46,7 @@ impl ToString for PartySlot {
             Self::Slot6 => "6",
         };
 
-        res.to_string()
+        write!(f, "{}", display)
     }
 }
 

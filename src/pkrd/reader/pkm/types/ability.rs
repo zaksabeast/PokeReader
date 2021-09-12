@@ -1,7 +1,5 @@
-use alloc::{
-    format,
-    string::{String, ToString},
-};
+use alloc::{format, string::ToString};
+use core::fmt;
 use num_enum::FromPrimitive;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, FromPrimitive)]
@@ -278,9 +276,9 @@ pub enum Ability {
     AsOne2 = 267,
 }
 
-impl ToString for Ability {
-    fn to_string(&self) -> String {
-        match self {
+impl fmt::Display for Ability {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let display = match self {
             Self::SpeedBoost => "Speed Boost".to_string(),
             Self::BattleArmor => "Battle Armor".to_string(),
             Self::SandVeil => "Sand Veil".to_string(),
@@ -443,6 +441,8 @@ impl ToString for Ability {
             Self::AsOne1 => "As One".to_string(),
             Self::AsOne2 => "As One".to_string(),
             _ => format!("{:?}", self),
-        }
+        };
+
+        write!(f, "{}", display)
     }
 }

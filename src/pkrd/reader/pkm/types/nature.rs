@@ -1,7 +1,4 @@
-use alloc::{
-    format,
-    string::{String, ToString},
-};
+use core::fmt;
 use num_enum::FromPrimitive;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, FromPrimitive)]
@@ -35,8 +32,8 @@ pub enum Nature {
     Quirky = 24,
 }
 
-impl ToString for Nature {
-    fn to_string(&self) -> String {
-        format!("{:?}", self)
+impl fmt::Display for Nature {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
     }
 }

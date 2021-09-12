@@ -43,6 +43,10 @@ impl Pkx for Pk6 {
     fn sid(&self) -> u16 {
         self.default_read(0x0E)
     }
+
+    fn nature(&self) -> types::Nature {
+        self.default_read::<u8>(0x1C).into()
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -144,6 +148,12 @@ mod test {
         let pkx = Pk6::new(TEST_EKX);
         let tsv = 0993;
         assert_eq!(pkx.tsv(), tsv)
+    }
+
+    #[test]
+    fn should_read_nature() {
+        let pkx = Pk6::new(TEST_EKX);
+        assert_eq!(pkx.nature(), types::Nature::Adamant)
     }
 
     #[test]

@@ -17,4 +17,6 @@ pub trait Pkx: Reader {
     fn tsv(&self) -> u16 {
         (self.tid() ^ self.sid()) >> 4
     }
+
+    fn nature(&self) -> types::Nature;
 }

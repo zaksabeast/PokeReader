@@ -31,6 +31,10 @@ pub fn run_view(
         y += 12;
         let tsv_text = &alloc::format!("TSV: {:04}", pkx.tsv());
         screen.draw_string(&white, tsv_text, x, y)?;
+
+        y += 12;
+        let nature_text = &alloc::format!("Nature: {}", pkx.nature().to_string());
+        screen.draw_string(&white, nature_text, x, y)?;
     }
 
     Ok(())

@@ -38,6 +38,9 @@ impl HookableProcess for PokemonXY {
             present_framebuffer_addr: 0x149354,
             hook_vars_addr: 0x5c0000,
         };
-        Self::patch_present_framebuffer(process, pkrd_handle, config)
+        let inital_seed_address = 0x1254f8;
+
+        Self::patch_present_framebuffer(process, pkrd_handle, config);
+        Self::patch_inital_seed(process, inital_seed_address)
     }
 }

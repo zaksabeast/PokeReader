@@ -96,6 +96,16 @@ pub trait HookableProcess: HookedProcess {
 
         Ok(())
     }
+
+    fn patch_inital_seed(process: &DebugProcess, address: u32) -> CtrResult<()> {
+        let patch_code: [u32; 1] = [0xe5001004];
+
+        process
+            .write_bytes(address, safe_transmute::transmute_to_bytes(&patch_code))
+            .unwrap();
+
+        Ok(())
+    }
 }
 
 /// A process that is hooked.

@@ -3,6 +3,14 @@ use super::{pkm, Reader};
 pub trait Gen7Reader: Reader {
     const INITIAL_SEED_OFFSET: usize;
     const PARTY_OFFSET: usize;
+    const WILD_OFFSET: usize;
+    const SOS_OFFSET: usize;
+    const SOS_SEED_OFFSET: usize;
+    const SOS_CHAIN_LENGTH: usize;
+    const EGG_READY_OFFSET: usize;
+    const EGG_OFFSET: usize;
+    const PARENT1_OFFSET: usize;
+    const PARENT2_OFFSET: usize;
 
     fn get_initial_seed(&self) -> u32 {
         self.default_read(Self::INITIAL_SEED_OFFSET)

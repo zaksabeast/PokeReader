@@ -19,4 +19,8 @@ pub trait Pkx: Reader {
     }
 
     fn nature(&self) -> types::Nature;
+
+    fn ability(&self) -> types::Ability;
+
+    fn ability_number(&self) -> u8;
 }

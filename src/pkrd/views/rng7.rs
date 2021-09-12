@@ -6,13 +6,13 @@ pub fn run_view(
     screen: &mut display::DirectWriteScreen,
 ) -> CtrResult<()> {
     if screen.get_is_top_screen() {
-        let mut x = 190;
+        let mut x = 220;
         let mut y = 10;
 
         let black = display::Color::black();
         let white = display::Color::white();
 
-        screen.paint_square(&black, x, y, 200, 56)?;
+        screen.paint_square(&black, x, y, 170, 56)?;
 
         x += 10;
         y += 4;

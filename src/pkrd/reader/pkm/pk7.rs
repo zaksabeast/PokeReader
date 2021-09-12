@@ -47,6 +47,15 @@ impl Pkx for Pk7 {
     fn nature(&self) -> types::Nature {
         self.default_read::<u8>(0x1C).into()
     }
+
+    fn ability(&self) -> types::Ability {
+        let ability: u8 = self.default_read(0x14);
+        (ability as u16).into()
+    }
+
+    fn ability_number(&self) -> u8 {
+        self.default_read(0x15)
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -154,6 +163,19 @@ mod test {
     fn should_read_nature() {
         let pkx = Pk7::new(TEST_EKX);
         assert_eq!(pkx.nature(), types::Nature::Serious)
+    }
+
+    #[test]
+    fn should_read_ability() {
+        let pkx = Pk7::new(TEST_EKX);
+        assert_eq!(pkx.ability(), types::Ability::Torrent)
+    }
+
+    #[test]
+    fn should_read_ability_name() {
+        let pkx = Pk7::new(TEST_EKX);
+        let ability_number = 1;
+        assert_eq!(pkx.ability_number(), ability_number)
     }
 
     #[test]

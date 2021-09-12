@@ -14,7 +14,7 @@ pub fn run_view(
         let black = display::Color::black();
         let white = display::Color::white();
 
-        screen.paint_square(&black, x, y, 170, 68)?;
+        screen.paint_square(&black, x, y, 190, 80)?;
 
         x += 10;
         y += 4;
@@ -35,6 +35,14 @@ pub fn run_view(
         y += 12;
         let nature_text = &alloc::format!("Nature: {}", pkx.nature().to_string());
         screen.draw_string(&white, nature_text, x, y)?;
+
+        y += 12;
+        let ability_text = &alloc::format!(
+            "Ability: {} ({})",
+            pkx.ability().to_string(),
+            pkx.ability_number()
+        );
+        screen.draw_string(&white, ability_text, x, y)?;
     }
 
     Ok(())

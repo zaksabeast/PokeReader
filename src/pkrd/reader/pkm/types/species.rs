@@ -912,7 +912,7 @@ pub enum Species {
 impl ToString for Species {
     fn to_string(&self) -> String {
         match self {
-            Self::FarfetchD => "Farfetch’d".to_string(),
+            Self::FarfetchD => "Farfetch'd".to_string(),
             Self::MrMime => "Mr. Mime".to_string(),
             Self::HoOh => "Ho-Oh".to_string(),
             Self::MimeJr => "Mime Jr.".to_string(),
@@ -926,7 +926,7 @@ impl ToString for Species {
             Self::TapuLele => "Tapu Lele".to_string(),
             Self::TapuBulu => "Tapu Bulu".to_string(),
             Self::TapuFini => "Tapu Fini".to_string(),
-            Self::SirfetchD => "Sirfetch’d".to_string(),
+            Self::SirfetchD => "Sirfetch'd".to_string(),
             Self::MrRime => "Mr. Rime".to_string(),
             _ => format!("{:?}", self),
         }

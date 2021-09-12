@@ -38,6 +38,9 @@ impl HookableProcess for PokemonORAS {
             present_framebuffer_addr: 0x148758,
             hook_vars_addr: 0x5d0000,
         };
-        Self::patch_present_framebuffer(process, pkrd_handle, config)
+        let inital_seed_address = 0x12e5c8;
+
+        Self::patch_present_framebuffer(process, pkrd_handle, config);
+        Self::patch_inital_seed(process, inital_seed_address)
     }
 }

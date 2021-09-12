@@ -1,8 +1,11 @@
+/// Tools to read Pokemon.
 pub mod pkm;
 
+/// Tools to read Gen 6 specific values.
 mod gen_6;
 pub use gen_6::*;
 
+/// Tools to read Gen 7 specific values.
 mod gen_7;
 pub use gen_7::*;
 
@@ -16,15 +19,14 @@ use ctr::{
 use safe_transmute::TriviallyTransmutable;
 
 /// An interface to safely read values from a struct.
-/// The implementor must implement the `get_data` method.
 pub trait Reader {
     /// Returns the data to be read from.
     fn get_data(&self) -> &[u8];
 
-    /// Safely reads any `TriviallyTransmutable` type.
+    /// Safely reads any [TriviallyTransmutable] type.
     /// Errors will be returned if the offset does not have enough data for the target type.
     ///
-    /// All data read is copied, so anything returned from this can be manipualted without fear
+    /// All read data is copied, so anything returned from this can be manipualted without fear
     /// of corrupting the data source.
     fn read<T: TriviallyTransmutable>(&self, offset: usize) -> CtrResult<T> {
         let data = self.get_data();
@@ -40,7 +42,7 @@ pub trait Reader {
         transmute_one_pedantic(&copy)
     }
 
-    /// Same as `read`, but returns a default value if the read is invalid.
+    /// Same as [Reader::read], but returns a default value if the read is invalid.
     /// This will also log an error in debug builds.
     fn default_read<T: TriviallyTransmutable + Default>(&self, offset: usize) -> T {
         let result = self.read(offset);

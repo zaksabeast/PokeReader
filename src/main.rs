@@ -8,6 +8,7 @@
 
 extern crate alloc;
 
+#[doc(hidden)]
 mod heap_allocator;
 mod pkrd;
 mod utils;
@@ -30,6 +31,7 @@ use ctr::{
 
 /// Called after main exits to clean things up.
 /// Used by 3ds toolchain.
+#[doc(hidden)]
 #[no_mangle]
 pub extern "C" fn __wrap_exit() {
     svc::exit_process();
@@ -37,6 +39,7 @@ pub extern "C" fn __wrap_exit() {
 
 /// Called before main to initialize the system.
 /// Used by 3ds toolchain.
+#[doc(hidden)]
 #[no_mangle]
 pub extern "C" fn initSystem() {
     // This is safe because we're only supposed to use this one time
@@ -60,6 +63,7 @@ pub extern "C" fn initSystem() {
 }
 
 #[cfg(not(test))]
+#[doc(hidden)]
 #[panic_handler]
 fn panic(panic: &PanicInfo<'_>) -> ! {
     if let Some(location) = panic.location() {
@@ -82,11 +86,13 @@ fn panic(panic: &PanicInfo<'_>) -> ! {
 }
 
 #[cfg(not(test))]
+#[doc(hidden)]
 #[no_mangle]
 pub extern "C" fn abort() -> ! {
     ctr::svc::break_execution(ctr::svc::UserBreakType::Panic)
 }
 
+#[doc(hidden)]
 #[start]
 fn main(_argc: isize, _argv: *const *const u8) -> isize {
     log("\n\nStarted!");

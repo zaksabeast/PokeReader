@@ -98,7 +98,17 @@ pub trait HookableProcess: HookedProcess {
     }
 
     fn patch_inital_seed(process: &DebugProcess, address: u32) -> CtrResult<()> {
-        let patch_code: [u32; 1] = [0xe5001004];
+        /*
+         * The MT table initialization in gen 6 has a very useful nop instruction at the beginning of the function
+         * To be more specific it is a mov r0, r0 instruction
+         * We overwrite this with str r1, [r0, #-4]
+         * r1 is the register that contains the initial seed and r0 is the register that contains the memory address for the MT table
+         * The #-4 is to indicate write the initial seed 4 bytes before the MT table
+         * After this instruction is executed we can read the memory address 4 bytes before the MT table to get the initial seed
+         */
+        let patch_code: [u32; 1] = [
+            0xe5001004, // str r1, [r0, #-4]
+        ];
 
         process
             .write_bytes(address, safe_transmute::transmute_to_bytes(&patch_code))

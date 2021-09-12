@@ -19,6 +19,8 @@ pub mod request_handler;
 
 /// Everything related to drawing on the screen.
 mod display;
+// Handles game pausing and frame advancing like an emulator to easily get frame accurate button presses.
+mod frame_pause;
 /// Orchestrates game related tasks such as hooking, reading, and showing views to the user.
 mod game;
 /// Tools for pkrd to hook into games.

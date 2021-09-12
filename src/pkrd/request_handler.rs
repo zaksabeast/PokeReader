@@ -1,4 +1,4 @@
-use super::{context::PkrdServiceContext, display::Screen};
+use super::{context::PkrdServiceContext, display::Screen, frame_pause::handle_frame_pause};
 use alloc::format;
 use core::{
     mem, slice,
@@ -87,6 +87,7 @@ pub fn handle_pkrd_game_request(
                 log(&alloc::format!("Failed screen context {:x}", result_code));
             }
 
+            // The input needs to be scanned here so we can use it in the hook
             hid::Global::scan_input();
 
             // The game ignores the result of this, and there's not much we can
@@ -94,6 +95,8 @@ pub fn handle_pkrd_game_request(
             if let Err(result_code) = game.run_hook(heap, screen) {
                 log(&alloc::format!("Failed run_hook: {:x}", result_code));
             }
+
+            handle_frame_pause(context, is_top_screen);
 
             let mut command = ipc::ThreadCommandBuilder::new(command_id);
             command.push(GenericResultCode::Success);

@@ -24,10 +24,6 @@ impl PatchPresentFramebufferConfig {
     }
 
     pub fn get_heap_size(&self) -> u32 {
-        if self.is_extended_memory {
-            0x34a8d84
-        } else {
-            0x6000000
-        }
+        0x6000000
     }
 }

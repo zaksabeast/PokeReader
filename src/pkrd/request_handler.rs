@@ -1,10 +1,12 @@
-use super::{context::PkrdServiceContext, display::Screen, reader};
+use super::{context::PkrdServiceContext, display::Screen, frame_pause::handle_frame_pause};
 use alloc::format;
 use core::{
     mem, slice,
     sync::atomic::{AtomicU32, Ordering},
 };
-use ctr::{ipc, log, res::GenericResultCode, svc, sysmodule::server, Handle};
+use ctr::{
+    hid, hid::InterfaceDevice, ipc, log, res::GenericResultCode, svc, sysmodule::server, Handle,
+};
 use num_enum::IntoPrimitive;
 
 static PKRD_HANDLE: AtomicU32 = AtomicU32::new(0);
@@ -76,7 +78,6 @@ pub fn handle_pkrd_game_request(
             // We're trusting our patch works and nothing else is using this command
             let physical_heap_ptr = svc::convert_pa_to_uncached_pa(heap_ptr)?;
             let heap = unsafe { slice::from_raw_parts_mut(physical_heap_ptr, heap_len) };
-            let reader = reader::Reader::new(heap);
 
             let (game, screen) = context.get_or_initialize_game_and_screen()?;
 
@@ -86,11 +87,16 @@ pub fn handle_pkrd_game_request(
                 log(&alloc::format!("Failed screen context {:x}", result_code));
             }
 
+            // The input needs to be scanned here so we can use it in the hook
+            hid::Global::scan_input();
+
             // The game ignores the result of this, and there's not much we can
             // do to handle the error aside from logging.
-            if let Err(result_code) = game.run_hook(reader, screen) {
+            if let Err(result_code) = game.run_hook(heap, screen) {
                 log(&alloc::format!("Failed run_hook: {:x}", result_code));
             }
+
+            handle_frame_pause(context, is_top_screen);
 
             let mut command = ipc::ThreadCommandBuilder::new(command_id);
             command.push(GenericResultCode::Success);

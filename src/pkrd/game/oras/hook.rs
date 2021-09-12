@@ -1,20 +1,21 @@
-use super::{frame, reader};
+use super::reader;
 use crate::pkrd::{
     display,
     hook::{HookableProcess, HookedProcess, PatchPresentFramebufferConfig, SupportedTitle},
-    reader::Reader,
+    views,
 };
 use alloc::boxed::Box;
 use ctr::{res::CtrResult, DebugProcess, Handle};
 
 pub struct PokemonORAS {
     title: SupportedTitle,
+    views: views::Views,
 }
 
 impl HookedProcess for PokemonORAS {
-    fn run_hook(&self, heap: Reader, screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
-        let game_reader = reader::PokemonORASReader::new(heap);
-        frame::run(game_reader, screen)
+    fn run_hook(&mut self, heap: &[u8], screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
+        let game = reader::PokemonORASReader::new(heap);
+        views::run_gen6_views(&mut self.views, &game, screen)
     }
 
     fn get_title(&self) -> SupportedTitle {
@@ -24,7 +25,10 @@ impl HookedProcess for PokemonORAS {
 
 impl HookableProcess for PokemonORAS {
     fn new_from_supported_title(title: SupportedTitle) -> Box<Self> {
-        Box::new(Self { title })
+        Box::new(Self {
+            title,
+            views: Default::default(),
+        })
     }
 
     fn install_hook(process: &DebugProcess, pkrd_handle: Handle) -> CtrResult<()> {

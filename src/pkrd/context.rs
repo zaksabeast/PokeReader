@@ -12,6 +12,7 @@ use ctr::{
 pub struct PkrdServiceContext {
     pub screen: DirectWriteScreen,
     pub game: Option<Box<dyn hook::HookedProcess>>,
+    pub is_paused: bool,
 }
 
 impl PkrdServiceContext {
@@ -19,6 +20,7 @@ impl PkrdServiceContext {
         Ok(Self {
             screen: DirectWriteScreen::new(),
             game: None,
+            is_paused: false,
         })
     }
 

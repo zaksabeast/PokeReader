@@ -6,11 +6,12 @@ PokeReader is a 3ds sysmodule that currently doesn't do anything, and is just a 
 
 ## Building, installing, and running
 
-1. Install make, rust, makerom, ctrtool, devkitarm, and devkitpro's 3ds libs
+1. Install make, [rust](https://www.rust-lang.org/tools/install), [makerom](https://github.com/3DSGuy/Project_CTR/releases), [ctrtool](https://github.com/3DSGuy/Project_CTR/releases), [devkitarm](https://devkitpro.org/wiki/Getting_Started), and [devkitpro's 3ds libs](https://github.com/devkitPro/docker/blob/2569602fc036110366e1f539e0e5ba7b7a97be57/devkitarm/Dockerfile#L5-L7)
 1. Run `make` to build the debug and release builds
 1. Run `make` in the `launcher` directory to build the launcher
 1. Copy `launcher/out/pkrd-launcher.3dsx` to your console's `/3ds` directory
 1. Install `out/release/pkrd.cia` to your console
+1. Launch `pkrd-launcher.3dsx` from the hombrew menu
 
 ## Developing
 
@@ -67,4 +68,5 @@ Thanks to these projects, teams, and individuals for being great resources:
 - [The rust3ds team](https://github.com/rust3ds) for the 3ds.json, initial ctru_sys, and code references to help get rust working on the 3ds
 - [devkitPro](https://github.com/devkitPro/) for their toolchain
 - [NTR](https://github.com/44670/NTR) for the inspiration and draw functions
-- All 3ds researchers
+- [PKHeX](https://github.com/kwsch/PKHeX/) for Pokemon related documentation, examples, and code
+- All Pokemon and 3ds researchers

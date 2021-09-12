@@ -31,6 +31,18 @@ impl Pkx for Pk6 {
     fn species(&self) -> types::Species {
         self.default_read::<u16>(8).into()
     }
+
+    fn pid(&self) -> u32 {
+        self.default_read(0x18)
+    }
+
+    fn tid(&self) -> u16 {
+        self.default_read(0x0C)
+    }
+
+    fn sid(&self) -> u16 {
+        self.default_read(0x0E)
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -104,6 +116,34 @@ mod test {
     fn should_read_species() {
         let pkx = Pk6::new(TEST_EKX);
         assert_eq!(pkx.species(), types::Species::Ditto);
+    }
+
+    #[test]
+    fn should_read_pid() {
+        let pkx = Pk6::new(TEST_EKX);
+        let pid = 0x31370F23;
+        assert_eq!(pkx.pid(), pid)
+    }
+
+    #[test]
+    fn should_read_tid() {
+        let pkx = Pk6::new(TEST_EKX);
+        let tid = 63062;
+        assert_eq!(pkx.tid(), tid)
+    }
+
+    #[test]
+    fn should_read_sid() {
+        let pkx = Pk6::new(TEST_EKX);
+        let sid = 51266;
+        assert_eq!(pkx.sid(), sid)
+    }
+
+    #[test]
+    fn should_read_tsv() {
+        let pkx = Pk6::new(TEST_EKX);
+        let tsv = 0993;
+        assert_eq!(pkx.tsv(), tsv)
     }
 
     #[test]

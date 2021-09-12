@@ -56,6 +56,10 @@ impl Pkx for Pk6 {
     fn ability_number(&self) -> u8 {
         self.default_read(0x15)
     }
+
+    fn iv32(&self) -> u32 {
+        self.default_read(0x74)
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

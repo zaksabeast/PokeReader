@@ -2,12 +2,12 @@
 pub mod pkm;
 
 /// Tools to read Gen 6 specific values.
-mod gen_6;
-pub use gen_6::*;
+mod gen6;
+pub use gen6::*;
 
 /// Tools to read Gen 7 specific values.
-mod gen_7;
-pub use gen_7::*;
+mod gen7;
+pub use gen7::*;
 
 use alloc::{vec, vec::Vec};
 use core::mem;

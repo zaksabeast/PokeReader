@@ -2,12 +2,12 @@ use core::fmt;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Stats {
-    pub hp: u32,
-    pub atk: u32,
-    pub def: u32,
-    pub spa: u32,
-    pub spd: u32,
-    pub spe: u32,
+    pub hp: u8,
+    pub atk: u8,
+    pub def: u8,
+    pub spa: u8,
+    pub spd: u8,
+    pub spe: u8,
 }
 
 impl fmt::Display for Stats {

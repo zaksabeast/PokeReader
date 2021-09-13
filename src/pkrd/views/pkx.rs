@@ -14,7 +14,7 @@ pub fn run_view(
         let black = display::Color::black();
         let white = display::Color::white();
 
-        screen.paint_square(&black, x, y, 190, 92)?;
+        screen.paint_square(&black, x, y, 190, 104)?;
 
         x += 10;
         y += 4;
@@ -47,6 +47,10 @@ pub fn run_view(
         y += 12;
         let iv_text = &alloc::format!("IVs: {}", pkx.ivs());
         screen.draw_string(&white, iv_text, x, y)?;
+
+        y += 12;
+        let hp_text = &alloc::format!("HPower: {}", pkx.hidden_power());
+        screen.draw_string(&white, hp_text, x, y)?;
     }
 
     Ok(())

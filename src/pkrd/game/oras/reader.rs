@@ -18,7 +18,9 @@ impl<'a> Reader for PokemonORASReader<'a> {
 
 impl<'a> Gen6Reader for PokemonORASReader<'a> {
     const INITIAL_SEED_OFFSET: usize = 0xc59e40;
+    const MT_START_OFFSET: usize = 0xc59e48;
     const MT_STATE_INDEX_OFFSET: usize = 0xc59e44;
+    const TINYMT_STATE_OFFSET: usize = 0xC59E04;
     const PARTY_OFFSET: usize = 0xCFB26C;
     const EGG_READY_OFFSET: usize = 0xC88358;
     const EGG_OFFSET: usize = 0xC88360;

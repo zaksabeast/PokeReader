@@ -2,7 +2,7 @@ use super::reader;
 use crate::pkrd::{
     display,
     hook::{HookableProcess, HookedProcess, PatchPresentFramebufferConfig, SupportedTitle},
-    views,
+    rng, views,
 };
 use alloc::boxed::Box;
 use ctr::{res::CtrResult, DebugProcess, Handle};
@@ -10,12 +10,13 @@ use ctr::{res::CtrResult, DebugProcess, Handle};
 pub struct PokemonORAS {
     title: SupportedTitle,
     views: views::Views,
+    rng: rng::Gen6Rng,
 }
 
 impl HookedProcess for PokemonORAS {
     fn run_hook(&mut self, heap: &[u8], screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
         let game = reader::PokemonORASReader::new(heap);
-        views::run_gen6_views(&mut self.views, &game, screen)
+        views::run_gen6_views(&mut self.views, &game, &self.rng, screen)
     }
 
     fn get_title(&self) -> SupportedTitle {
@@ -28,6 +29,7 @@ impl HookableProcess for PokemonORAS {
         Box::new(Self {
             title,
             views: Default::default(),
+            rng: Default::default(),
         })
     }
 
@@ -40,7 +42,7 @@ impl HookableProcess for PokemonORAS {
         };
         let inital_seed_address = 0x12e5c8;
 
-        Self::patch_present_framebuffer(process, pkrd_handle, config);
+        Self::patch_present_framebuffer(process, pkrd_handle, config)?;
         Self::patch_inital_seed(process, inital_seed_address)
     }
 }

@@ -1,5 +1,5 @@
 use super::party_view::PartyView;
-use crate::pkrd::{display, reader};
+use crate::pkrd::{display, reader, rng};
 use ctr::{
     hid,
     hid::{Button, InterfaceDevice},
@@ -21,6 +21,7 @@ impl Views {
 pub fn run_gen6_views<GameReader: reader::Gen6Reader>(
     views: &mut Views,
     game: &GameReader,
+    rng: &rng::Gen6Rng,
     screen: &mut display::DirectWriteScreen,
 ) -> CtrResult<()> {
     if hid::Global::is_just_pressed(Button::Start | Button::Dup) {
@@ -28,7 +29,7 @@ pub fn run_gen6_views<GameReader: reader::Gen6Reader>(
     }
 
     if views.show_rng_view {
-        super::rng6::run_view(game, screen)?;
+        super::rng6::run_view(game, rng, screen)?;
     }
 
     let party_slot = views.party_view.get_slot();

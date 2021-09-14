@@ -176,7 +176,7 @@ mod test {
     }
 
     #[test]
-    fn should_read_ability_name() {
+    fn should_read_ability_number() {
         let pkx = Pk7::new(TEST_EKX);
         let ability_number = 1;
         assert_eq!(pkx.ability_number(), ability_number)

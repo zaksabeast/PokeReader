@@ -6,23 +6,14 @@ use ctr::{
 };
 
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
-pub struct PartyView {
+pub struct WildView {
     is_active: bool,
-    slot: pkm::PartySlot,
 }
 
-impl PartyView {
+impl WildView {
     pub fn get_is_active(&mut self) -> bool {
-        if hid::Global::is_just_pressed(Button::Start | Button::Dright) {
+        if hid::Global::is_just_pressed(Button::Start | Button::Dleft) {
             self.is_active = !self.is_active;
-        }
-
-        if hid::Global::is_just_pressed(Button::Select | Button::Dright) {
-            self.slot = self.slot.increment()
-        }
-
-        if hid::Global::is_just_pressed(Button::Select | Button::Dleft) {
-            self.slot = self.slot.decrement()
         }
 
         self.is_active
@@ -37,13 +28,8 @@ impl PartyView {
         pkx: &impl pkm::Pkx,
         screen: &mut display::DirectWriteScreen,
     ) -> CtrResult<()> {
-        let title = &alloc::format!("Party {}", self.slot);
-        super::pkx::run_view(title, pkx, screen)?;
+        super::pkx::run_view("Wild", pkx, screen)?;
 
         Ok(())
-    }
-
-    pub fn get_slot(&self) -> pkm::PartySlot {
-        self.slot
     }
 }

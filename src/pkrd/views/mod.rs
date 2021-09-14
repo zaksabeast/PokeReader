@@ -5,3 +5,4 @@ mod party_view;
 mod pkx;
 mod rng6;
 mod rng7;
+mod wild_view;

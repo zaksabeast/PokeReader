@@ -20,4 +20,8 @@ pub trait Gen7Reader: Reader {
         let offset = ((slot as usize) * 484) + Self::PARTY_OFFSET;
         self.default_read::<pkm::Pk7Data>(offset).into()
     }
+
+    fn get_wild_pkm(&self) -> pkm::Pk7 {
+        self.default_read::<pkm::Pk7Data>(Self::WILD_OFFSET).into()
+    }
 }

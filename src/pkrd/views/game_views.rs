@@ -1,4 +1,7 @@
-use super::{party_view::PartyView, rng6::Rng6View, rng7::Rng7View, wild_view::WildView};
+use super::{
+    daycare_view::Daycare7View, party_view::PartyView, rng6::Rng6View, rng7::Rng7View,
+    wild_view::WildView,
+};
 use crate::pkrd::{display, reader, rng};
 use ctr::res::CtrResult;
 
@@ -7,6 +10,7 @@ pub struct Gen6Views {
     rng_view: Rng6View,
     party_view: PartyView,
     wild_view: WildView,
+    show_daycare_view: bool,
 }
 
 impl Gen6Views {
@@ -43,6 +47,7 @@ pub struct Gen7Views {
     rng_view: Rng7View,
     party_view: PartyView,
     wild_view: WildView,
+    daycare_view: Daycare7View,
 }
 
 impl Gen7Views {
@@ -61,7 +66,13 @@ impl Gen7Views {
         rng.update(game);
 
         if views.rng_view.get_is_active() {
+            views.daycare_view.set_is_active(false);
             Rng7View::run_view(game, rng, screen)?;
+        }
+
+        if views.daycare_view.get_is_active() {
+            views.rng_view.set_is_active(false);
+            Daycare7View::run_view(game, screen)?;
         }
 
         if views.party_view.get_is_active() {

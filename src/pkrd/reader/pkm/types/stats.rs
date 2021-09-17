@@ -14,7 +14,7 @@ impl fmt::Display for Stats {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "{}/{}/{}/{}/{}/{}",
+            "{:02}/{:02}/{:02}/{:02}/{:02}/{:02}",
             self.hp, self.atk, self.def, self.spa, self.spd, self.spe
         )
     }

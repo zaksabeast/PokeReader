@@ -23,11 +23,7 @@ impl WildView {
         self.is_active = is_active;
     }
 
-    pub fn run_view(
-        &mut self,
-        pkx: &impl pkm::Pkx,
-        screen: &mut display::DirectWriteScreen,
-    ) -> CtrResult<()> {
+    pub fn run_view(pkx: &impl pkm::Pkx, screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
         super::pkx::run_view("Wild", pkx, screen)?;
 
         Ok(())

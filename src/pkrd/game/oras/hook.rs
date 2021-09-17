@@ -40,7 +40,7 @@ impl HookableProcess for PokemonORAS {
         };
         let inital_seed_address = 0x12e5c8;
 
-        Self::patch_present_framebuffer(process, pkrd_handle, config);
+        Self::patch_present_framebuffer(process, pkrd_handle, config)?;
         Self::patch_inital_seed(process, inital_seed_address)
     }
 }

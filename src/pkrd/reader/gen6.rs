@@ -4,6 +4,7 @@ use ctr::res::CtrResult;
 pub trait Gen6Reader: Reader {
     const INITIAL_SEED_OFFSET: usize;
     const MT_STATE_INDEX_OFFSET: usize;
+    const TINYMT_STATE_OFFSET: usize;
     const PARTY_OFFSET: usize;
     const EGG_READY_OFFSET: usize;
     const EGG_OFFSET: usize;
@@ -16,6 +17,15 @@ pub trait Gen6Reader: Reader {
 
     fn get_mt_state_index(&self) -> CtrResult<usize> {
         self.read(Self::MT_STATE_INDEX_OFFSET)
+    } 
+
+    fn get_tinymt_state(&self) -> [u32; 4] {
+        [
+            self.default_read::<u32>(Self::TINYMT_STATE_OFFSET),
+            self.default_read::<u32>(Self::TINYMT_STATE_OFFSET+4),
+            self.default_read::<u32>(Self::TINYMT_STATE_OFFSET+8),
+            self.default_read::<u32>(Self::TINYMT_STATE_OFFSET+12)
+        ]
     }
 
     fn get_party_pkm(&self, slot: pkm::PartySlot) -> pkm::Pk6 {

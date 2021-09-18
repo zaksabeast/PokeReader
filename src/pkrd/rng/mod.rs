@@ -1,4 +1,5 @@
 pub mod mt;
+pub mod tinymt;
 pub mod sfmt;
 
 mod gen6;

@@ -16,7 +16,7 @@ pub struct PokemonORAS {
 impl HookedProcess for PokemonORAS {
     fn run_hook(&mut self, heap: &[u8], screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
         let game = reader::PokemonORASReader::new(heap);
-        views::run_gen6_views(&mut self.views, &game, &self.rng, screen)
+        views::run_gen6_views(&mut self.views, &game, &mut self.rng, screen)
     }
 
     fn get_title(&self) -> SupportedTitle {

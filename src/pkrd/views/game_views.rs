@@ -27,7 +27,11 @@ pub fn run_gen6_views<GameReader: reader::Gen6Reader>(
     if hid::Global::is_just_pressed(Button::Start | Button::Dup) {
         views.show_rng_view = !views.show_rng_view;
     }
-    rng.update(game.get_mt_state_index()?, game.get_initial_seed()?, game.get_tinymt_state());
+    rng.update(
+        game.get_mt_state_index()?,
+        game.get_initial_seed()?,
+        game.get_tinymt_state(),
+    );
     if views.show_rng_view {
         super::rng6::run_view(game, rng, screen)?;
     }

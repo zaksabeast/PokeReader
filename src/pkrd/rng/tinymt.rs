@@ -1,15 +1,11 @@
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct TinyMT {
-    state: [u32; 4]
+    state: [u32; 4],
 }
 
 impl TinyMT {
     pub fn new(state: [u32; 4]) -> TinyMT {
-        let mut rng = TinyMT {
-            state: state
-        };
-        
-        rng
+        TinyMT { state }
     }
 
     pub fn next_state(&mut self) {
@@ -33,7 +29,7 @@ impl TinyMT {
         if t1 & 1 == 1 {
             t0 ^= 0x3793fdff;
         }
-        
+
         t0
     }
 
@@ -42,7 +38,7 @@ impl TinyMT {
         self.temper()
     }
 
-    pub fn get_state(&self) -> [u32;4] {
+    pub fn get_state(&self) -> [u32; 4] {
         self.state
     }
 }
@@ -53,11 +49,14 @@ mod test {
 
     #[test]
     fn should_generate_random_values() {
-        let mut rng = TinyMT::new([0x11112222,0x33334444,0x55556666,0x77778888]);
+        let mut rng = TinyMT::new([0x11112222, 0x33334444, 0x55556666, 0x77778888]);
         for _ in 0..156 {
             rng.next_state();
         }
 
-        assert_eq!(rng.get_state(), [0x233f3c9d,0x5a385202,0x56e043c9,0x76b46859]);
+        assert_eq!(
+            rng.get_state(),
+            [0x233f3c9d, 0x5a385202, 0x56e043c9, 0x76b46859]
+        );
     }
 }

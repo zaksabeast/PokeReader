@@ -17,7 +17,7 @@ pub trait Gen6Reader: Reader {
 
     fn get_mt_state_index(&self) -> CtrResult<usize> {
         self.read(Self::MT_STATE_INDEX_OFFSET)
-    } 
+    }
 
     fn get_tinymt_state(&self) -> [u32; 4] {
         self.default_read(Self::TINYMT_STATE_OFFSET)

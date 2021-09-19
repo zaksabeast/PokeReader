@@ -20,12 +20,7 @@ pub trait Gen6Reader: Reader {
     } 
 
     fn get_tinymt_state(&self) -> [u32; 4] {
-        [
-            self.default_read::<u32>(Self::TINYMT_STATE_OFFSET),
-            self.default_read::<u32>(Self::TINYMT_STATE_OFFSET+4),
-            self.default_read::<u32>(Self::TINYMT_STATE_OFFSET+8),
-            self.default_read::<u32>(Self::TINYMT_STATE_OFFSET+12)
-        ]
+        self.default_read(Self::TINYMT_STATE_OFFSET)
     }
 
     fn get_party_pkm(&self, slot: pkm::PartySlot) -> pkm::Pk6 {

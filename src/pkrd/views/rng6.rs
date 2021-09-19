@@ -13,7 +13,7 @@ pub fn run_view(
         let black = display::Color::black();
         let white = display::Color::white();
 
-        screen.paint_square(&black, x, y, 200, 116)?;
+        screen.paint_square(&black, x, y, 200, 140)?;
 
         x += 10;
         y += 4;

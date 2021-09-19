@@ -34,18 +34,17 @@ impl TinyMT {
 
 }
 
-// #[cfg(test)]
-// mod test {
-//     use super::*;
+#[cfg(test)]
+mod test {
+    use super::*;
 
-//     #[test]
-//     fn test_shuffle() {
-//         let mut rng = MT::new(0xaabbccdd);
-//         for _ in 0..624 {
-//             rng.next();
-//         }
+    #[test]
+    fn should_generate_random_values() {
+        let mut state = [0x11112222,0x33334444,0x55556666,0x77778888];
+        for _ in 0..156 {
+            TinyMT::next_state(&mut state);
+        }
 
-//         let result = rng.next();
-//         assert_eq!(result, 0x796d251a);
-//     }
-// }
+        assert_eq!(state, [0x233f3c9d,0x5a385202,0x56e043c9,0x76b46859]);
+    }
+}

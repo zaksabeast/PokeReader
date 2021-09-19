@@ -28,7 +28,7 @@ pub fn run_gen6_views<GameReader: reader::Gen6Reader>(
         views.show_rng_view = !views.show_rng_view;
     }
     rng.update(
-        game.get_mt_state_index()?,
+        game.get_mt_seed(game.get_mt_state_index()?)?,
         game.get_initial_seed()?,
         game.get_tinymt_state(),
     );

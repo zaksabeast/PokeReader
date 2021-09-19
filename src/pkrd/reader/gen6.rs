@@ -3,6 +3,7 @@ use ctr::res::CtrResult;
 
 pub trait Gen6Reader: Reader {
     const INITIAL_SEED_OFFSET: usize;
+    const MT_START_OFFSET: usize;
     const MT_STATE_INDEX_OFFSET: usize;
     const TINYMT_STATE_OFFSET: usize;
     const PARTY_OFFSET: usize;
@@ -17,6 +18,10 @@ pub trait Gen6Reader: Reader {
 
     fn get_mt_state_index(&self) -> CtrResult<usize> {
         self.read(Self::MT_STATE_INDEX_OFFSET)
+    }
+
+    fn get_mt_seed(&self, index: usize) -> CtrResult<usize> {
+        self.read(Self::MT_START_OFFSET + if index != 624 { index * 4 } else { 0 })
     }
 
     fn get_tinymt_state(&self) -> [u32; 4] {

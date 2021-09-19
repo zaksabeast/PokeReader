@@ -25,8 +25,8 @@ pub fn run_view(
         screen.draw_string(&white, seed_text, x, y)?;
 
         y += 12;
-        let mt_state_index = game.get_mt_state_index()?;
-        let state_text = &alloc::format!("MT state index: {}", mt_state_index);
+        let mt_seed = game.get_mt_seed(game.get_mt_state_index()?)?;
+        let state_text = &alloc::format!("Curr seed: {:08X}", mt_seed);
         screen.draw_string(&white, state_text, x, y)?;
 
         y += 12;

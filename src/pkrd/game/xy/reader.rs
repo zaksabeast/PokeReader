@@ -18,6 +18,7 @@ impl<'a> Reader for PokemonXYReader<'a> {
 
 impl<'a> Gen6Reader for PokemonXYReader<'a> {
     const INITIAL_SEED_OFFSET: usize = 0xc52844;
+    const MT_START_OFFSET: usize = 0xc5284c;
     const MT_STATE_INDEX_OFFSET: usize = 0xc52848;
     const TINYMT_STATE_OFFSET: usize = 0xc52808;
     const PARTY_OFFSET: usize = 0xCE1CF8;

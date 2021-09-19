@@ -1,3 +1,4 @@
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct MT {
     index: usize,
     mt: [u32; 624],
@@ -7,7 +8,7 @@ impl MT {
     pub fn new(seed: u32) -> MT {
         let mut rng = MT {
             mt: [0; 624],
-            index: 624,
+            index: 0,
         };
         rng.init(seed);
 
@@ -78,6 +79,15 @@ impl MT {
     }
 }
 
+impl Default for MT {
+    fn default() -> MT {
+        MT {
+            mt: [0; 624],
+            index: 624,
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -85,6 +95,7 @@ mod test {
     #[test]
     fn test_shuffle() {
         let mut rng = MT::new(0xaabbccdd);
+        rng.shuffle();
         for _ in 0..624 {
             rng.next();
         }

@@ -12,7 +12,7 @@ pub trait Gen6Reader: Reader {
     const PARENT1_OFFSET: usize;
     const PARENT2_OFFSET: usize;
 
-    fn get_initial_seed(&self) -> CtrResult<usize> {
+    fn get_initial_seed(&self) -> CtrResult<u32> {
         self.read(Self::INITIAL_SEED_OFFSET)
     }
 
@@ -20,7 +20,8 @@ pub trait Gen6Reader: Reader {
         self.read(Self::MT_STATE_INDEX_OFFSET)
     }
 
-    fn get_mt_seed(&self, index: usize) -> CtrResult<usize> {
+    fn get_mt_state(&self) -> CtrResult<u32> {
+        let index = self.get_mt_state_index()?;
         self.read(Self::MT_START_OFFSET + if index != 624 { index * 4 } else { 0 })
     }
 

@@ -6,13 +6,17 @@ pub struct MT {
 
 impl MT {
     pub fn new(seed: u32) -> MT {
-        let mut rng = MT {
-            mt: [0; 624],
-            index: 0,
-        };
+        let mut rng = MT::default();
         rng.init(seed);
 
         rng
+    }
+
+    fn blank_mt() -> Self {
+        Self {
+            mt: [0; 624],
+            index: 0,
+        }
     }
 
     fn init(&mut self, seed: u32) {
@@ -81,10 +85,7 @@ impl MT {
 
 impl Default for MT {
     fn default() -> MT {
-        MT {
-            mt: [0; 624],
-            index: 624,
-        }
+        MT::blank_mt()
     }
 }
 

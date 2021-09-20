@@ -54,9 +54,6 @@ mod test {
             rng.next_state();
         }
 
-        assert_eq!(
-            rng.get_state(),
-            [0x233f3c9d, 0x5a385202, 0x56e043c9, 0x76b46859]
-        );
+        assert_eq!(rng.next(), 0x670e7a39);
     }
 }

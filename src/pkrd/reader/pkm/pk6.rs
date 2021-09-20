@@ -183,6 +183,12 @@ mod test {
     }
 
     #[test]
+    fn should_read_hidden_power() {
+        let pkx = Pk6::new(TEST_EKX);
+        assert_eq!(pkx.hidden_power(), types::HiddenPower::Dark)
+    }
+
+    #[test]
     fn pk6_data_size_should_be_232() {
         assert_eq!(core::mem::size_of::<Pk6Data>(), Pk6::STORED_SIZE);
     }

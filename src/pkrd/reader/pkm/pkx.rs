@@ -40,14 +40,14 @@ pub trait Pkx: Reader {
 
     fn hidden_power_num(&self) -> u8 {
         let ivs = self.ivs();
-        (((ivs.hp & 1)
-            + (ivs.atk & 1) * 2
-            + (ivs.def & 1) * 4
-            + (ivs.spe & 1) * 8
-            + (ivs.spa & 1) * 16
-            + (ivs.spd & 1) * 32)
-            * 15)
-            / 63
+        ((((ivs.hp & 1)
+            + ((ivs.atk & 1) << 1)
+            + ((ivs.def & 1) << 2)
+            + ((ivs.spe & 1) << 3)
+            + ((ivs.spa & 1) << 4)
+            + ((ivs.spd & 1) << 5)) as u16
+            * 15) as u16
+            / 63) as u8
     }
 
     fn hidden_power(&self) -> types::HiddenPower {

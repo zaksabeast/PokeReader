@@ -1,5 +1,6 @@
 use super::hook;
-use ctr::{log, ptm, res::CtrResult, sysmodule::notification::NotificationHandlerResult};
+use crate::log;
+use ctr::{ptm, res::CtrResult, sysmodule::notification::NotificationHandlerResult};
 
 /// The notification Id is currently a u32 to avoid assumptions about the notifications that might be sent.
 ///
@@ -29,7 +30,7 @@ pub fn handle_launch_title_notification(_notification_id: u32) -> CtrResult<()> 
         let hook_result = hook::install_hook(title);
 
         if hook_result.is_err() {
-            log(&alloc::format!(
+            log::error(&alloc::format!(
                 "Failed to hook title {:x}",
                 u64::from(title)
             ));

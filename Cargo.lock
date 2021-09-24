@@ -81,6 +81,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "lazy_static"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
+dependencies = [
+ "spin",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.93"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -89,7 +98,7 @@ checksum = "9385f66bf6105b241aa65a61cb923ef20efc665cb9f9bb50ac2f0c4b7f378d41"
 [[package]]
 name = "libctr-rs"
 version = "0.1.0"
-source = "git+https://github.com/zaksabeast/libctr-rs#2093c80490c31eec94172c822fffb89e23899d2e"
+source = "git+https://github.com/zaksabeast/libctr-rs#8074db561022c7a1f859ca7fd59a0d6e60b26c68"
 dependencies = [
  "base64",
  "cstr_core",
@@ -176,6 +185,7 @@ checksum = "692fcb63b64b1758029e0a96ee63e049ce8c5948587f2f7208df04625e5f6b56"
 name = "pkrd"
 version = "0.1.0"
 dependencies = [
+ "lazy_static",
  "libctr-rs",
  "linked_list_allocator",
  "mocktopus",
@@ -212,6 +222,12 @@ name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
+
+[[package]]
+name = "spin"
+version = "0.5.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6e63cff320ae2c57904679ba7cb63280a3dc4613885beafb148ee7bf9aa9042d"
 
 [[package]]
 name = "spinning_top"

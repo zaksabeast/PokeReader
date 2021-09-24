@@ -6,9 +6,10 @@ edition = "2018"
 publish = false
 
 [dependencies]
-safe-transmute = { version = "0.11", default-features = false }
-num_enum = { version = "0.5", default-features = false }
 ctr = { package = "libctr-rs", git = "https://github.com/zaksabeast/libctr-rs" }
+lazy_static = { version = "1.4.0", default-features = false, features = ["spin_no_std"] }
+num_enum = { version = "0.5", default-features = false }
+safe-transmute = { version = "0.11", default-features = false }
 
 [dev-dependencies]
 mocktopus = "0.7.11"

@@ -1,12 +1,11 @@
 use super::{context::PkrdServiceContext, display::Screen, frame_pause::handle_frame_pause};
+use crate::log;
 use alloc::format;
 use core::{
     mem, slice,
     sync::atomic::{AtomicU32, Ordering},
 };
-use ctr::{
-    hid, hid::InterfaceDevice, ipc, log, res::GenericResultCode, svc, sysmodule::server, Handle,
-};
+use ctr::{hid, hid::InterfaceDevice, ipc, res::GenericResultCode, svc, sysmodule::server, Handle};
 use num_enum::IntoPrimitive;
 
 static PKRD_HANDLE: AtomicU32 = AtomicU32::new(0);
@@ -44,7 +43,7 @@ pub fn handle_pkrd_game_request(
 ) -> server::RequestHandlerResult {
     let command_id = command_parser.get_command_id();
 
-    log(&format!(
+    log::debug(&format!(
         "[CMD] pkrd:game[{:x}][{:x}]",
         command_id,
         command_parser.get_header()
@@ -84,7 +83,7 @@ pub fn handle_pkrd_game_request(
             if let Err(result_code) =
                 screen.set_context(is_top_screen, frame_buffer, stride, format)
             {
-                log(&alloc::format!("Failed screen context {:x}", result_code));
+                log::error(&alloc::format!("Failed screen context {:x}", result_code));
             }
 
             // The input needs to be scanned here so we can use it in the hook
@@ -93,7 +92,7 @@ pub fn handle_pkrd_game_request(
             // The game ignores the result of this, and there's not much we can
             // do to handle the error aside from logging.
             if let Err(result_code) = game.run_hook(heap, screen) {
-                log(&alloc::format!("Failed run_hook: {:x}", result_code));
+                log::error(&alloc::format!("Failed run_hook: {:x}", result_code));
             }
 
             handle_frame_pause(context, is_top_screen);

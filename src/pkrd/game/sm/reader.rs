@@ -1,22 +1,22 @@
 use crate::pkrd::reader::{Gen7Reader, Reader};
 
-pub(super) struct PokemonSMReader<'a> {
-    heap: &'a [u8],
+pub(super) struct PokemonSMReader {
+    heap: &'static [u8],
 }
 
-impl<'a> PokemonSMReader<'a> {
-    pub fn new(heap: &'a [u8]) -> Self {
+impl PokemonSMReader {
+    pub fn new(heap: &'static [u8]) -> Self {
         Self { heap }
     }
 }
 
-impl<'a> Reader for PokemonSMReader<'a> {
+impl Reader for PokemonSMReader {
     fn get_data(&self) -> &[u8] {
         self.heap
     }
 }
 
-impl<'a> Gen7Reader for PokemonSMReader<'a> {
+impl Gen7Reader for PokemonSMReader {
     const INITIAL_SEED_OFFSET: usize = 0x25A3878;
     const PARTY_OFFSET: usize = 0x4195E10;
     const WILD_OFFSET: usize = 0x002F7B8;

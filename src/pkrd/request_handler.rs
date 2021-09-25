@@ -78,17 +78,18 @@ pub fn handle_pkrd_game_request(
             let format = command_parser.pop();
             let is_top_screen = screen_id == 0;
 
-            // Get heap
-            let heap_ptr = command_parser.pop() as *mut u8;
-            let heap_len = command_parser.pop_usize();
-
             if notification::is_new_game_launch() {
-                context.game = hook::get_hooked_process();
-            }
+                // Get heap
+                let heap_ptr = command_parser.pop() as *mut u8;
+                let heap_len = command_parser.pop_usize();
 
-            // We're trusting our patch works and nothing else is using this command
-            let physical_heap_ptr = svc::convert_pa_to_uncached_pa(heap_ptr)?;
-            let heap = unsafe { slice::from_raw_parts_mut(physical_heap_ptr, heap_len) };
+                // We're trusting our patch works and nothing else is using this command
+                let physical_heap_ptr = svc::convert_pa_to_uncached_pa(heap_ptr)?;
+                let heap = unsafe { slice::from_raw_parts_mut(physical_heap_ptr, heap_len) };
+
+                // Since this is a physical address, it is static memory
+                context.game = hook::get_hooked_process(heap);
+            }
 
             let screen = &mut context.screen;
 
@@ -107,7 +108,7 @@ pub fn handle_pkrd_game_request(
                 .ok_or_else::<ResultCode, fn() -> ResultCode>(|| {
                     GenericResultCode::InvalidValue.into()
                 })?
-                .run_hook(heap, screen);
+                .run_hook(screen);
 
             // The game ignores the result of this, and there's not much we can
             // do to handle the error aside from logging.

@@ -1,22 +1,22 @@
 use crate::pkrd::reader::{Gen6Reader, Reader};
 
-pub(super) struct PokemonXYReader<'a> {
-    heap: &'a [u8],
+pub(super) struct PokemonXYReader {
+    heap: &'static [u8],
 }
 
-impl<'a> PokemonXYReader<'a> {
-    pub fn new(heap: &'a [u8]) -> Self {
+impl PokemonXYReader {
+    pub fn new(heap: &'static [u8]) -> Self {
         Self { heap }
     }
 }
 
-impl<'a> Reader for PokemonXYReader<'a> {
+impl Reader for PokemonXYReader {
     fn get_data(&self) -> &[u8] {
         self.heap
     }
 }
 
-impl<'a> Gen6Reader for PokemonXYReader<'a> {
+impl Gen6Reader for PokemonXYReader {
     const INITIAL_SEED_OFFSET: usize = 0xc52844;
     const MT_START_OFFSET: usize = 0xc5284c;
     const MT_STATE_INDEX_OFFSET: usize = 0xc52848;

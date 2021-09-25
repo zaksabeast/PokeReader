@@ -11,12 +11,12 @@ pub struct PokemonXY {
     title: SupportedTitle,
     views: views::Gen6Views,
     rng: rng::Gen6Rng,
+    reader: reader::PokemonXYReader,
 }
 
 impl HookedProcess for PokemonXY {
-    fn run_hook(&mut self, heap: &[u8], screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
-        let game = reader::PokemonXYReader::new(heap);
-        views::Gen6Views::run_views(&mut self.views, &game, &mut self.rng, screen)
+    fn run_hook(&mut self, screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
+        views::Gen6Views::run_views(&mut self.views, &self.reader, &mut self.rng, screen)
     }
 
     fn get_title(&self) -> SupportedTitle {
@@ -25,11 +25,12 @@ impl HookedProcess for PokemonXY {
 }
 
 impl HookableProcess for PokemonXY {
-    fn new_from_supported_title(title: SupportedTitle) -> Box<Self> {
+    fn new_from_supported_title(title: SupportedTitle, heap: &'static [u8]) -> Box<Self> {
         Box::new(Self {
             title,
             views: Default::default(),
             rng: Default::default(),
+            reader: reader::PokemonXYReader::new(heap),
         })
     }
 

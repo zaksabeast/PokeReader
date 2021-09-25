@@ -5,8 +5,8 @@ pub struct MT {
 }
 
 impl MT {
-    pub fn new(seed: u32) -> MT {
-        let mut rng = MT::default();
+    pub fn new(seed: u32) -> Self {
+        let mut rng = Self::default();
         rng.init(seed);
 
         rng
@@ -84,8 +84,8 @@ impl MT {
 }
 
 impl Default for MT {
-    fn default() -> MT {
-        MT::blank_mt()
+    fn default() -> Self {
+        Self::blank_mt()
     }
 }
 
@@ -96,12 +96,11 @@ mod test {
     #[test]
     fn test_shuffle() {
         let mut rng = MT::new(0xaabbccdd);
-        rng.shuffle();
         for _ in 0..624 {
             rng.next();
         }
 
         let result = rng.next();
-        assert_eq!(result, 0x796d251a);
+        assert_eq!(result, 0xd80fcb47);
     }
 }

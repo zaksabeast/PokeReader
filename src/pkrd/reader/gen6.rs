@@ -1,6 +1,6 @@
 use super::{pkm, Reader};
-use ctr::res::CtrResult;
 
+#[cfg_attr(not(target_os = "horizon"), mocktopus::macros::mockable)]
 pub trait Gen6Reader: Reader {
     const INITIAL_SEED_OFFSET: usize;
     const MT_START_OFFSET: usize;
@@ -12,17 +12,17 @@ pub trait Gen6Reader: Reader {
     const PARENT1_OFFSET: usize;
     const PARENT2_OFFSET: usize;
 
-    fn get_initial_seed(&self) -> CtrResult<u32> {
-        self.read(Self::INITIAL_SEED_OFFSET)
+    fn get_initial_seed(&self) -> u32 {
+        self.default_read(Self::INITIAL_SEED_OFFSET)
     }
 
-    fn get_mt_state_index(&self) -> CtrResult<usize> {
-        self.read(Self::MT_STATE_INDEX_OFFSET)
+    fn get_mt_state_index(&self) -> usize {
+        self.default_read(Self::MT_STATE_INDEX_OFFSET)
     }
 
-    fn get_mt_state(&self) -> CtrResult<u32> {
-        let index = self.get_mt_state_index()?;
-        self.read(Self::MT_START_OFFSET + if index != 624 { index * 4 } else { 0 })
+    fn get_mt_state(&self) -> u32 {
+        let index = self.get_mt_state_index();
+        self.default_read(Self::MT_START_OFFSET + if index != 624 { index * 4 } else { 0 })
     }
 
     fn get_tinymt_state(&self) -> [u32; 4] {

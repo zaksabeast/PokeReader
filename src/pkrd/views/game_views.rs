@@ -22,11 +22,7 @@ impl Gen6Views {
         rng: &mut rng::Gen6Rng,
         screen: &mut display::DirectWriteScreen,
     ) -> CtrResult<()> {
-        rng.update(
-            game.get_mt_state()?,
-            game.get_initial_seed()?,
-            game.get_tinymt_state(),
-        );
+        rng.update(game);
 
         if views.rng_view.get_is_active() {
             Rng6View::run_view(game, rng, screen)?;

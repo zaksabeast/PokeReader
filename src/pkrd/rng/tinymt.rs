@@ -4,8 +4,8 @@ pub struct TinyMT {
 }
 
 impl TinyMT {
-    pub fn new(state: [u32; 4]) -> TinyMT {
-        TinyMT { state }
+    pub fn new(state: [u32; 4]) -> Self {
+        Self { state }
     }
 
     pub fn next_state(&mut self) {

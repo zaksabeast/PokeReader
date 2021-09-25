@@ -1,11 +1,19 @@
-use super::{context::PkrdServiceContext, display::Screen, frame_pause::handle_frame_pause};
-use crate::log;
+use super::{context::PkrdServiceContext, display::Screen, frame_pause::handle_frame_pause, hook};
+use crate::{log, pkrd::notification};
 use alloc::format;
 use core::{
     mem, slice,
     sync::atomic::{AtomicU32, Ordering},
 };
-use ctr::{hid, hid::InterfaceDevice, ipc, res::GenericResultCode, svc, sysmodule::server, Handle};
+use ctr::{
+    hid,
+    hid::InterfaceDevice,
+    ipc,
+    res::{GenericResultCode, ResultCode},
+    svc,
+    sysmodule::server,
+    Handle,
+};
 use num_enum::IntoPrimitive;
 
 static PKRD_HANDLE: AtomicU32 = AtomicU32::new(0);
@@ -74,11 +82,15 @@ pub fn handle_pkrd_game_request(
             let heap_ptr = command_parser.pop() as *mut u8;
             let heap_len = command_parser.pop_usize();
 
+            if notification::is_new_game_launch() {
+                context.game = hook::get_hooked_process();
+            }
+
             // We're trusting our patch works and nothing else is using this command
             let physical_heap_ptr = svc::convert_pa_to_uncached_pa(heap_ptr)?;
             let heap = unsafe { slice::from_raw_parts_mut(physical_heap_ptr, heap_len) };
 
-            let (game, screen) = context.get_or_initialize_game_and_screen()?;
+            let screen = &mut context.screen;
 
             if let Err(result_code) =
                 screen.set_context(is_top_screen, frame_buffer, stride, format)
@@ -89,9 +101,17 @@ pub fn handle_pkrd_game_request(
             // The input needs to be scanned here so we can use it in the hook
             hid::Global::scan_input();
 
+            let hook_result = context
+                .game
+                .as_mut()
+                .ok_or_else::<ResultCode, fn() -> ResultCode>(|| {
+                    GenericResultCode::InvalidValue.into()
+                })?
+                .run_hook(heap, screen);
+
             // The game ignores the result of this, and there's not much we can
             // do to handle the error aside from logging.
-            if let Err(result_code) = game.run_hook(heap, screen) {
+            if let Err(result_code) = hook_result {
                 log::error(&alloc::format!("Failed run_hook: {:x}", result_code));
             }
 

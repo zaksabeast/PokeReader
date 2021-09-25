@@ -1,6 +1,33 @@
 use super::hook;
 use crate::log;
+use core::sync::atomic::{AtomicBool, Ordering};
 use ctr::{ptm, res::CtrResult, sysmodule::notification::NotificationHandlerResult};
+
+static IS_NEW_GAME_LAUNCH: AtomicBool = AtomicBool::new(false);
+
+/// Determines if a game was just launched.
+/// After this has been called once, it will always return `false` until a game is launched.
+pub fn is_new_game_launch() -> bool {
+    IS_NEW_GAME_LAUNCH.swap(false, Ordering::Relaxed)
+}
+
+pub fn handle_launch_title_notification(_notification_id: u32) -> CtrResult<()> {
+    IS_NEW_GAME_LAUNCH.store(true, Ordering::Relaxed);
+    if let Some(title) = hook::SupportedTitle::from_running_app() {
+        let hook_result = hook::install_hook(title);
+
+        if hook_result.is_err() {
+            log::error(&alloc::format!(
+                "Failed to hook title {:x}",
+                u64::from(title)
+            ));
+        }
+
+        return hook_result;
+    }
+
+    Ok(())
+}
 
 /// The notification Id is currently a u32 to avoid assumptions about the notifications that might be sent.
 ///
@@ -22,22 +49,5 @@ pub fn handle_sleep_notification(notification_id: u32) -> NotificationHandlerRes
     }
 
     ptm::sysm_exit();
-    Ok(())
-}
-
-pub fn handle_launch_title_notification(_notification_id: u32) -> CtrResult<()> {
-    if let Some(title) = hook::SupportedTitle::from_running_app() {
-        let hook_result = hook::install_hook(title);
-
-        if hook_result.is_err() {
-            log::error(&alloc::format!(
-                "Failed to hook title {:x}",
-                u64::from(title)
-            ));
-        }
-
-        return hook_result;
-    }
-
     Ok(())
 }

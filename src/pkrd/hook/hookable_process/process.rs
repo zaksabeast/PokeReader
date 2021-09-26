@@ -81,18 +81,14 @@ pub trait HookableProcess: HookedProcess {
             config.get_heap_size(),           // Heap size
         ];
 
-        process
-            .write_bytes(
-                config.present_framebuffer_addr,
-                safe_transmute::transmute_to_bytes(&hook_code),
-            )
-            .unwrap();
-        process
-            .write_bytes(
-                config.hook_vars_addr,
-                safe_transmute::transmute_to_bytes(&hook_vars),
-            )
-            .unwrap();
+        process.write_bytes(
+            config.present_framebuffer_addr,
+            safe_transmute::transmute_to_bytes(&hook_code),
+        )?;
+        process.write_bytes(
+            config.hook_vars_addr,
+            safe_transmute::transmute_to_bytes(&hook_vars),
+        )?;
 
         Ok(())
     }
@@ -110,9 +106,7 @@ pub trait HookableProcess: HookedProcess {
             0xe5001004, // str r1, [r0, #-4]
         ];
 
-        process
-            .write_bytes(address, safe_transmute::transmute_to_bytes(&patch_code))
-            .unwrap();
+        process.write_bytes(address, safe_transmute::transmute_to_bytes(&patch_code))?;
 
         Ok(())
     }
@@ -128,7 +122,7 @@ pub trait HookedProcess {
 }
 
 pub fn get_hooked_process(heap: &'static [u8]) -> Option<Box<dyn HookedProcess>> {
-    let running_app = SupportedTitle::from_running_app().unwrap();
+    let running_app = SupportedTitle::from_running_app()?;
 
     let hookable_process: Box<dyn HookedProcess> = match running_app {
         SupportedTitle::PokemonX => game::PokemonXY::new_from_supported_title(running_app, heap),
@@ -145,12 +139,10 @@ pub fn get_hooked_process(heap: &'static [u8]) -> Option<Box<dyn HookedProcess>>
 }
 
 pub fn install_hook(title: SupportedTitle) -> CtrResult<()> {
-    let debug = DebugProcess::new(title.into()).unwrap();
+    let debug = DebugProcess::new(title.into())?;
     let process = debug.get_process();
     let pkrd_session_handle = get_pkrd_session_handle();
-    let handle_copy = process
-        .copy_handle_to_process(&pkrd_session_handle)
-        .unwrap();
+    let handle_copy = process.copy_handle_to_process(&pkrd_session_handle)?;
 
     match title {
         SupportedTitle::PokemonX => game::PokemonXY::install_hook(&debug, handle_copy),
@@ -161,10 +153,9 @@ pub fn install_hook(title: SupportedTitle) -> CtrResult<()> {
         SupportedTitle::PokemonM => game::PokemonSM::install_hook(&debug, handle_copy),
         SupportedTitle::PokemonUS => game::PokemonUSUM::install_hook(&debug, handle_copy),
         SupportedTitle::PokemonUM => game::PokemonUSUM::install_hook(&debug, handle_copy),
-    }
-    .unwrap();
+    }?;
 
-    debug.eat_events().unwrap();
+    debug.eat_events()?;
 
     Ok(())
 }

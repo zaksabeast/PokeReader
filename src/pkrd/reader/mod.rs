@@ -9,10 +9,10 @@ pub use gen6::*;
 mod gen7;
 pub use gen7::*;
 
+use crate::log;
 use alloc::{vec, vec::Vec};
 use core::mem;
 use ctr::{
-    log,
     res::{CtrResult, GenericResultCode},
     safe_transmute::transmute_one_pedantic,
 };
@@ -48,7 +48,7 @@ pub trait Reader {
         let result = self.read(offset);
 
         if let Err(result_code) = result {
-            log(&alloc::format!(
+            log::error(&alloc::format!(
                 "Failed read in default_read: {:x}",
                 result_code
             ))

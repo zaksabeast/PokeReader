@@ -10,6 +10,7 @@ extern crate alloc;
 
 #[doc(hidden)]
 mod heap_allocator;
+mod log;
 mod pkrd;
 mod utils;
 
@@ -22,7 +23,7 @@ use alloc::{boxed::Box, vec};
 #[cfg(not(test))]
 use core::panic::PanicInfo;
 use ctr::{
-    fs, log, ptm, srv, svc,
+    fs, ptm, srv, svc,
     sysmodule::{
         notification::NotificationManager,
         server::{Service, ServiceManager},
@@ -95,13 +96,13 @@ pub extern "C" fn abort() -> ! {
 #[doc(hidden)]
 #[start]
 fn main(_argc: isize, _argv: *const *const u8) -> isize {
-    log("\n\nStarted!");
+    log::debug("\n\nStarted!");
 
     let global_context = Box::new(PkrdServiceContext::new().unwrap());
 
     let services = vec![Service::new("pkrd:game", 8, handle_pkrd_game_request).unwrap()];
 
-    log("Setting up notification manager");
+    log::debug("Setting up notification manager");
 
     let mut notification_manger = NotificationManager::new().unwrap();
 
@@ -127,15 +128,15 @@ fn main(_argc: isize, _argv: *const *const u8) -> isize {
         )
         .unwrap();
 
-    log("Setting up service manager");
+    log::debug("Setting up service manager");
     let mut manager = ServiceManager::new(services, notification_manger, global_context);
-    log("Set up service manager");
+    log::debug("Set up service manager");
     let result = manager.run();
 
     match result {
         Ok(result) => result as isize,
         Err(result_code) => {
-            log(&alloc::format!("manager.run error {:x}", result_code));
+            log::error(&alloc::format!("manager.run error {:x}", result_code));
             result_code as isize
         }
     }

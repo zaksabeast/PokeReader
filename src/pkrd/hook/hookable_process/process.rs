@@ -11,7 +11,7 @@ use ctr::{
 
 /// A process that has the ability to be hooked.
 pub trait HookableProcess: HookedProcess {
-    fn new_from_supported_title(title: SupportedTitle) -> Box<Self>;
+    fn new_from_supported_title(title: SupportedTitle, heap: &'static [u8]) -> Box<Self>;
 
     fn install_hook(process: &DebugProcess, pkrd_handle: Handle) -> CtrResult<()>;
 
@@ -96,29 +96,49 @@ pub trait HookableProcess: HookedProcess {
 
         Ok(())
     }
+
+    fn patch_inital_seed(process: &DebugProcess, address: u32) -> CtrResult<()> {
+        /*
+         * The MT table initialization in gen 6 has a very useful nop instruction at the beginning of the function
+         * To be more specific it is a mov r0, r0 instruction
+         * We overwrite this with str r1, [r0, #-4]
+         * r1 is the register that contains the initial seed and r0 is the register that contains the memory address for the MT table
+         * The #-4 is to indicate write the initial seed 4 bytes before the MT table
+         * After this instruction is executed we can read the memory address 4 bytes before the MT table to get the initial seed
+         */
+        let patch_code: [u32; 1] = [
+            0xe5001004, // str r1, [r0, #-4]
+        ];
+
+        process
+            .write_bytes(address, safe_transmute::transmute_to_bytes(&patch_code))
+            .unwrap();
+
+        Ok(())
+    }
 }
 
 /// A process that is hooked.
 /// This is separate from HookableProcess so it can have a vtable
 /// and be used as `dyn HookedProcess`.
 pub trait HookedProcess {
-    fn run_hook(&mut self, heap: &[u8], screen: &mut display::DirectWriteScreen) -> CtrResult<()>;
+    fn run_hook(&mut self, screen: &mut display::DirectWriteScreen) -> CtrResult<()>;
 
     fn get_title(&self) -> SupportedTitle;
 }
 
-pub fn get_hooked_process() -> Option<Box<dyn HookedProcess>> {
+pub fn get_hooked_process(heap: &'static [u8]) -> Option<Box<dyn HookedProcess>> {
     let running_app = SupportedTitle::from_running_app().unwrap();
 
     let hookable_process: Box<dyn HookedProcess> = match running_app {
-        SupportedTitle::PokemonX => game::PokemonXY::new_from_supported_title(running_app),
-        SupportedTitle::PokemonY => game::PokemonXY::new_from_supported_title(running_app),
-        SupportedTitle::PokemonOR => game::PokemonORAS::new_from_supported_title(running_app),
-        SupportedTitle::PokemonAS => game::PokemonORAS::new_from_supported_title(running_app),
-        SupportedTitle::PokemonS => game::PokemonSM::new_from_supported_title(running_app),
-        SupportedTitle::PokemonM => game::PokemonSM::new_from_supported_title(running_app),
-        SupportedTitle::PokemonUS => game::PokemonUSUM::new_from_supported_title(running_app),
-        SupportedTitle::PokemonUM => game::PokemonUSUM::new_from_supported_title(running_app),
+        SupportedTitle::PokemonX => game::PokemonXY::new_from_supported_title(running_app, heap),
+        SupportedTitle::PokemonY => game::PokemonXY::new_from_supported_title(running_app, heap),
+        SupportedTitle::PokemonOR => game::PokemonORAS::new_from_supported_title(running_app, heap),
+        SupportedTitle::PokemonAS => game::PokemonORAS::new_from_supported_title(running_app, heap),
+        SupportedTitle::PokemonS => game::PokemonSM::new_from_supported_title(running_app, heap),
+        SupportedTitle::PokemonM => game::PokemonSM::new_from_supported_title(running_app, heap),
+        SupportedTitle::PokemonUS => game::PokemonUSUM::new_from_supported_title(running_app, heap),
+        SupportedTitle::PokemonUM => game::PokemonUSUM::new_from_supported_title(running_app, heap),
     };
 
     Some(hookable_process)
@@ -156,7 +176,7 @@ mod test {
     struct MockGame {}
 
     impl HookableProcess for MockGame {
-        fn new_from_supported_title(_title: SupportedTitle) -> Box<Self> {
+        fn new_from_supported_title(_title: SupportedTitle, _heap: &'static [u8]) -> Box<Self> {
             Box::new(Self {})
         }
 
@@ -166,11 +186,7 @@ mod test {
     }
 
     impl HookedProcess for MockGame {
-        fn run_hook(
-            &mut self,
-            _heap: &[u8],
-            _screen: &mut display::DirectWriteScreen,
-        ) -> CtrResult<()> {
+        fn run_hook(&mut self, _screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
             Ok(())
         }
 

@@ -3,11 +3,7 @@ use super::{
     hook,
 };
 use alloc::boxed::Box;
-use ctr::{
-    pm_dbg,
-    res::{CtrResult, GenericResultCode, ResultCode},
-    sysmodule::server::ServiceContext,
-};
+use ctr::{res::CtrResult, sysmodule::server::ServiceContext};
 
 pub struct PkrdServiceContext {
     pub screen: DirectWriteScreen,
@@ -22,34 +18,6 @@ impl PkrdServiceContext {
             game: None,
             is_paused: false,
         })
-    }
-
-    fn initialize_game(&mut self) {
-        self.game = hook::get_hooked_process();
-    }
-
-    pub fn get_or_initialize_game_and_screen(
-        &mut self,
-    ) -> CtrResult<(&mut Box<dyn hook::HookedProcess>, &mut DirectWriteScreen)> {
-        let running_title_id = pm_dbg::get_current_app_info()?.program_info.program_id;
-
-        match &self.game {
-            None => self.initialize_game(),
-            Some(game) => {
-                if game.get_title() != running_title_id {
-                    self.initialize_game()
-                }
-            }
-        };
-
-        let game = self
-            .game
-            .as_mut()
-            .ok_or_else::<ResultCode, fn() -> ResultCode>(|| {
-                GenericResultCode::InvalidValue.into()
-            })?;
-
-        Ok((game, &mut self.screen))
     }
 }
 

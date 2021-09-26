@@ -1,11 +1,18 @@
-use super::{context::PkrdServiceContext, display::Screen, frame_pause::handle_frame_pause};
+use super::{context::PkrdServiceContext, display::Screen, frame_pause::handle_frame_pause, hook};
+use crate::{log, pkrd::notification};
 use alloc::format;
 use core::{
     mem, slice,
     sync::atomic::{AtomicU32, Ordering},
 };
 use ctr::{
-    hid, hid::InterfaceDevice, ipc, log, res::GenericResultCode, svc, sysmodule::server, Handle,
+    hid,
+    hid::InterfaceDevice,
+    ipc,
+    res::{GenericResultCode, ResultCode},
+    svc,
+    sysmodule::server,
+    Handle,
 };
 use num_enum::IntoPrimitive;
 
@@ -44,7 +51,7 @@ pub fn handle_pkrd_game_request(
 ) -> server::RequestHandlerResult {
     let command_id = command_parser.get_command_id();
 
-    log(&format!(
+    log::debug(&format!(
         "[CMD] pkrd:game[{:x}][{:x}]",
         command_id,
         command_parser.get_header()
@@ -71,29 +78,42 @@ pub fn handle_pkrd_game_request(
             let format = command_parser.pop();
             let is_top_screen = screen_id == 0;
 
-            // Get heap
-            let heap_ptr = command_parser.pop() as *mut u8;
-            let heap_len = command_parser.pop_usize();
+            if notification::is_new_game_launch() {
+                // Get heap
+                let heap_ptr = command_parser.pop() as *mut u8;
+                let heap_len = command_parser.pop_usize();
 
-            // We're trusting our patch works and nothing else is using this command
-            let physical_heap_ptr = svc::convert_pa_to_uncached_pa(heap_ptr)?;
-            let heap = unsafe { slice::from_raw_parts_mut(physical_heap_ptr, heap_len) };
+                // We're trusting our patch works and nothing else is using this command
+                let physical_heap_ptr = svc::convert_pa_to_uncached_pa(heap_ptr)?;
+                let heap = unsafe { slice::from_raw_parts_mut(physical_heap_ptr, heap_len) };
 
-            let (game, screen) = context.get_or_initialize_game_and_screen()?;
+                // Since this is a physical address, it is static memory
+                context.game = hook::get_hooked_process(heap);
+            }
+
+            let screen = &mut context.screen;
 
             if let Err(result_code) =
                 screen.set_context(is_top_screen, frame_buffer, stride, format)
             {
-                log(&alloc::format!("Failed screen context {:x}", result_code));
+                log::error(&alloc::format!("Failed screen context {:x}", result_code));
             }
 
             // The input needs to be scanned here so we can use it in the hook
             hid::Global::scan_input();
 
+            let hook_result = context
+                .game
+                .as_mut()
+                .ok_or_else::<ResultCode, fn() -> ResultCode>(|| {
+                    GenericResultCode::InvalidValue.into()
+                })?
+                .run_hook(screen);
+
             // The game ignores the result of this, and there's not much we can
             // do to handle the error aside from logging.
-            if let Err(result_code) = game.run_hook(heap, screen) {
-                log(&alloc::format!("Failed run_hook: {:x}", result_code));
+            if let Err(result_code) = hook_result {
+                log::error(&alloc::format!("Failed run_hook: {:x}", result_code));
             }
 
             handle_frame_pause(context, is_top_screen);

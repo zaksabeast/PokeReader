@@ -7,18 +7,14 @@ use ctr::{
 
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct PartyView {
-    show: bool,
+    is_active: bool,
     slot: pkm::PartySlot,
 }
 
 impl PartyView {
-    pub fn run_view(
-        &mut self,
-        party_pkx: &impl pkm::Pkx,
-        screen: &mut display::DirectWriteScreen,
-    ) -> CtrResult<()> {
+    pub fn get_is_active(&mut self) -> bool {
         if hid::Global::is_just_pressed(Button::Start | Button::Dright) {
-            self.show = !self.show;
+            self.is_active = !self.is_active;
         }
 
         if hid::Global::is_just_pressed(Button::Select | Button::Dright) {
@@ -29,10 +25,20 @@ impl PartyView {
             self.slot = self.slot.decrement()
         }
 
-        if self.show {
-            let title = &alloc::format!("Party {}", self.slot);
-            super::pkx::run_view(title, party_pkx, screen)?;
-        }
+        self.is_active
+    }
+
+    pub fn set_is_active(&mut self, is_active: bool) {
+        self.is_active = is_active;
+    }
+
+    pub fn run_view(
+        &mut self,
+        pkx: &impl pkm::Pkx,
+        screen: &mut display::DirectWriteScreen,
+    ) -> CtrResult<()> {
+        let title = &alloc::format!("Party {}", self.slot);
+        super::pkx::run_view(title, pkx, screen)?;
 
         Ok(())
     }

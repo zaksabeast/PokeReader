@@ -9,13 +9,13 @@ use ctr::{res::CtrResult, DebugProcess, Handle};
 
 pub struct PokemonSM {
     title: SupportedTitle,
-    views: views::Views,
+    views: views::Gen7Views,
+    reader: reader::PokemonSMReader,
 }
 
 impl HookedProcess for PokemonSM {
-    fn run_hook(&mut self, heap: &[u8], screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
-        let game = reader::PokemonSMReader::new(heap);
-        views::run_gen7_views(&mut self.views, &game, screen)
+    fn run_hook(&mut self, screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
+        views::Gen7Views::run_views(&mut self.views, &self.reader, screen)
     }
 
     fn get_title(&self) -> SupportedTitle {
@@ -24,10 +24,11 @@ impl HookedProcess for PokemonSM {
 }
 
 impl HookableProcess for PokemonSM {
-    fn new_from_supported_title(title: SupportedTitle) -> Box<Self> {
+    fn new_from_supported_title(title: SupportedTitle, heap: &'static [u8]) -> Box<Self> {
         Box::new(Self {
             title,
             views: Default::default(),
+            reader: reader::PokemonSMReader::new(heap),
         })
     }
 

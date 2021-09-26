@@ -1,17 +1,22 @@
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct MT {
     index: usize,
     mt: [u32; 624],
 }
 
 impl MT {
-    pub fn new(seed: u32) -> MT {
-        let mut rng = MT {
-            mt: [0; 624],
-            index: 624,
-        };
+    pub fn new(seed: u32) -> Self {
+        let mut rng = Self::default();
         rng.init(seed);
 
         rng
+    }
+
+    fn blank_mt() -> Self {
+        Self {
+            mt: [0; 624],
+            index: 0,
+        }
     }
 
     fn init(&mut self, seed: u32) {
@@ -78,6 +83,12 @@ impl MT {
     }
 }
 
+impl Default for MT {
+    fn default() -> Self {
+        Self::blank_mt()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -90,6 +101,6 @@ mod test {
         }
 
         let result = rng.next();
-        assert_eq!(result, 0x796d251a);
+        assert_eq!(result, 0xd80fcb47);
     }
 }

@@ -29,15 +29,15 @@ impl Rng6View {
         screen: &mut display::DirectWriteScreen,
     ) -> CtrResult<()> {
         if screen.get_is_top_screen() {
-            let mut x = 190;
+            let mut x = 200;
             let mut y = 10;
 
             let black = display::Color::black();
             let white = display::Color::white();
 
-            screen.paint_square(&black, x, y, 200, 148)?;
+            screen.paint_square(&black, x, y, 192, 148)?;
 
-            x += 10;
+            x += 4;
             y += 4;
             screen.draw_string(&white, "Hello from rust!", x, y)?;
 

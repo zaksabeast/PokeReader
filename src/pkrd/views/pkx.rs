@@ -1,4 +1,7 @@
-use crate::pkrd::{display, display::Screen, reader::pkm};
+use crate::{
+    pkrd::{display, display::Screen, reader::pkm},
+    utils,
+};
 use alloc::string::ToString;
 use ctr::res::CtrResult;
 
@@ -21,7 +24,8 @@ pub fn run_view(
         screen.draw_string(&white, title, x, y)?;
 
         y += 12;
-        let species_text = &alloc::format!("Species: {}", pkx.species().to_string());
+        let species = pkx.species().to_string();
+        let species_text = &alloc::format!("Species: {}", utils::string::ellipse(&species, 13));
         screen.draw_string(&white, species_text, x, y)?;
 
         y += 12;
@@ -37,9 +41,10 @@ pub fn run_view(
         screen.draw_string(&white, nature_text, x, y)?;
 
         y += 12;
+        let ability = pkx.ability().to_string();
         let ability_text = &alloc::format!(
             "Ability: {} ({})",
-            pkx.ability().to_string(),
+            utils::string::ellipse(&ability, 9),
             pkx.ability_number()
         );
         screen.draw_string(&white, ability_text, x, y)?;

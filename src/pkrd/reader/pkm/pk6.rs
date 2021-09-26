@@ -43,6 +43,23 @@ impl Pkx for Pk6 {
     fn sid(&self) -> u16 {
         self.default_read(0x0E)
     }
+
+    fn nature(&self) -> types::Nature {
+        self.default_read::<u8>(0x1C).into()
+    }
+
+    fn ability(&self) -> types::Ability {
+        let ability: u8 = self.default_read(0x14);
+        (ability as u16).into()
+    }
+
+    fn ability_number(&self) -> u8 {
+        self.default_read(0x15)
+    }
+
+    fn iv32(&self) -> u32 {
+        self.default_read(0x74)
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -144,6 +161,31 @@ mod test {
         let pkx = Pk6::new(TEST_EKX);
         let tsv = 0993;
         assert_eq!(pkx.tsv(), tsv)
+    }
+
+    #[test]
+    fn should_read_nature() {
+        let pkx = Pk6::new(TEST_EKX);
+        assert_eq!(pkx.nature(), types::Nature::Adamant)
+    }
+
+    #[test]
+    fn should_read_ability() {
+        let pkx = Pk6::new(TEST_EKX);
+        assert_eq!(pkx.ability(), types::Ability::Imposter)
+    }
+
+    #[test]
+    fn should_read_ability_number() {
+        let pkx = Pk6::new(TEST_EKX);
+        let ability_number = 4;
+        assert_eq!(pkx.ability_number(), ability_number)
+    }
+
+    #[test]
+    fn should_read_hidden_power() {
+        let pkx = Pk6::new(TEST_EKX);
+        assert_eq!(pkx.hidden_power(), types::HiddenPower::Dark)
     }
 
     #[test]

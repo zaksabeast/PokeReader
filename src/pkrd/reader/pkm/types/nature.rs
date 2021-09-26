@@ -2,7 +2,7 @@ use core::fmt;
 use num_enum::FromPrimitive;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, FromPrimitive)]
-#[repr(u16)]
+#[repr(u8)]
 pub enum Nature {
     #[num_enum(default)]
     Hardy = 0,

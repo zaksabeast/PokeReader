@@ -16,3 +16,9 @@ pub use species::*;
 
 mod party_slot;
 pub use party_slot::*;
+
+mod stats;
+pub use stats::*;
+
+mod hidden_power;
+pub use hidden_power::*;

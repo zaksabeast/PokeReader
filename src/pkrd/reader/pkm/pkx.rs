@@ -18,6 +18,12 @@ pub trait Pkx: Reader {
         (self.tid() ^ self.sid()) >> 4
     }
 
+    fn psv(&self) -> u16 {
+        let pid = self.pid();
+        let psv = ((pid >> 16) ^ (pid & 0xffff)) >> 4;
+        psv as u16
+    }
+
     fn nature(&self) -> types::Nature;
 
     fn ability(&self) -> types::Ability;

@@ -164,6 +164,12 @@ mod test {
     }
 
     #[test]
+    fn should_read_psv() {
+        let pkx = Pk6::new(TEST_EKX);
+        assert_eq!(pkx.psv(), 0993)
+    }
+
+    #[test]
     fn should_read_nature() {
         let pkx = Pk6::new(TEST_EKX);
         assert_eq!(pkx.nature(), types::Nature::Adamant)

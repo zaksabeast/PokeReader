@@ -22,7 +22,7 @@ pub trait Pkx: Reader {
 
     fn ability(&self) -> types::Ability;
 
-    fn ability_number(&self) -> u8;
+    fn ability_number(&self) -> types::AbilityNumber;
 
     fn iv32(&self) -> u32;
 

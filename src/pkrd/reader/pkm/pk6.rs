@@ -53,8 +53,8 @@ impl Pkx for Pk6 {
         (ability as u16).into()
     }
 
-    fn ability_number(&self) -> u8 {
-        self.default_read(0x15)
+    fn ability_number(&self) -> types::AbilityNumber {
+        self.default_read::<u8>(0x15).into()
     }
 
     fn iv32(&self) -> u32 {
@@ -178,8 +178,7 @@ mod test {
     #[test]
     fn should_read_ability_number() {
         let pkx = Pk6::new(TEST_EKX);
-        let ability_number = 4;
-        assert_eq!(pkx.ability_number(), ability_number)
+        assert_eq!(pkx.ability_number(), types::AbilityNumber::Hidden)
     }
 
     #[test]

@@ -3,6 +3,29 @@ use core::fmt;
 use num_enum::FromPrimitive;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, FromPrimitive)]
+#[repr(u8)]
+pub enum AbilityNumber {
+    #[num_enum(default)]
+    None = 0,
+    First = 1,
+    Second = 2,
+    Hidden = 4,
+}
+
+impl fmt::Display for AbilityNumber {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let display = match self {
+            Self::None => "?".to_string(),
+            Self::First => "1".to_string(),
+            Self::Second => "2".to_string(),
+            Self::Hidden => "H".to_string(),
+        };
+
+        write!(f, "{}", display)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, FromPrimitive)]
 #[repr(u16)]
 pub enum Ability {
     #[num_enum(default)]

@@ -31,6 +31,10 @@ include $(DEVKITARM)/3ds_rules
 #     - icon.png
 #     - <libctru folder>/default_icon.png
 #---------------------------------------------------------------------------------
+APP_TITLE		:= 	pkrd-launcher
+APP_DESCRIPTION	:=	Launch PokeReader
+APP_AUTHOR		:=	RNG Team
+
 TARGET		:=	pkrd-launcher
 BUILD		:=	build
 SOURCES		:=	source
@@ -159,11 +163,17 @@ ifneq ($(ROMFS),)
 	export _3DSXFLAGS += --romfs=$(CURDIR)/$(ROMFS)
 endif
 
-.PHONY: all clean
+.PHONY: all clean 3dsx cia
 
 #---------------------------------------------------------------------------------
-all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES)
+all: 3dsx cia
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+
+cia: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES)
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile $@
+
+3dsx: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES)
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile $@
 
 $(BUILD):
 	@mkdir -p $(OUT_DIR)
@@ -198,9 +208,17 @@ else
 #---------------------------------------------------------------------------------
 $(OUTPUT).3dsx	:	$(OUTPUT).elf $(_3DSXDEPS)
 
+$(OUTPUT).cia	:	$(OUTPUT).elf $(TOPDIR)/$(TARGET).rsf
+	@makerom -f cia -rsf $(TOPDIR)/$(TARGET).rsf -elf $(OUTPUT).elf -o $@
+	@echo built ... $(TARGET).cia
+
 $(OFILES_SOURCES) : $(HFILES)
 
 $(OUTPUT).elf	:	$(OFILES)
+
+3dsx : $(OUTPUT).3dsx
+
+cia	:	$(OUTPUT).cia
 
 #---------------------------------------------------------------------------------
 # you need a rule like this for each extension you use as binary data

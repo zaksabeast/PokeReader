@@ -915,7 +915,7 @@ impl fmt::Display for Species {
             Self::HoOh => "Ho-Oh".to_string(),
             Self::MimeJr => "Mime Jr.".to_string(),
             Self::PorygonZ => "Porygon-Z".to_string(),
-            Self::Flabebe => "Flabébé".to_string(),
+            Self::Flabebe => "Flabebe".to_string(),
             Self::TypeNull => "Type: Null".to_string(),
             Self::JangmoO => "Jangmo-o".to_string(),
             Self::HakamoO => "Hakamo-o".to_string(),

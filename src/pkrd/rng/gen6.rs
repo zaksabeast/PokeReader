@@ -1,7 +1,7 @@
 use super::{mt, tinymt};
 use crate::{log, pkrd::reader};
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Debug, PartialEq, Default)]
 pub struct Gen6Rng {
     init_seed: u32,
     init_tinymt_state: [u32; 4],
@@ -137,14 +137,10 @@ mod test {
 
         #[test]
         fn should_update_mt_info() {
-            let game = MockGen6Game::default();
-            reader::Gen6Reader::get_mt_state
-                .mock_safe(|_: &MockGen6Game| MockResult::Return(0xd80fcb47));
-
             let mut rng = Gen6Rng::default();
 
             rng.mt_rng = mt::MT::new(0xaabbccdd);
-            rng.update(&game);
+            rng.update_mt(0xd80fcb47);
 
             assert_eq!(rng.mt_advances, 625);
             assert_eq!(rng.mt_state, 0xd80fcb47);
@@ -156,15 +152,10 @@ mod test {
 
         #[test]
         fn should_update_tinymt_info() {
-            let game = MockGen6Game::default();
-            reader::Gen6Reader::get_tinymt_state.mock_safe(|_: &MockGen6Game| {
-                MockResult::Return([0x233f3c9d, 0x5a385202, 0x56e043c9, 0x76b46859])
-            });
-
             let mut rng = Gen6Rng::default();
 
             rng.tinymt_rng = tinymt::TinyMT::new([0x11112222, 0x33334444, 0x55556666, 0x77778888]);
-            rng.update(&game);
+            rng.update_tinymt([0x233f3c9d, 0x5a385202, 0x56e043c9, 0x76b46859]);
 
             assert_eq!(rng.tinymt_advances, 156);
         }

@@ -1,4 +1,4 @@
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct MT {
     index: usize,
     mt: [u32; 624],

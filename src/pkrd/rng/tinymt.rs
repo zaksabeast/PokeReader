@@ -23,7 +23,7 @@ impl TinyMT {
 
     pub fn temper(&self) -> u32 {
         let mut t0 = self.state[3];
-        let t1 = self.state[0] + (self.state[2] >> 8);
+        let t1 = self.state[0].wrapping_add(self.state[2] >> 8);
 
         t0 ^= t1;
         if t1 & 1 == 1 {
@@ -55,5 +55,11 @@ mod test {
         }
 
         assert_eq!(rng.next(), 0x670e7a39);
+    }
+
+    #[test]
+    fn should_not_fail_from_state_overflow() {
+        let mut rng = TinyMT::new([0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff]);
+        assert_eq!(rng.next(), 0x007c78fb);
     }
 }

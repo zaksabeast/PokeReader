@@ -2,7 +2,7 @@ use super::reader;
 use crate::pkrd::{
     display,
     hook::{HookableProcess, HookedProcess, PatchPresentFramebufferConfig, SupportedTitle},
-    views,
+    rng, views,
 };
 use alloc::boxed::Box;
 use ctr::{res::CtrResult, DebugProcess, Handle};
@@ -10,12 +10,13 @@ use ctr::{res::CtrResult, DebugProcess, Handle};
 pub struct PokemonSM {
     title: SupportedTitle,
     views: views::Gen7Views,
+    rng: rng::Gen7Rng,
     reader: reader::PokemonSMReader,
 }
 
 impl HookedProcess for PokemonSM {
     fn run_hook(&mut self, screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
-        views::Gen7Views::run_views(&mut self.views, &self.reader, screen)
+        views::Gen7Views::run_views(&mut self.views, &self.reader, &mut self.rng, screen)
     }
 
     fn get_title(&self) -> SupportedTitle {
@@ -28,6 +29,7 @@ impl HookableProcess for PokemonSM {
         Box::new(Self {
             title,
             views: Default::default(),
+            rng: Default::default(),
             reader: reader::PokemonSMReader::new(heap),
         })
     }

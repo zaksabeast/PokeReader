@@ -55,10 +55,13 @@ impl Gen7Views {
     pub fn run_views<GameReader: reader::Gen7Reader>(
         views: &mut Gen7Views,
         game: &GameReader,
+        rng: &mut rng::Gen7Rng,
         screen: &mut display::DirectWriteScreen,
     ) -> CtrResult<()> {
+        rng.update(game);
+
         if views.rng_view.get_is_active() {
-            Rng7View::run_view(game, screen)?;
+            Rng7View::run_view(game, rng, screen)?;
         }
 
         if views.party_view.get_is_active() {

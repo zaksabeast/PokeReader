@@ -18,6 +18,8 @@ impl Reader for PokemonSMReader {
 
 impl Gen7Reader for PokemonSMReader {
     const INITIAL_SEED_OFFSET: usize = 0x25A3878;
+    const SFMT_STATE_INDEX_OFFSET: usize = 0x3196548;
+    const SFMT_STATE_OFFSET: usize = 0x3195B88;
     const PARTY_OFFSET: usize = 0x4195E10;
     const WILD_OFFSET: usize = 0x002F7B8;
     const SOS_OFFSET: usize = 0x002F7B8;

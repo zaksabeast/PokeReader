@@ -1,7 +1,10 @@
 use super::{pkm, Reader};
 
+#[cfg_attr(not(target_os = "horizon"), mocktopus::macros::mockable)]
 pub trait Gen7Reader: Reader {
     const INITIAL_SEED_OFFSET: usize;
+    const SFMT_STATE_INDEX_OFFSET: usize;
+    const SFMT_STATE_OFFSET: usize;
     const PARTY_OFFSET: usize;
     const WILD_OFFSET: usize;
     const SOS_OFFSET: usize;
@@ -14,6 +17,15 @@ pub trait Gen7Reader: Reader {
 
     fn get_initial_seed(&self) -> u32 {
         self.default_read(Self::INITIAL_SEED_OFFSET)
+    }
+
+    fn get_sfmt_state_index(&self) -> usize {
+        self.default_read(Self::SFMT_STATE_INDEX_OFFSET)
+    }
+
+    fn get_sfmt_state(&self) -> u64 {
+        let index = self.get_sfmt_state_index();
+        self.default_read(Self::SFMT_STATE_OFFSET + if index != 624 { index * 4 } else { 0 })
     }
 
     fn get_party_pkm(&self, slot: pkm::PartySlot) -> pkm::Pk7 {

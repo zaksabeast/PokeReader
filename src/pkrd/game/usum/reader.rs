@@ -18,6 +18,8 @@ impl Reader for PokemonUSUMReader {
 
 impl Gen7Reader for PokemonUSUMReader {
     const INITIAL_SEED_OFFSET: usize = 0x2663BF0;
+    const SFMT_STATE_INDEX_OFFSET: usize = 0x30D3F98;
+    const SFMT_STATE_OFFSET: usize = 0x30D35D8;
     const PARTY_OFFSET: usize = 0x3F7FA44;
     const WILD_OFFSET: usize = 0x002F9A0;
     const SOS_OFFSET: usize = 0x002F9A0;

@@ -1,8 +1,9 @@
-use crate::pkrd::{display, display::Screen, reader};
+use crate::pkrd::{display, display::Screen, reader, rng};
 use ctr::{
     hid,
     hid::{Button, InterfaceDevice},
     res::CtrResult,
+    safe_transmute,
 };
 
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
@@ -25,6 +26,7 @@ impl Rng7View {
 
     pub fn run_view(
         game: &impl reader::Gen7Reader,
+        rng: &rng::Gen7Rng,
         screen: &mut display::DirectWriteScreen,
     ) -> CtrResult<()> {
         if screen.get_is_top_screen() {
@@ -34,7 +36,7 @@ impl Rng7View {
             let black = display::Color::black();
             let white = display::Color::white();
 
-            screen.paint_square(&black, x, y, 192, 56)?;
+            screen.paint_square(&black, x, y, 192, 92)?;
 
             x += 4;
             y += 4;
@@ -48,8 +50,26 @@ impl Rng7View {
 
             y += 16;
             let init_seed = game.get_initial_seed();
-            let seed_text = &alloc::format!("Init seed: {:08x}", init_seed);
+            let seed_text = &alloc::format!("Init seed: {:08X}", init_seed);
             screen.draw_string(&white, seed_text, x, y)?;
+
+            let sfmt_state = game.get_sfmt_state();
+            let sfmt_state_bytes = sfmt_state.to_ne_bytes();
+            let sfmt_state_parts: [u32; 2] =
+                safe_transmute::transmute_one_pedantic(&sfmt_state_bytes)?;
+
+            y += 12;
+            let state_text = &alloc::format!("Curr state[1]: {:08X}", sfmt_state_parts[1]);
+            screen.draw_string(&white, state_text, x, y)?;
+
+            y += 12;
+            let state_text = &alloc::format!("Curr state[0]: {:08X}", sfmt_state_parts[0]);
+            screen.draw_string(&white, state_text, x, y)?;
+
+            y += 12;
+            let sfmt_advances = rng.get_sfmt_advances();
+            let advances_text = &alloc::format!("Advances: {}", sfmt_advances);
+            screen.draw_string(&white, advances_text, x, y)?;
         }
 
         Ok(())

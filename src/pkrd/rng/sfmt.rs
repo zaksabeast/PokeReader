@@ -1,3 +1,6 @@
+use safe_transmute;
+
+#[derive(Clone, Debug, PartialEq)]
 pub struct SFMT {
     index: usize,
     sfmt: [u32; 624],
@@ -35,17 +38,24 @@ impl SFMT {
         self.sfmt[0] ^= !inner & 1;
     }
 
+    pub(crate) fn get_current_state(&self) -> u64 {
+        let index = if self.index != 624 { self.index } else { 0 };
+        let state_bytes = safe_transmute::transmute_to_bytes(&self.sfmt[index..=index + 1]);
+        safe_transmute::transmute_one_pedantic(state_bytes).unwrap()
+    }
+
     pub fn next(&mut self) -> u64 {
+        // Get state before shuffle
+        // Needed for gen 7 compatbility
+        let state = self.get_current_state();
+
         if self.index == 624 {
             self.shuffle();
         }
 
-        let low = self.sfmt[self.index] as u64;
-        self.index += 1;
-        let high = self.sfmt[self.index] as u64;
-        self.index += 1;
+        self.index += 2;
 
-        low | (high << 32)
+        state
     }
 
     fn shuffle(&mut self) {
@@ -89,18 +99,38 @@ impl SFMT {
     }
 }
 
+impl Default for SFMT {
+    fn default() -> Self {
+        Self {
+            index: 0,
+            sfmt: [0; 624],
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
 
     #[test]
     fn test_shuffle() {
-        let mut rng = SFMT::new(0xaabbccdd);
+        let mut rng = SFMT::new(0x7725e5e1);
+        for _ in 0..1000 {
+            rng.next();
+        }
+
+        let result = rng.next();
+        assert_eq!(result, 0xd7efa47e23000ac8);
+    }
+
+    #[test]
+    fn test_next_should_return_state_before_shuffle() {
+        let mut rng = SFMT::new(0xc91cc389);
         for _ in 0..624 {
             rng.next();
         }
 
         let result = rng.next();
-        assert_eq!(result, 0xC3A87073C81F87B6);
+        assert_eq!(result, 0xb5618d99ce90d534);
     }
 }

@@ -1,5 +1,3 @@
-use safe_transmute;
-
 #[derive(Clone, Debug, PartialEq)]
 pub struct SFMT {
     index: usize,
@@ -40,8 +38,10 @@ impl SFMT {
 
     pub(crate) fn get_current_state(&self) -> u64 {
         let index = if self.index != 624 { self.index } else { 0 };
-        let state_bytes = safe_transmute::transmute_to_bytes(&self.sfmt[index..=index + 1]);
-        safe_transmute::transmute_one_pedantic(state_bytes).unwrap()
+        let low = self.sfmt[index] as u64;
+        let high = self.sfmt[index + 1] as u64;
+
+        low | (high << 32)
     }
 
     pub fn next(&mut self) -> u64 {

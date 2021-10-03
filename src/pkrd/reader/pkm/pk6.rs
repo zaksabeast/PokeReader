@@ -1,7 +1,7 @@
 use super::{pkx::Pkx, poke_crypto, types};
 use crate::pkrd::reader::Reader;
-use ::safe_transmute::TriviallyTransmutable;
-use ctr::safe_transmute;
+use core::convert::TryInto;
+use safe_transmute::TriviallyTransmutable;
 
 pub type Pk6Bytes = [u8; Pk6::STORED_SIZE];
 
@@ -14,7 +14,8 @@ impl Pk6 {
     pub const BLOCK_SIZE: usize = 56;
 
     pub fn new(data: [u8; Pk6::STORED_SIZE]) -> Self {
-        let seed = safe_transmute::transmute_one_pedantic(&data[0..4]).unwrap();
+        let seed_bytes: [u8; 4] = data[0..4].try_into().unwrap();
+        let seed = u32::from_le_bytes(seed_bytes);
         Self {
             data: poke_crypto::decrypt::<{ Pk6::STORED_SIZE }, { Pk6::BLOCK_SIZE }>(data, seed),
         }
@@ -29,19 +30,19 @@ impl Reader for Pk6 {
 
 impl Pkx for Pk6 {
     fn species(&self) -> types::Species {
-        self.default_read::<u16>(8).into()
+        self.default_read_le::<u16>(8).into()
     }
 
     fn pid(&self) -> u32 {
-        self.default_read(0x18)
+        self.default_read_le(0x18)
     }
 
     fn tid(&self) -> u16 {
-        self.default_read(0x0C)
+        self.default_read_le(0x0C)
     }
 
     fn sid(&self) -> u16 {
-        self.default_read(0x0E)
+        self.default_read_le(0x0E)
     }
 
     fn nature(&self) -> types::Nature {
@@ -58,7 +59,7 @@ impl Pkx for Pk6 {
     }
 
     fn iv32(&self) -> u32 {
-        self.default_read(0x74)
+        self.default_read_le(0x74)
     }
 }
 

@@ -11,7 +11,7 @@ pub use gen7::*;
 
 use crate::log;
 use alloc::{vec, vec::Vec};
-use core::mem;
+use core::{convert::TryInto, mem};
 use ctr::{
     res::{CtrResult, GenericResultCode},
     safe_transmute::transmute_one_pedantic,
@@ -23,12 +23,7 @@ pub trait Reader {
     /// Returns the data to be read from.
     fn get_data(&self) -> &[u8];
 
-    /// Safely reads any [TriviallyTransmutable] type.
-    /// Errors will be returned if the offset does not have enough data for the target type.
-    ///
-    /// All read data is copied, so anything returned from this can be manipualted without fear
-    /// of corrupting the data source.
-    fn read<T: TriviallyTransmutable>(&self, offset: usize) -> CtrResult<T> {
+    fn read_bytes<T: Sized>(&self, offset: usize) -> CtrResult<&[u8]> {
         let data = self.get_data();
         let result_size = mem::size_of::<T>();
         let offset_end = offset + result_size;
@@ -37,8 +32,19 @@ pub trait Reader {
             return Err(GenericResultCode::InvalidSize.into());
         }
 
-        let mut copy: Vec<u8> = vec![0; result_size];
-        copy.copy_from_slice(&data[offset..offset_end]);
+        Ok(&data[offset..offset_end])
+    }
+
+    /// Safely reads any [TriviallyTransmutable] type.
+    /// Errors will be returned if the offset does not have enough data for the target type.
+    ///
+    /// All read data is copied, so anything returned from this can be manipualted without fear
+    /// of corrupting the data source.
+    fn read<T: TriviallyTransmutable>(&self, offset: usize) -> CtrResult<T> {
+        let bytes = self.read_bytes::<T>(offset)?;
+
+        let mut copy: Vec<u8> = vec![0; bytes.len()];
+        copy.copy_from_slice(bytes);
         transmute_one_pedantic(&copy)
     }
 
@@ -55,5 +61,47 @@ pub trait Reader {
         }
 
         result.unwrap_or_default()
+    }
+
+    /// Same as [Reader::read], except the value is read from its little endian representation.
+    /// Prefer [Reader::read] and [Reader::default_read] when possible.
+    /// This should only be used when reading data from a format or protocol
+    /// that explicitly defines little endian.
+    fn read_le<T: EndianRead>(&self, offset: usize) -> CtrResult<T> {
+        let bytes = self.read_bytes::<T>(offset)?;
+        Ok(T::read_le(bytes))
+    }
+
+    /// /// Same as [Reader::default_read], except the value is read from its little endian representation.
+    /// Prefer [Reader::read] and [Reader::default_read] when possible.
+    /// This should only be used when reading data from a format or protocol
+    /// that explicitly defines little endian.
+    fn default_read_le<T: EndianRead + Default>(&self, offset: usize) -> T {
+        let result = self.read_le(offset);
+
+        if let Err(result_code) = result {
+            log::error(&alloc::format!(
+                "Failed read in default_read_le: {:x}",
+                result_code
+            ))
+        }
+
+        result.unwrap_or_default()
+    }
+}
+
+pub trait EndianRead: Sized {
+    fn read_le(bytes: &[u8]) -> Self;
+}
+
+impl EndianRead for u16 {
+    fn read_le(bytes: &[u8]) -> Self {
+        u16::from_le_bytes(bytes.try_into().unwrap())
+    }
+}
+
+impl EndianRead for u32 {
+    fn read_le(bytes: &[u8]) -> Self {
+        u32::from_le_bytes(bytes.try_into().unwrap())
     }
 }

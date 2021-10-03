@@ -3,7 +3,7 @@ use crate::pkrd::reader::Reader;
 
 pub trait Pkx: Reader {
     fn encryption_constant(&self) -> u32 {
-        self.read(0).unwrap()
+        self.default_read_le(0)
     }
 
     fn species(&self) -> types::Species;

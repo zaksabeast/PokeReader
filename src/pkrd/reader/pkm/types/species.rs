@@ -1,3 +1,4 @@
+use super::{get_species_gender_ratio, GenderRatio};
 use alloc::{format, string::ToString};
 use core::fmt;
 use num_enum::FromPrimitive;
@@ -905,6 +906,12 @@ pub enum Species {
     Glastrier = 896,
     Spectrier = 897,
     Calyrex = 898,
+}
+
+impl Species {
+    pub fn get_gender_ratio(&self) -> GenderRatio {
+        get_species_gender_ratio(self)
+    }
 }
 
 impl fmt::Display for Species {

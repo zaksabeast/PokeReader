@@ -61,6 +61,15 @@ impl Pkx for Pk7 {
     fn iv32(&self) -> u32 {
         self.default_read_le(0x74)
     }
+
+    fn language(&self) -> types::Language {
+        self.default_read::<u8>(0xE3).into()
+    }
+
+    fn gender(&self) -> types::Gender {
+        let byte = self.default_read::<u8>(0x1D);
+        ((byte >> 1) & 3).into()
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

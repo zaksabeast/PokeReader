@@ -3,21 +3,15 @@ use num_enum::FromPrimitive;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, FromPrimitive)]
 #[repr(u8)]
-pub enum Language {
+pub enum Gender {
+    Male = 0,
+    Female = 1,
+    Genderless = 2,
     #[num_enum(default)]
-    Invalid = 0,
-    Japanese = 1,
-    English = 2,
-    French = 3,
-    Italian = 4,
-    German = 5,
-    Spanish = 7,
-    Korean = 8,
-    ChineseS = 9,
-    ChineseT = 10,
+    Unknown = 3,
 }
 
-impl fmt::Display for Language {
+impl fmt::Display for Gender {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{:?}", self)
     }

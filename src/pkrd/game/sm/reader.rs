@@ -29,4 +29,7 @@ impl Gen7Reader for PokemonSMReader {
     const EGG_OFFSET: usize = 0x313EDDC;
     const PARENT1_OFFSET: usize = 0x313EC01;
     const PARENT2_OFFSET: usize = 0x313ECEA;
+    const IS_PARENT1_OCCUPIED_OFFSET: usize = 0x313EC00;
+    const IS_PARENT2_OCCUPIED_OFFSET: usize = 0x313ECE9;
+    const SHINY_CHARM_OFFSET: usize = 0x30d5930;
 }

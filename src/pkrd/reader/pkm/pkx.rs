@@ -30,6 +30,10 @@ pub trait Pkx: Reader {
 
     fn ability_number(&self) -> types::AbilityNumber;
 
+    fn language(&self) -> types::Language;
+
+    fn gender(&self) -> types::Gender;
+
     fn iv32(&self) -> u32;
 
     fn ivs(&self) -> types::Stats {
@@ -58,5 +62,9 @@ pub trait Pkx: Reader {
 
     fn hidden_power(&self) -> types::HiddenPower {
         self.hidden_power_num().into()
+    }
+
+    fn gender_ratio(&self) -> types::GenderRatio {
+        self.species().get_gender_ratio()
     }
 }

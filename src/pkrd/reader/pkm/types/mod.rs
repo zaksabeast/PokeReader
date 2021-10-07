@@ -22,3 +22,9 @@ pub use stats::*;
 
 mod hidden_power;
 pub use hidden_power::*;
+
+mod gender;
+pub use gender::*;
+
+mod gender_ratio;
+pub use gender_ratio::*;

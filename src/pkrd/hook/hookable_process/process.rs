@@ -1,5 +1,6 @@
 use super::config;
 use crate::{
+    log,
     pkrd::{display, game, hook::SupportedTitle, request_handler::get_pkrd_session_handle},
     utils,
 };
@@ -22,6 +23,10 @@ pub trait HookableProcess: HookedProcess {
         config: config::PatchPresentFramebufferConfig,
     ) -> CtrResult<()> {
         if (config.hook_vars_addr & 0xFFFF) != 0 || config.hook_vars_addr == 0 {
+            log::error(&alloc::format!(
+                "{:X} is not 0x10000 aligned",
+                config.hook_vars_addr
+            ));
             return Err(GenericResultCode::InvalidPointer.into());
         }
 

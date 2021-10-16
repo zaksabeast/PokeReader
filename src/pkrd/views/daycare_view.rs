@@ -1,10 +1,11 @@
-use crate::pkrd::{display, display::Screen, reader, reader::pkm};
+use crate::pkrd::{display, display::Screen, reader};
 use alloc::string::String;
 use ctr::{
     hid,
     hid::{Button, InterfaceDevice},
     res::CtrResult,
 };
+use pkm_rs::pkm;
 
 fn is_masuda_method(parent1: &impl pkm::Pkx, parent2: &impl pkm::Pkx) -> bool {
     parent1.language() != parent2.language()

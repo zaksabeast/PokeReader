@@ -1,9 +1,10 @@
 use crate::{
-    pkrd::{display, display::Screen, reader::pkm},
+    pkrd::{display, display::Screen},
     utils,
 };
 use alloc::string::ToString;
 use ctr::res::CtrResult;
+use pkm_rs::pkm;
 
 pub fn run_view(
     title: &str,

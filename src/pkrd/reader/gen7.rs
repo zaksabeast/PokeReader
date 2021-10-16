@@ -1,4 +1,5 @@
-use super::{pkm, Reader};
+use no_std_io::Reader;
+use pkm_rs::pkm;
 
 #[cfg_attr(not(target_os = "horizon"), mocktopus::macros::mockable)]
 pub trait Gen7Reader: Reader {

@@ -1,9 +1,10 @@
-use crate::pkrd::{display, reader::pkm};
+use crate::pkrd::display;
 use ctr::{
     hid,
     hid::{Button, InterfaceDevice},
     res::CtrResult,
 };
+use pkm_rs::pkm;
 
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct PartyView {

@@ -1,4 +1,5 @@
-use crate::pkrd::reader::{Gen6Reader, Reader};
+use crate::pkrd::reader::Gen6Reader;
+use no_std_io::Reader;
 
 pub(super) struct PokemonXYReader {
     heap: &'static [u8],
@@ -11,7 +12,7 @@ impl PokemonXYReader {
 }
 
 impl Reader for PokemonXYReader {
-    fn get_data(&self) -> &[u8] {
+    fn get_slice(&self) -> &[u8] {
         self.heap
     }
 }

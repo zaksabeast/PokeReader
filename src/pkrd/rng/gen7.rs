@@ -59,6 +59,7 @@ impl Gen7Rng {
 mod test {
     use super::*;
     use mocktopus::mocking::{MockResult, Mockable};
+    use no_std_io::Reader;
 
     struct MockGen7Game {
         data: [u8; 0],
@@ -70,8 +71,8 @@ mod test {
         }
     }
 
-    impl reader::Reader for MockGen7Game {
-        fn get_data(&self) -> &[u8] {
+    impl Reader for MockGen7Game {
+        fn get_slice(&self) -> &[u8] {
             &self.data
         }
     }

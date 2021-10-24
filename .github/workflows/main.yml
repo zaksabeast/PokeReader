@@ -38,7 +38,7 @@ jobs:
             launcher/out/pkrd-launcher.3dsx
 
       - name: Draft release
-        if: github.events.workflow_run.requested
+        if: github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v1
         with:
           draft: true

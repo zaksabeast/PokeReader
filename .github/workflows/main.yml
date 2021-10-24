@@ -1,9 +1,10 @@
 name: CICD
 
 on:
+  workflow_dispatch:
+    branches: [main]
   push:
     branches: [main]
-    tags: ["v*.*.*"]
 
 jobs:
   lint-build-deploy:
@@ -37,7 +38,7 @@ jobs:
             launcher/out/pkrd-launcher.3dsx
 
       - name: Draft release
-        if: startsWith(github.ref, 'refs/tags/')
+        if: github.events.workflow_run.requested
         uses: softprops/action-gh-release@v1
         with:
           draft: true

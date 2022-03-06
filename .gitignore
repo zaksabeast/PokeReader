@@ -13,3 +13,6 @@ build/
 *.elf
 *.3dsx
 *.smdh
+
+# Mac
+.DS_Store

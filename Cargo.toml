@@ -26,5 +26,6 @@ mocktopus = { version = "0.7.11" }
 panic = "abort"
 
 [profile.release]
+opt-level = 1
 lto = true
 panic = "abort"

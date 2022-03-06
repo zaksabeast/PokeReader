@@ -1,7 +1,6 @@
 #![no_std]
 #![allow(incomplete_features)]
 #![feature(alloc_error_handler)]
-#![feature(asm)]
 #![feature(start)]
 #![feature(if_let_guard)]
 #![allow(dead_code)]
@@ -21,7 +20,7 @@ use crate::pkrd::{
 };
 use alloc::{boxed::Box, vec};
 #[cfg(not(test))]
-use core::panic::PanicInfo;
+use core::{arch::asm, panic::PanicInfo};
 use ctr::{
     fs, ptm, srv, svc,
     sysmodule::{

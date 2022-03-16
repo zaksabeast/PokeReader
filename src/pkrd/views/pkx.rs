@@ -38,7 +38,7 @@ pub fn run_view(
         screen.draw_string(&white, psv_text, x, y)?;
 
         y += 12;
-        let nature_text = &alloc::format!("Nature: {}", pkx.nature().to_string());
+        let nature_text = &alloc::format!("Nature: {}", pkx.nature());
         screen.draw_string(&white, nature_text, x, y)?;
 
         y += 12;

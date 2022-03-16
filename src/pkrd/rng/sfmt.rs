@@ -1,12 +1,12 @@
 #[derive(Clone, Debug, PartialEq)]
-pub struct SFMT {
+pub struct Sfmt {
     index: usize,
     sfmt: [u32; 624],
 }
 
-impl SFMT {
-    pub fn new(seed: u32) -> SFMT {
-        let mut rng = SFMT {
+impl Sfmt {
+    pub fn new(seed: u32) -> Self {
+        let mut rng = Self {
             sfmt: [0; 624],
             index: 624,
         };
@@ -99,7 +99,7 @@ impl SFMT {
     }
 }
 
-impl Default for SFMT {
+impl Default for Sfmt {
     fn default() -> Self {
         Self {
             index: 0,
@@ -114,7 +114,7 @@ mod test {
 
     #[test]
     fn test_shuffle() {
-        let mut rng = SFMT::new(0x7725e5e1);
+        let mut rng = Sfmt::new(0x7725e5e1);
         for _ in 0..1000 {
             rng.next();
         }
@@ -125,7 +125,7 @@ mod test {
 
     #[test]
     fn test_next_should_return_state_before_shuffle() {
-        let mut rng = SFMT::new(0xc91cc389);
+        let mut rng = Sfmt::new(0xc91cc389);
         for _ in 0..624 {
             rng.next();
         }

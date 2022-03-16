@@ -1,10 +1,10 @@
-use super::sfmt;
+use super::sfmt::Sfmt;
 use crate::{log, pkrd::reader};
 
 #[derive(Clone, Debug, PartialEq, Default)]
 pub struct Gen7Rng {
     init_seed: u32,
-    sfmt_rng: sfmt::SFMT,
+    sfmt_rng: Sfmt,
     sfmt_advances: u32,
     sfmt_current_state: u64,
 }
@@ -30,7 +30,7 @@ impl Gen7Rng {
             temp_sfmt_current_state = self.sfmt_rng.next();
         }
 
-        if is_state_found == false {
+        if !is_state_found {
             log::error(&alloc::format!(
                 "SFMT State not found! Seed {:x}, State {:x}, Advances {}",
                 self.init_seed,
@@ -46,7 +46,7 @@ impl Gen7Rng {
 
         if self.init_seed != init_seed && init_seed != 0 {
             self.init_seed = init_seed;
-            self.sfmt_rng = sfmt::SFMT::new(init_seed);
+            self.sfmt_rng = Sfmt::new(init_seed);
             self.sfmt_advances = 0;
             self.sfmt_current_state = self.sfmt_rng.get_current_state();
         }
@@ -102,7 +102,7 @@ mod test {
         fn should_update_sfmt_info() {
             let mut rng = Gen7Rng::default();
 
-            rng.sfmt_rng = sfmt::SFMT::new(0x7725e5e1);
+            rng.sfmt_rng = Sfmt::new(0x7725e5e1);
             rng.update_sfmt(0xd7efa47e23000ac8);
 
             assert_eq!(rng.sfmt_advances, 1001);

@@ -40,7 +40,7 @@ impl Gen6Rng {
             temp_mt_state = self.mt_rng.next();
         }
 
-        if is_state_found == false {
+        if !is_state_found {
             log::error(&alloc::format!(
                 "MT State not found! Seed {:x}, State {:x}, Advances {}",
                 self.init_seed,
@@ -63,7 +63,7 @@ impl Gen6Rng {
             self.tinymt_rng.next_state();
         }
 
-        if is_state_found == false {
+        if !is_state_found {
             log::error(&alloc::format!(
                 "TinyMT State not found! InitialState[0] {:x}, InitialState[1] {:x}, InitialState[2] {:x}, InitialState[3] {:x}, State[0] {:x}, State[1] {:x}, State[2] {:x}, State[3] {:x}, Advances {}",
                 self.init_tinymt_state[0],

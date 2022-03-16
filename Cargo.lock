@@ -104,7 +104,7 @@ checksum = "9385f66bf6105b241aa65a61cb923ef20efc665cb9f9bb50ac2f0c4b7f378d41"
 [[package]]
 name = "libctr-rs"
 version = "0.1.0"
-source = "git+https://github.com/zaksabeast/libctr-rs?rev=556cf48#556cf4857866db512ae415fd33f17131178ab465"
+source = "git+https://github.com/zaksabeast/libctr-rs?rev=6abdbcd#6abdbcd4edac94a9acda472ab4b1ff90012ea6d7"
 dependencies = [
  "base64",
  "cstr_core",

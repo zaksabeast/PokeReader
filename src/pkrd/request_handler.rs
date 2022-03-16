@@ -64,7 +64,7 @@ pub fn handle_pkrd_game_request(
             PKRD_HANDLE.store(raw_handle, Ordering::Relaxed);
 
             let mut command = ipc::ThreadCommandBuilder::new(command_id);
-            command.push(GenericResultCode::Success);
+            command.push(ResultCode::success());
             Ok(command.build())
         }
         PkrdGameCommand::RunGameHook => {
@@ -96,7 +96,10 @@ pub fn handle_pkrd_game_request(
             if let Err(result_code) =
                 screen.set_context(is_top_screen, frame_buffer, stride, format)
             {
-                log::error(&alloc::format!("Failed screen context {:x}", result_code));
+                log::error(&alloc::format!(
+                    "Failed screen context {:x}",
+                    result_code.into_raw()
+                ));
             }
 
             // The input needs to be scanned here so we can use it in the hook
@@ -113,13 +116,16 @@ pub fn handle_pkrd_game_request(
             // The game ignores the result of this, and there's not much we can
             // do to handle the error aside from logging.
             if let Err(result_code) = hook_result {
-                log::error(&alloc::format!("Failed run_hook: {:x}", result_code));
+                log::error(&alloc::format!(
+                    "Failed run_hook: {:x}",
+                    result_code.into_raw()
+                ));
             }
 
             handle_frame_pause(context, is_top_screen);
 
             let mut command = ipc::ThreadCommandBuilder::new(command_id);
-            command.push(GenericResultCode::Success);
+            command.push(ResultCode::success());
             Ok(command.build())
         }
         _ => {

@@ -212,7 +212,7 @@ mod test {
                         "Patching framebuffer should have failed for unaligned hook var address",
                     );
 
-            assert_eq!(result, GenericResultCode::InvalidPointer.into());
+            assert_eq!(result, GenericResultCode::InvalidPointer.into_result_code());
         }
 
         #[test]
@@ -232,7 +232,7 @@ mod test {
                         "Patching framebuffer should have failed for null hook var address",
                     );
 
-            assert_eq!(result, GenericResultCode::InvalidPointer.into());
+            assert_eq!(result, GenericResultCode::InvalidPointer.into_result_code());
         }
 
         #[test]

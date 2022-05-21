@@ -39,7 +39,7 @@ impl Rng6View {
 
             x += 4;
             y += 4;
-            screen.draw_string(&white, "Hello from rust!", x, y)?;
+            screen.draw_string(&white, "Main RNG View", x, y)?;
 
             y += 16;
             let init_seed = game.get_initial_seed();

@@ -131,6 +131,8 @@ mod test {
         const EGG_OFFSET: usize = 0;
         const PARENT1_OFFSET: usize = 0;
         const PARENT2_OFFSET: usize = 0;
+        const IS_PARENT1_OCCUPIED_OFFSET: usize = 0;
+        const IS_PARENT2_OCCUPIED_OFFSET: usize = 0;
     }
 
     mod update_mt {

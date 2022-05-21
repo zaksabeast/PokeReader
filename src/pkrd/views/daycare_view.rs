@@ -84,7 +84,7 @@ impl Daycare7View {
             screen.draw_string(&white, &parent1_text, x, y)?;
 
             y += 12;
-            let parent2_text = format_egg_parent(2, &parent1);
+            let parent2_text = format_egg_parent(2, &parent2);
             screen.draw_string(&white, &parent2_text, x, y)?;
 
             y += 16;
@@ -103,6 +103,76 @@ impl Daycare7View {
             y += 16;
             let shiny_charm_text = &alloc::format!("Shiny Charm: {}", game.get_has_shiny_charm());
             screen.draw_string(&white, shiny_charm_text, x, y)?;
+
+            y += 12;
+            let is_masuda_method = is_daycare_masuda_method(&parent1, &parent2);
+            let masuda_method_text = &alloc::format!("Masuda Method: {}", is_masuda_method);
+            screen.draw_string(&white, masuda_method_text, x, y)?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
+pub struct Daycare6View {
+    is_active: bool,
+}
+
+impl Daycare6View {
+    pub fn get_is_active(&mut self) -> bool {
+        if hid::Global::is_just_pressed(Button::Start | Button::Ddown) {
+            self.is_active = !self.is_active;
+        }
+
+        self.is_active
+    }
+
+    pub fn set_is_active(&mut self, is_active: bool) {
+        self.is_active = is_active;
+    }
+
+    pub fn run_view(
+        game: &impl reader::Gen6Reader,
+        screen: &mut display::DirectWriteScreen,
+    ) -> CtrResult<()> {
+        if screen.get_is_top_screen() {
+            let mut x = 200;
+            let mut y = 10;
+
+            let black = display::Color::black();
+            let white = display::Color::white();
+
+            screen.paint_square(&black, x, y, 192, 136)?;
+
+            x += 4;
+            y += 4;
+            screen.draw_string(&white, "Daycare View", x, y)?;
+
+            y += 16;
+            screen.draw_string(&white, "Route 117", x, y)?;
+
+            y += 12;
+            let is_egg_ready = game.get_is_egg_ready();
+            screen.draw_string(&white, &alloc::format!("Egg Ready: {}", is_egg_ready), x, y)?;
+
+            let parent1 = game.get_egg_parent_1();
+            let parent2 = game.get_egg_parent_2();
+
+            y += 12;
+            let parent1_text = format_egg_parent(1, &parent1);
+            screen.draw_string(&white, &parent1_text, x, y)?;
+
+            y += 12;
+            let parent2_text = format_egg_parent(2, &parent2);
+            screen.draw_string(&white, &parent2_text, x, y)?;
+
+            y += 16;
+            let egg_seed = game.get_egg_seed();
+            screen.draw_string(&white, &alloc::format!("Egg[0]: {:08X}", egg_seed[1]), x, y)?;
+
+            y += 12;
+            screen.draw_string(&white, &alloc::format!("Egg[1]: {:08X}", egg_seed[0]), x, y)?;
 
             y += 12;
             let is_masuda_method = is_daycare_masuda_method(&parent1, &parent2);

@@ -9,14 +9,14 @@ use ctr::{res::CtrResult, DebugProcess, Handle};
 
 pub struct PokemonUSUM {
     title: SupportedTitle,
-    views: views::Gen7Views,
+    views: views::gen7::Gen7Views,
     rng: rng::Gen7Rng,
     reader: reader::PokemonUSUMReader,
 }
 
 impl HookedProcess for PokemonUSUM {
     fn run_hook(&mut self, screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
-        views::Gen7Views::run_views(&mut self.views, &self.reader, &mut self.rng, screen)
+        self.views.run_views(screen, &self.reader, &mut self.rng)
     }
 
     fn get_title(&self) -> SupportedTitle {

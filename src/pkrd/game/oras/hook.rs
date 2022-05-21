@@ -9,14 +9,14 @@ use ctr::{res::CtrResult, DebugProcess, Handle};
 
 pub struct PokemonORAS {
     title: SupportedTitle,
-    views: views::Gen6Views,
+    views: views::gen6::Gen6Views,
     rng: rng::Gen6Rng,
     reader: reader::PokemonORASReader,
 }
 
 impl HookedProcess for PokemonORAS {
     fn run_hook(&mut self, screen: &mut display::DirectWriteScreen) -> CtrResult<()> {
-        views::Gen6Views::run_views(&mut self.views, &self.reader, &mut self.rng, screen)
+        self.views.run_views(screen, &self.reader, &mut self.rng)
     }
 
     fn get_title(&self) -> SupportedTitle {

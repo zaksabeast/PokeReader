@@ -1,3 +1,4 @@
+use crate::utils::party_slot::PartySlot;
 use no_std_io::Reader;
 use pkm_rs::pkm;
 
@@ -30,8 +31,8 @@ pub trait Gen6Reader: Reader {
         self.default_read(Self::TINYMT_STATE_OFFSET)
     }
 
-    fn get_party_pkm(&self, slot: pkm::PartySlot) -> pkm::Pk6 {
-        let offset = ((slot as usize) * 484) + Self::PARTY_OFFSET;
+    fn get_party_pkm(&self, slot: PartySlot) -> pkm::Pk6 {
+        let offset = ((slot.value() as usize) * 484) + Self::PARTY_OFFSET;
         self.default_read::<pkm::Pk6Data>(offset).into()
     }
 }

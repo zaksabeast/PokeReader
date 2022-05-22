@@ -1,4 +1,4 @@
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
 pub struct TinyMT {
     state: [u32; 4],
 }

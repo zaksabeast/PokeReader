@@ -1,7 +1,7 @@
 use super::sfmt::Sfmt;
 use crate::{log, pkrd::reader};
 
-#[derive(Clone, Debug, PartialEq, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Default)]
 pub struct Gen7Rng {
     init_seed: u32,
     sfmt_rng: Sfmt,

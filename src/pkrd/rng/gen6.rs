@@ -1,7 +1,7 @@
 use super::{mt, tinymt};
 use crate::{log, pkrd::reader};
 
-#[derive(Clone, Debug, PartialEq, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Default)]
 pub struct Gen6Rng {
     init_seed: u32,
     init_tinymt_state: [u32; 4],
@@ -127,10 +127,22 @@ mod test {
         const MT_STATE_INDEX_OFFSET: usize = 0;
         const TINYMT_STATE_OFFSET: usize = 0;
         const PARTY_OFFSET: usize = 0;
-        const EGG_READY_OFFSET: usize = 0;
-        const EGG_OFFSET: usize = 0;
-        const PARENT1_OFFSET: usize = 0;
-        const PARENT2_OFFSET: usize = 0;
+        const EGG_READY_OFFSET_1: usize = 0;
+        const EGG_SEED_OFFSET_1: usize = 0;
+        const PARENT1_OFFSET_1: usize = 0;
+        const PARENT2_OFFSET_1: usize = 0;
+        const IS_PARENT1_OCCUPIED_OFFSET_1: usize = 0;
+        const IS_PARENT2_OCCUPIED_OFFSET_1: usize = 0;
+        const DAYCARE_TITLE_1: &'static str = "Daycare View";
+        const DAYCARE_FOOTER_1: &'static str = "";
+        const EGG_READY_OFFSET_2: usize = 0;
+        const EGG_SEED_OFFSET_2: usize = 0;
+        const PARENT1_OFFSET_2: usize = 0;
+        const PARENT2_OFFSET_2: usize = 0;
+        const IS_PARENT1_OCCUPIED_OFFSET_2: usize = 0;
+        const IS_PARENT2_OCCUPIED_OFFSET_2: usize = 0;
+        const DAYCARE_TITLE_2: &'static str = "Daycare View";
+        const DAYCARE_FOOTER_2: &'static str = "";
     }
 
     mod update_mt {

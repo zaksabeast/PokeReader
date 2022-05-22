@@ -1,26 +1,28 @@
 use super::rng as rng_view;
 use crate::{
-    pkrd::{display, reader, rng, views::pkm},
+    pkrd::{display, reader, reader::DaycareSlot, rng, views::gen6::daycare, views::pkm},
     utils::party_slot::PartySlot,
 };
 use ctr::res::CtrResult;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum LeftGen6View {
     None,
     PartyView,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum RightGen6View {
     None,
     RngView,
+    DaycareView,
 }
 
 pub struct Gen6Views {
     left_view: LeftGen6View,
     right_view: RightGen6View,
     party_slot: PartySlot,
+    daycare_slot: DaycareSlot,
 }
 
 impl Default for Gen6Views {
@@ -29,6 +31,7 @@ impl Default for Gen6Views {
             left_view: LeftGen6View::None,
             right_view: RightGen6View::None,
             party_slot: PartySlot::default(),
+            daycare_slot: DaycareSlot::default(),
         }
     }
 }
@@ -37,9 +40,15 @@ impl Gen6Views {
     fn update_views(&mut self) {
         self.right_view = match self.right_view {
             RightGen6View::RngView if rng_view::input::toggle() => RightGen6View::None,
+            RightGen6View::DaycareView if daycare::input::toggle() => RightGen6View::None,
             _ if rng_view::input::toggle() => RightGen6View::RngView,
+            _ if daycare::input::toggle() => RightGen6View::DaycareView,
             view => view,
         };
+
+        if self.right_view == RightGen6View::DaycareView {
+            self.daycare_slot = daycare::input::next_daycare_slot(self.daycare_slot);
+        }
 
         self.left_view = match self.left_view {
             LeftGen6View::PartyView if pkm::party::input::toggle() => LeftGen6View::None,
@@ -71,6 +80,10 @@ impl Gen6Views {
 
         match self.right_view {
             RightGen6View::RngView => rng_view::draw(screen, game, rng)?,
+            RightGen6View::DaycareView => {
+                let daycare = game.get_daycare(self.daycare_slot);
+                daycare::draw(screen, &daycare)?;
+            }
             RightGen6View::None => {}
         }
 

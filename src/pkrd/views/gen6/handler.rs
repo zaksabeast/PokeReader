@@ -5,13 +5,13 @@ use crate::{
 };
 use ctr::res::CtrResult;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum LeftGen6View {
     None,
     PartyView,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum RightGen6View {
     None,
     RngView,

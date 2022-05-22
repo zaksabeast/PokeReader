@@ -1,7 +1,7 @@
 use super::{mt, tinymt};
 use crate::{log, pkrd::reader};
 
-#[derive(Clone, Debug, PartialEq, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Default)]
 pub struct Gen6Rng {
     init_seed: u32,
     init_tinymt_state: [u32; 4],

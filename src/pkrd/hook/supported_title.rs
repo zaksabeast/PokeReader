@@ -5,7 +5,7 @@ use ctr::{
 };
 use num_enum::IntoPrimitive;
 
-#[derive(Clone, Copy, Debug, PartialEq, IntoPrimitive)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, IntoPrimitive)]
 #[repr(u64)]
 pub enum SupportedTitle {
     PokemonX = 0x0004000000055D00,

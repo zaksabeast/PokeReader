@@ -69,15 +69,15 @@ pub fn draw(screen: &mut display::DirectWriteScreen, daycare: &Daycare) -> CtrRe
         let parent1 = &daycare.parent_1;
         let parent2 = &daycare.parent_2;
         let egg_seed = daycare.egg_seed;
-        let is_masuda_method = is_daycare_masuda_method(&parent1, &parent2);
+        let is_masuda_method = is_daycare_masuda_method(parent1, parent2);
 
         view::draw_right(
             screen,
             daycare.daycare_title,
             &[
                 &alloc::format!("Egg Ready: {}", is_egg_ready),
-                &format_egg_parent(1, &parent1),
-                &format_egg_parent(2, &parent2),
+                &format_egg_parent(1, parent1),
+                &format_egg_parent(2, parent2),
                 "",
                 &alloc::format!("Egg[0]: {:08X}", egg_seed[1]),
                 &alloc::format!("Egg[1]: {:08X}", egg_seed[0]),

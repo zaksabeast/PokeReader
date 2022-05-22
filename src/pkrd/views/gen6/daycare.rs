@@ -1,10 +1,8 @@
-use crate::pkrd::{display, display::Screen, reader, views::view};
-use crate::utils::CircularCounter;
+use crate::pkrd::reader::{Daycare, DaycareSlot};
+use crate::pkrd::{display, display::Screen, views::view};
 use alloc::string::String;
 use ctr::res::CtrResult;
 use pkm_rs::pkm;
-
-pub type DaycareSlot = CircularCounter<0, 1>;
 
 pub mod input {
     use super::*;
@@ -65,21 +63,17 @@ fn format_egg_parent(parent_num: u8, parent: &Option<impl pkm::Pkx>) -> String {
     formatted_parent
 }
 
-pub fn draw<Reader: reader::Gen6Reader>(
-    screen: &mut display::DirectWriteScreen,
-    game: &Reader,
-    daycare_id: u32,
-) -> CtrResult<()> {
+pub fn draw(screen: &mut display::DirectWriteScreen, daycare: &Daycare) -> CtrResult<()> {
     if screen.get_is_top_screen() {
-        let is_egg_ready = game.get_is_egg_ready(daycare_id);
-        let parent1 = game.get_egg_parent_1();
-        let parent2 = game.get_egg_parent_2();
-        let egg_seed = game.get_egg_seed();
+        let is_egg_ready = daycare.is_egg_ready;
+        let parent1 = &daycare.parent_1;
+        let parent2 = &daycare.parent_2;
+        let egg_seed = daycare.egg_seed;
         let is_masuda_method = is_daycare_masuda_method(&parent1, &parent2);
 
         view::draw_right(
             screen,
-            Reader::DAYCARE_TITLE,
+            daycare.daycare_title,
             &[
                 &alloc::format!("Egg Ready: {}", is_egg_ready),
                 &format_egg_parent(1, &parent1),
@@ -89,7 +83,7 @@ pub fn draw<Reader: reader::Gen6Reader>(
                 &alloc::format!("Egg[1]: {:08X}", egg_seed[0]),
                 "",
                 &alloc::format!("Masuda Method: {}", is_masuda_method),
-                Reader::DAYCARE_FOOTER,
+                daycare.daycare_footer,
             ],
         )?;
     }

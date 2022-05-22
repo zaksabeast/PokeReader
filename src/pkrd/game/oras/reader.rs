@@ -35,8 +35,8 @@ impl Gen6Reader for PokemonORASReader {
     const EGG_OFFSET_2: usize = 0xC88550;
     const PARENT1_OFFSET_2: usize = 0xC88370;
     const PARENT2_OFFSET_2: usize = 0xC88460;
-    const IS_PARENT1_OCCUPIED_OFFSET_2: usize = 0xC88168;
-    const IS_PARENT2_OCCUPIED_OFFSET_2: usize = 0xC88258;
+    const IS_PARENT1_OCCUPIED_OFFSET_2: usize = 0xC88368;
+    const IS_PARENT2_OCCUPIED_OFFSET_2: usize = 0xC88458;
     const DAYCARE_TITLE_2: &'static str = "Daycare: Battle Resort";
     const DAYCARE_FOOTER_2: &'static str = "<- Select + Left";
 }

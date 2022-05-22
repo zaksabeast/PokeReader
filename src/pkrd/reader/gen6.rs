@@ -1,6 +1,18 @@
 use crate::utils::party_slot::PartySlot;
+use crate::utils::CircularCounter;
 use no_std_io::Reader;
 use pkm_rs::pkm;
+
+pub struct Daycare {
+    pub daycare_title: &'static str,
+    pub daycare_footer: &'static str,
+    pub egg_seed: [u32; 4],
+    pub is_egg_ready: bool,
+    pub parent_1: Option<pkm::Pk6>,
+    pub parent_2: Option<pkm::Pk6>,
+}
+
+pub type DaycareSlot = CircularCounter<0, 1>;
 
 #[cfg_attr(not(target_os = "horizon"), mocktopus::macros::mockable)]
 pub trait Gen6Reader: Reader {
@@ -26,6 +38,32 @@ pub trait Gen6Reader: Reader {
     const DAYCARE_TITLE_2: &'static str;
     const DAYCARE_FOOTER_2: &'static str;
 
+    fn get_daycare(&self, daycare_slot: DaycareSlot) -> Daycare {
+        if daycare_slot.value() == 0 {
+            Daycare {
+                daycare_title: Self::DAYCARE_TITLE,
+                daycare_footer: Self::DAYCARE_FOOTER,
+                egg_seed: self.default_read(Self::EGG_OFFSET),
+                is_egg_ready: self.default_read::<u8>(Self::EGG_READY_OFFSET) != 0,
+                parent_1: self
+                    .get_egg_parent(Self::IS_PARENT1_OCCUPIED_OFFSET, Self::PARENT1_OFFSET),
+                parent_2: self
+                    .get_egg_parent(Self::IS_PARENT2_OCCUPIED_OFFSET, Self::PARENT2_OFFSET),
+            }
+        } else {
+            Daycare {
+                daycare_title: Self::DAYCARE_TITLE_2,
+                daycare_footer: Self::DAYCARE_FOOTER_2,
+                egg_seed: self.default_read(Self::EGG_OFFSET_2),
+                is_egg_ready: self.default_read::<u8>(Self::EGG_READY_OFFSET_2) != 0,
+                parent_1: self
+                    .get_egg_parent(Self::IS_PARENT1_OCCUPIED_OFFSET_2, Self::PARENT1_OFFSET_2),
+                parent_2: self
+                    .get_egg_parent(Self::IS_PARENT2_OCCUPIED_OFFSET_2, Self::PARENT2_OFFSET_2),
+            }
+        }
+    }
+
     fn get_initial_seed(&self) -> u32 {
         self.default_read(Self::INITIAL_SEED_OFFSET)
     }
@@ -46,18 +84,6 @@ pub trait Gen6Reader: Reader {
     fn get_party_pkm(&self, slot: PartySlot) -> pkm::Pk6 {
         let offset = ((slot.value() as usize) * 484) + Self::PARTY_OFFSET;
         self.default_read::<pkm::Pk6Data>(offset).into()
-    }
-
-    fn get_egg_seed(&self) -> [u32; 4] {
-        self.default_read(Self::EGG_OFFSET)
-    }
-
-    fn get_is_egg_ready(&self, daycare_id: u32) -> bool {
-        if daycare_id == 0 {
-            self.default_read::<u8>(Self::EGG_READY_OFFSET) != 0
-        } else {
-            self.default_read::<u8>(Self::EGG_READY_OFFSET_2) != 0
-        }
     }
 
     fn get_egg_parent(&self, is_present_offset: usize, pkm_offset: usize) -> Option<pkm::Pk6> {

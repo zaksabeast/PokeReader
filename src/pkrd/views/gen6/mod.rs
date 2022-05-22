@@ -1,4 +1,4 @@
-mod daycare;
+pub mod daycare;
 mod handler;
 mod rng;
 

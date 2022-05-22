@@ -1,9 +1,6 @@
-use super::{
-    daycare::{self, DaycareSlot},
-    rng as rng_view,
-};
+use super::rng as rng_view;
 use crate::{
-    pkrd::{display, reader, rng, views::pkm},
+    pkrd::{display, reader, reader::DaycareSlot, rng, views::gen6::daycare, views::pkm},
     utils::party_slot::PartySlot,
 };
 use ctr::res::CtrResult;
@@ -83,7 +80,10 @@ impl Gen6Views {
 
         match self.right_view {
             RightGen6View::RngView => rng_view::draw(screen, game, rng)?,
-            RightGen6View::DaycareView => daycare::draw(screen, game, self.daycare_slot.value())?,
+            RightGen6View::DaycareView => {
+                let daycare = game.get_daycare(self.daycare_slot);
+                daycare::draw(screen, &daycare)?;
+            }
             RightGen6View::None => {}
         }
 

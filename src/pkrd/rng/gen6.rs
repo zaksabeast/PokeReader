@@ -133,6 +133,7 @@ mod test {
         const PARENT2_OFFSET: usize = 0;
         const IS_PARENT1_OCCUPIED_OFFSET: usize = 0;
         const IS_PARENT2_OCCUPIED_OFFSET: usize = 0;
+        const DAYCARE_TITLE: &'static str = "Daycare View";
     }
 
     mod update_mt {

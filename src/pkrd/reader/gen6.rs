@@ -15,6 +15,7 @@ pub trait Gen6Reader: Reader {
     const PARENT2_OFFSET: usize;
     const IS_PARENT1_OCCUPIED_OFFSET: usize;
     const IS_PARENT2_OCCUPIED_OFFSET: usize;
+    const DAYCARE_TITLE: &'static str;
 
     fn get_initial_seed(&self) -> u32 {
         self.default_read(Self::INITIAL_SEED_OFFSET)

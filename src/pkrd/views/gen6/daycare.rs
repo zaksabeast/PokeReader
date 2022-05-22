@@ -41,9 +41,9 @@ fn format_egg_parent(parent_num: u8, parent: &Option<impl pkm::Pkx>) -> String {
     formatted_parent
 }
 
-pub fn draw(
+pub fn draw<Reader: reader::Gen6Reader>(
     screen: &mut display::DirectWriteScreen,
-    game: &impl reader::Gen6Reader,
+    game: &Reader,
 ) -> CtrResult<()> {
     if screen.get_is_top_screen() {
         let is_egg_ready = game.get_is_egg_ready();
@@ -54,7 +54,7 @@ pub fn draw(
 
         view::draw_right(
             screen,
-            "Daycare View",
+            Reader::DAYCARE_TITLE,
             &[
                 &alloc::format!("Egg Ready: {}", is_egg_ready),
                 &format_egg_parent(1, &parent1),

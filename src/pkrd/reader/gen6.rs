@@ -21,14 +21,14 @@ pub trait Gen6Reader: Reader {
     const MT_STATE_INDEX_OFFSET: usize;
     const TINYMT_STATE_OFFSET: usize;
     const PARTY_OFFSET: usize;
-    const EGG_READY_OFFSET: usize;
-    const EGG_SEED_OFFSET: usize;
-    const PARENT1_OFFSET: usize;
-    const PARENT2_OFFSET: usize;
-    const IS_PARENT1_OCCUPIED_OFFSET: usize;
-    const IS_PARENT2_OCCUPIED_OFFSET: usize;
-    const DAYCARE_TITLE: &'static str;
-    const DAYCARE_FOOTER: &'static str;
+    const EGG_READY_OFFSET_1: usize;
+    const EGG_SEED_OFFSET_1: usize;
+    const PARENT1_OFFSET_1: usize;
+    const PARENT2_OFFSET_1: usize;
+    const IS_PARENT1_OCCUPIED_OFFSET_1: usize;
+    const IS_PARENT2_OCCUPIED_OFFSET_1: usize;
+    const DAYCARE_TITLE_1: &'static str;
+    const DAYCARE_FOOTER_1: &'static str;
     const EGG_READY_OFFSET_2: usize;
     const EGG_SEED_OFFSET_2: usize;
     const PARENT1_OFFSET_2: usize;
@@ -41,14 +41,14 @@ pub trait Gen6Reader: Reader {
     fn get_daycare(&self, daycare_slot: DaycareSlot) -> Daycare {
         if daycare_slot.value() == 0 {
             Daycare {
-                daycare_title: Self::DAYCARE_TITLE,
-                daycare_footer: Self::DAYCARE_FOOTER,
-                egg_seed: self.default_read(Self::EGG_SEED_OFFSET),
-                is_egg_ready: self.default_read::<u8>(Self::EGG_READY_OFFSET) != 0,
+                daycare_title: Self::DAYCARE_TITLE_1,
+                daycare_footer: Self::DAYCARE_FOOTER_1,
+                egg_seed: self.default_read(Self::EGG_SEED_OFFSET_1),
+                is_egg_ready: self.default_read::<u8>(Self::EGG_READY_OFFSET_1) != 0,
                 parent_1: self
-                    .get_egg_parent(Self::IS_PARENT1_OCCUPIED_OFFSET, Self::PARENT1_OFFSET),
+                    .get_egg_parent(Self::IS_PARENT1_OCCUPIED_OFFSET_1, Self::PARENT1_OFFSET_1),
                 parent_2: self
-                    .get_egg_parent(Self::IS_PARENT2_OCCUPIED_OFFSET, Self::PARENT2_OFFSET),
+                    .get_egg_parent(Self::IS_PARENT2_OCCUPIED_OFFSET_1, Self::PARENT2_OFFSET_1),
             }
         } else {
             Daycare {

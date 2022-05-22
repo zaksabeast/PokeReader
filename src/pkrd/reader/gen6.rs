@@ -22,7 +22,7 @@ pub trait Gen6Reader: Reader {
     const TINYMT_STATE_OFFSET: usize;
     const PARTY_OFFSET: usize;
     const EGG_READY_OFFSET: usize;
-    const EGG_OFFSET: usize;
+    const EGG_SEED_OFFSET: usize;
     const PARENT1_OFFSET: usize;
     const PARENT2_OFFSET: usize;
     const IS_PARENT1_OCCUPIED_OFFSET: usize;
@@ -30,7 +30,7 @@ pub trait Gen6Reader: Reader {
     const DAYCARE_TITLE: &'static str;
     const DAYCARE_FOOTER: &'static str;
     const EGG_READY_OFFSET_2: usize;
-    const EGG_OFFSET_2: usize;
+    const EGG_SEED_OFFSET_2: usize;
     const PARENT1_OFFSET_2: usize;
     const PARENT2_OFFSET_2: usize;
     const IS_PARENT1_OCCUPIED_OFFSET_2: usize;
@@ -43,7 +43,7 @@ pub trait Gen6Reader: Reader {
             Daycare {
                 daycare_title: Self::DAYCARE_TITLE,
                 daycare_footer: Self::DAYCARE_FOOTER,
-                egg_seed: self.default_read(Self::EGG_OFFSET),
+                egg_seed: self.default_read(Self::EGG_SEED_OFFSET),
                 is_egg_ready: self.default_read::<u8>(Self::EGG_READY_OFFSET) != 0,
                 parent_1: self
                     .get_egg_parent(Self::IS_PARENT1_OCCUPIED_OFFSET, Self::PARENT1_OFFSET),
@@ -54,7 +54,7 @@ pub trait Gen6Reader: Reader {
             Daycare {
                 daycare_title: Self::DAYCARE_TITLE_2,
                 daycare_footer: Self::DAYCARE_FOOTER_2,
-                egg_seed: self.default_read(Self::EGG_OFFSET_2),
+                egg_seed: self.default_read(Self::EGG_SEED_OFFSET_2),
                 is_egg_ready: self.default_read::<u8>(Self::EGG_READY_OFFSET_2) != 0,
                 parent_1: self
                     .get_egg_parent(Self::IS_PARENT1_OCCUPIED_OFFSET_2, Self::PARENT1_OFFSET_2),

@@ -128,7 +128,7 @@ mod test {
         const TINYMT_STATE_OFFSET: usize = 0;
         const PARTY_OFFSET: usize = 0;
         const EGG_READY_OFFSET: usize = 0;
-        const EGG_OFFSET: usize = 0;
+        const EGG_SEED_OFFSET: usize = 0;
         const PARENT1_OFFSET: usize = 0;
         const PARENT2_OFFSET: usize = 0;
         const IS_PARENT1_OCCUPIED_OFFSET: usize = 0;
@@ -136,7 +136,7 @@ mod test {
         const DAYCARE_TITLE: &'static str = "Daycare View";
         const DAYCARE_FOOTER: &'static str = "";
         const EGG_READY_OFFSET_2: usize = 0;
-        const EGG_OFFSET_2: usize = 0;
+        const EGG_SEED_OFFSET_2: usize = 0;
         const PARENT1_OFFSET_2: usize = 0;
         const PARENT2_OFFSET_2: usize = 0;
         const IS_PARENT1_OCCUPIED_OFFSET_2: usize = 0;

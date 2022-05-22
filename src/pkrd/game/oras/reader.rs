@@ -24,7 +24,7 @@ impl Gen6Reader for PokemonORASReader {
     const TINYMT_STATE_OFFSET: usize = 0xC59E04;
     const PARTY_OFFSET: usize = 0xCFB26C;
     const EGG_READY_OFFSET: usize = 0xC88358;
-    const EGG_OFFSET: usize = 0xC88360;
+    const EGG_SEED_OFFSET: usize = 0xC88360;
     const PARENT1_OFFSET: usize = 0xC88180;
     const PARENT2_OFFSET: usize = 0xC88270;
     const IS_PARENT1_OCCUPIED_OFFSET: usize = 0xC88178;
@@ -32,7 +32,7 @@ impl Gen6Reader for PokemonORASReader {
     const DAYCARE_TITLE: &'static str = "Daycare: Route 117";
     const DAYCARE_FOOTER: &'static str = "Select + Right ->";
     const EGG_READY_OFFSET_2: usize = 0xC88548;
-    const EGG_OFFSET_2: usize = 0xC88550;
+    const EGG_SEED_OFFSET_2: usize = 0xC88550;
     const PARENT1_OFFSET_2: usize = 0xC88370;
     const PARENT2_OFFSET_2: usize = 0xC88460;
     const IS_PARENT1_OCCUPIED_OFFSET_2: usize = 0xC88368;

@@ -27,4 +27,6 @@ impl Gen6Reader for PokemonORASReader {
     const EGG_OFFSET: usize = 0xC88360;
     const PARENT1_OFFSET: usize = 0xC88180;
     const PARENT2_OFFSET: usize = 0xC88270;
+    const IS_PARENT1_OCCUPIED_OFFSET: usize = 0xC88178;
+    const IS_PARENT2_OCCUPIED_OFFSET: usize = 0xC88268;
 }

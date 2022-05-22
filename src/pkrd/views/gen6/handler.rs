@@ -1,4 +1,4 @@
-use super::rng as rng_view;
+use super::{daycare, rng as rng_view};
 use crate::{
     pkrd::{display, reader, rng, views::pkm},
     utils::party_slot::PartySlot,
@@ -15,6 +15,7 @@ enum LeftGen6View {
 enum RightGen6View {
     None,
     RngView,
+    DaycareView,
 }
 
 pub struct Gen6Views {
@@ -37,7 +38,9 @@ impl Gen6Views {
     fn update_views(&mut self) {
         self.right_view = match self.right_view {
             RightGen6View::RngView if rng_view::input::toggle() => RightGen6View::None,
+            RightGen6View::DaycareView if daycare::input::toggle() => RightGen6View::None,
             _ if rng_view::input::toggle() => RightGen6View::RngView,
+            _ if daycare::input::toggle() => RightGen6View::DaycareView,
             view => view,
         };
 
@@ -71,6 +74,7 @@ impl Gen6Views {
 
         match self.right_view {
             RightGen6View::RngView => rng_view::draw(screen, game, rng)?,
+            RightGen6View::DaycareView => daycare::draw(screen, game)?,
             RightGen6View::None => {}
         }
 

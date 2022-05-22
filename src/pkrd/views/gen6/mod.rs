@@ -1,3 +1,4 @@
+mod daycare;
 mod handler;
 mod rng;
 

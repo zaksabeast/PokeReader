@@ -96,12 +96,4 @@ pub trait Gen6Reader: Reader {
         let parent = self.default_read::<pkm::Pk6Data>(pkm_offset).into();
         Some(parent)
     }
-
-    fn get_egg_parent_1(&self) -> Option<pkm::Pk6> {
-        self.get_egg_parent(Self::IS_PARENT1_OCCUPIED_OFFSET, Self::PARENT1_OFFSET)
-    }
-
-    fn get_egg_parent_2(&self) -> Option<pkm::Pk6> {
-        self.get_egg_parent(Self::IS_PARENT2_OCCUPIED_OFFSET, Self::PARENT2_OFFSET)
-    }
 }

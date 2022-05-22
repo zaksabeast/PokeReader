@@ -1,13 +1,37 @@
 use crate::pkrd::{display, display::Screen, reader, views::view};
+use crate::utils::CircularCounter;
 use alloc::string::String;
 use ctr::res::CtrResult;
 use pkm_rs::pkm;
 
+pub type DaycareSlot = CircularCounter<0, 1>;
+
 pub mod input {
+    use super::*;
     use ctr::hid::{Button, Global, InterfaceDevice};
 
     pub fn toggle() -> bool {
         Global::is_just_pressed(Button::Start | Button::Ddown)
+    }
+
+    fn increment() -> bool {
+        Global::is_just_pressed(Button::Select | Button::Dright)
+    }
+
+    fn decrement() -> bool {
+        Global::is_just_pressed(Button::Select | Button::Dleft)
+    }
+
+    pub fn next_daycare_slot(mut slot: DaycareSlot) -> DaycareSlot {
+        if increment() {
+            slot.increment();
+        }
+
+        if decrement() {
+            slot.decrement();
+        }
+
+        slot
     }
 }
 
@@ -44,9 +68,10 @@ fn format_egg_parent(parent_num: u8, parent: &Option<impl pkm::Pkx>) -> String {
 pub fn draw<Reader: reader::Gen6Reader>(
     screen: &mut display::DirectWriteScreen,
     game: &Reader,
+    daycare_id: u32,
 ) -> CtrResult<()> {
     if screen.get_is_top_screen() {
-        let is_egg_ready = game.get_is_egg_ready();
+        let is_egg_ready = game.get_is_egg_ready(daycare_id);
         let parent1 = game.get_egg_parent_1();
         let parent2 = game.get_egg_parent_2();
         let egg_seed = game.get_egg_seed();
@@ -64,6 +89,7 @@ pub fn draw<Reader: reader::Gen6Reader>(
                 &alloc::format!("Egg[1]: {:08X}", egg_seed[0]),
                 "",
                 &alloc::format!("Masuda Method: {}", is_masuda_method),
+                Reader::DAYCARE_FOOTER,
             ],
         )?;
     }

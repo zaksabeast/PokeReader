@@ -30,4 +30,13 @@ impl Gen6Reader for PokemonXYReader {
     const IS_PARENT1_OCCUPIED_OFFSET: usize = 0xC7FF44;
     const IS_PARENT2_OCCUPIED_OFFSET: usize = 0xC80034;
     const DAYCARE_TITLE: &'static str = "Daycare View";
+    const DAYCARE_FOOTER: &'static str = "";
+    const EGG_READY_OFFSET_2: usize = 0xC80124;
+    const EGG_OFFSET_2: usize = 0xC8012C;
+    const PARENT1_OFFSET_2: usize = 0xC7FF4C;
+    const PARENT2_OFFSET_2: usize = 0xC8003C;
+    const IS_PARENT1_OCCUPIED_OFFSET_2: usize = 0xC7FF44;
+    const IS_PARENT2_OCCUPIED_OFFSET_2: usize = 0xC80034;
+    const DAYCARE_TITLE_2: &'static str = "Daycare View";
+    const DAYCARE_FOOTER_2: &'static str = "";
 }

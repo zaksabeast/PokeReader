@@ -16,6 +16,15 @@ pub trait Gen6Reader: Reader {
     const IS_PARENT1_OCCUPIED_OFFSET: usize;
     const IS_PARENT2_OCCUPIED_OFFSET: usize;
     const DAYCARE_TITLE: &'static str;
+    const DAYCARE_FOOTER: &'static str;
+    const EGG_READY_OFFSET_2: usize;
+    const EGG_OFFSET_2: usize;
+    const PARENT1_OFFSET_2: usize;
+    const PARENT2_OFFSET_2: usize;
+    const IS_PARENT1_OCCUPIED_OFFSET_2: usize;
+    const IS_PARENT2_OCCUPIED_OFFSET_2: usize;
+    const DAYCARE_TITLE_2: &'static str;
+    const DAYCARE_FOOTER_2: &'static str;
 
     fn get_initial_seed(&self) -> u32 {
         self.default_read(Self::INITIAL_SEED_OFFSET)
@@ -43,8 +52,12 @@ pub trait Gen6Reader: Reader {
         self.default_read(Self::EGG_OFFSET)
     }
 
-    fn get_is_egg_ready(&self) -> bool {
-        self.default_read::<u8>(Self::EGG_READY_OFFSET) != 0
+    fn get_is_egg_ready(&self, daycare_id: u32) -> bool {
+        if daycare_id == 0 {
+            self.default_read::<u8>(Self::EGG_READY_OFFSET) != 0
+        } else {
+            self.default_read::<u8>(Self::EGG_READY_OFFSET_2) != 0
+        }
     }
 
     fn get_egg_parent(&self, is_present_offset: usize, pkm_offset: usize) -> Option<pkm::Pk6> {

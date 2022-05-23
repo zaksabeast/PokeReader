@@ -38,7 +38,7 @@ pub trait Gen7Reader: Reader {
     }
 
     fn get_party_pkm(&self, slot: PartySlot) -> pkm::Pk7 {
-        let offset = ((slot.value() as usize) * 484) + Self::PARTY_OFFSET;
+        let offset = ((slot.value() as usize - 1) * 484) + Self::PARTY_OFFSET;
         self.default_read::<pkm::Pk7Data>(offset).into()
     }
 

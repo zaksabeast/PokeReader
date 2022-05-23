@@ -88,7 +88,7 @@ impl Gen6Views {
 
         match self.left_view {
             LeftGen6View::PartyView => {
-                let pkx = game.get_party_pkm(self.party_slot - 1);
+                let pkx = game.get_party_pkm(self.party_slot);
                 pkm::party::draw(screen, &pkx, self.party_slot)?;
             }
             LeftGen6View::None => {}

@@ -82,7 +82,7 @@ pub trait Gen6Reader: Reader {
     }
 
     fn get_party_pkm(&self, slot: PartySlot) -> pkm::Pk6 {
-        let offset = ((slot.value() as usize) * 484) + Self::PARTY_OFFSET;
+        let offset = ((slot.value() as usize - 1) * 484) + Self::PARTY_OFFSET;
         self.default_read::<pkm::Pk6Data>(offset).into()
     }
 

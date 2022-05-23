@@ -1,4 +1,4 @@
-use super::{daycare, rng as rng_view};
+use super::{daycare, help as help_view, rng as rng_view};
 use crate::{
     pkrd::{display, reader, rng, views::pkm},
     utils::party_slot::PartySlot,
@@ -19,9 +19,16 @@ enum RightGen7View {
     DaycareView,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum EntireGen7View {
+    None,
+    HelpView,
+}
+
 pub struct Gen7Views {
     left_view: LeftGen7View,
     right_view: RightGen7View,
+    entire_view: EntireGen7View,
     party_slot: PartySlot,
 }
 
@@ -30,6 +37,7 @@ impl Default for Gen7Views {
         Self {
             left_view: LeftGen7View::None,
             right_view: RightGen7View::None,
+            entire_view: EntireGen7View::None,
             party_slot: PartySlot::default(),
         }
     }
@@ -55,6 +63,12 @@ impl Gen7Views {
 
         if self.left_view == LeftGen7View::PartyView {
             self.party_slot = pkm::party::input::next_party_slot(self.party_slot);
+        }
+
+        self.entire_view = match self.entire_view {
+            EntireGen7View::HelpView if help_view::input::toggle() => EntireGen7View::None,
+            _ if help_view::input::toggle() => EntireGen7View::HelpView,
+            view => view,
         }
     }
 
@@ -83,6 +97,11 @@ impl Gen7Views {
             RightGen7View::RngView => rng_view::draw(screen, game, rng)?,
             RightGen7View::DaycareView => daycare::draw(screen, game)?,
             RightGen7View::None => {}
+        }
+
+        match self.entire_view {
+            EntireGen7View::HelpView => help_view::draw(screen)?,
+            EntireGen7View::None => {}
         }
 
         Ok(())

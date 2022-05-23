@@ -44,3 +44,11 @@ pub fn draw_right(
 ) -> CtrResult<()> {
     draw(screen, title, content, 192, 200, 10)
 }
+
+pub fn draw_entire_bottom(
+    screen: &mut display::DirectWriteScreen,
+    title: &str,
+    content: &[&str],
+) -> CtrResult<()> {
+    draw(screen, title, content, 308, 6, 10)
+}

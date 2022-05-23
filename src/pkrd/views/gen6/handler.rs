@@ -1,6 +1,8 @@
+use super::help as help_view;
 use super::rng as rng_view;
+use crate::pkrd::views::gen6::daycare;
 use crate::{
-    pkrd::{display, reader, reader::DaycareSlot, rng, views::gen6::daycare, views::pkm},
+    pkrd::{display, reader, reader::DaycareSlot, rng, views::pkm},
     utils::party_slot::PartySlot,
 };
 use ctr::res::CtrResult;
@@ -18,9 +20,16 @@ enum RightGen6View {
     DaycareView,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum EntireGen6View {
+    None,
+    HelpView,
+}
+
 pub struct Gen6Views {
     left_view: LeftGen6View,
     right_view: RightGen6View,
+    entire_view: EntireGen6View,
     party_slot: PartySlot,
     daycare_slot: DaycareSlot,
 }
@@ -30,6 +39,7 @@ impl Default for Gen6Views {
         Self {
             left_view: LeftGen6View::None,
             right_view: RightGen6View::None,
+            entire_view: EntireGen6View::None,
             party_slot: PartySlot::default(),
             daycare_slot: DaycareSlot::default(),
         }
@@ -59,6 +69,12 @@ impl Gen6Views {
         if self.left_view == LeftGen6View::PartyView {
             self.party_slot = pkm::party::input::next_party_slot(self.party_slot);
         }
+
+        self.entire_view = match self.entire_view {
+            EntireGen6View::HelpView if help_view::input::toggle() => EntireGen6View::None,
+            _ if help_view::input::toggle() => EntireGen6View::HelpView,
+            view => view,
+        };
     }
 
     pub fn run_views<GameReader: reader::Gen6Reader>(
@@ -85,6 +101,11 @@ impl Gen6Views {
                 daycare::draw(screen, &daycare)?;
             }
             RightGen6View::None => {}
+        }
+
+        match self.entire_view {
+            EntireGen6View::HelpView => help_view::draw(screen)?,
+            EntireGen6View::None => {}
         }
 
         Ok(())

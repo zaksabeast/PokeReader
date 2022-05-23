@@ -9,6 +9,7 @@ use ctr::res::CtrResult;
 enum LeftGen6View {
     None,
     PartyView,
+    WildView,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -52,7 +53,9 @@ impl Gen6Views {
 
         self.left_view = match self.left_view {
             LeftGen6View::PartyView if pkm::party::input::toggle() => LeftGen6View::None,
+            LeftGen6View::WildView if pkm::wild::input::toggle() => LeftGen6View::None,
             _ if pkm::party::input::toggle() => LeftGen6View::PartyView,
+            _ if pkm::wild::input::toggle() => LeftGen6View::WildView,
             view => view,
         };
 
@@ -74,6 +77,10 @@ impl Gen6Views {
             LeftGen6View::PartyView => {
                 let pkx = game.get_party_pkm(self.party_slot);
                 pkm::party::draw(screen, &pkx, self.party_slot)?;
+            }
+            LeftGen6View::WildView => {
+                let pkx = game.get_wild_pkm();
+                pkm::wild::draw(screen, &pkx)?;
             }
             LeftGen6View::None => {}
         }

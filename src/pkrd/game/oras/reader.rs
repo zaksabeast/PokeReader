@@ -40,7 +40,7 @@ impl Gen6Reader for PokemonORASReader {
     const DAYCARE_TITLE_2: &'static str = "Daycare: Battle Resort";
     const DAYCARE_FOOTER_2: &'static str = "<- Select + Left";
 
-    fn get_wild_offset(&self) -> usize  {
+    fn get_wild_offset(&self) -> usize {
         let mut pointer = self.default_read::<u32>(0x80313C) - 0x22C0;
         if pointer < 0x8000000 || pointer > 0x8DF0000 {
             if self.default_read::<u32>(0x804060) == 0 {

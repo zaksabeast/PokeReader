@@ -89,7 +89,8 @@ pub trait Gen6Reader: Reader {
     }
 
     fn get_wild_pkm(&self) -> pkm::Pk6 {
-        self.default_read::<pkm::Pk6Data>(self.get_wild_offset()).into()
+        self.default_read::<pkm::Pk6Data>(self.get_wild_offset())
+            .into()
     }
 
     fn get_egg_parent(&self, is_present_offset: usize, pkm_offset: usize) -> Option<pkm::Pk6> {

@@ -26,6 +26,9 @@ impl Gen7Reader for PokemonUSUMReader {
     const SOS_OFFSET: usize = 0x002F9A0;
     const SOS_SEED_OFFSET: usize = 0x0038E30;
     const SOS_CHAIN_LENGTH: usize = 0x00397F9;
+    const PELAGO_OFFSET_1: usize = 0x002F7B8;
+    const PELAGO_OFFSET_2: usize = 0x002F7B8;
+    const PELAGO_OFFSET_3: usize = 0x002F7B8;
     const EGG_READY_OFFSET: usize = 0x307B1E8;
     const EGG_OFFSET: usize = 0x307B1EC;
     const PARENT1_OFFSET: usize = 0x307B011;
@@ -33,4 +36,9 @@ impl Gen7Reader for PokemonUSUMReader {
     const IS_PARENT1_OCCUPIED_OFFSET: usize = 0x307B010;
     const IS_PARENT2_OCCUPIED_OFFSET: usize = 0x307B0F9;
     const SHINY_CHARM_OFFSET: usize = 0x3012008;
+    const WILD_TITLE: &'static str = "Wild";
+    const SOS_TITLE: &'static str = "SOS";
+    const PELAGO_TITLE_1: &'static str = "Pelago Slot 1";
+    const PELAGO_TITLE_2: &'static str = "Pelago Slot 2";
+    const PELAGO_TITLE_3: &'static str = "Pelago Slot 3";
 }

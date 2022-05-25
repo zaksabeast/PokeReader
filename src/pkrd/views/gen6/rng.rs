@@ -22,7 +22,7 @@ pub fn draw(
         let initial_state = rng.get_initial_tinymt_state();
         let current_state = game.get_tinymt_state();
 
-        view::draw_right(
+        view::draw_top_right(
             screen,
             "Main RNG View",
             &[

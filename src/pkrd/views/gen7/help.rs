@@ -12,7 +12,7 @@ pub mod input {
 
 pub fn draw(screen: &mut DirectWriteScreen) -> CtrResult<()> {
     if !screen.get_is_top_screen() {
-        view::draw_entire_bottom(
+        view::draw_bottom(
             screen,
             "PokeReader Gen 7 Help Menu",
             &[

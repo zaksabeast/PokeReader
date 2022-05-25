@@ -29,7 +29,7 @@ fn draw(
     Ok(())
 }
 
-pub fn draw_left(
+pub fn draw_top_left(
     screen: &mut display::DirectWriteScreen,
     title: &str,
     content: &[&str],
@@ -37,7 +37,7 @@ pub fn draw_left(
     draw(screen, title, content, 184, 6, 10)
 }
 
-pub fn draw_right(
+pub fn draw_top_right(
     screen: &mut display::DirectWriteScreen,
     title: &str,
     content: &[&str],
@@ -45,7 +45,7 @@ pub fn draw_right(
     draw(screen, title, content, 192, 200, 10)
 }
 
-pub fn draw_entire_bottom(
+pub fn draw_bottom(
     screen: &mut display::DirectWriteScreen,
     title: &str,
     content: &[&str],

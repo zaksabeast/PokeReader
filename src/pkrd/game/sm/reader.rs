@@ -26,9 +26,9 @@ impl Gen7Reader for PokemonSMReader {
     const SOS_OFFSET: usize = 0x002F7B8;
     const SOS_SEED_OFFSET: usize = 0x0038C44;
     const SOS_CHAIN_LENGTH: usize = 0x003960D;
-    const PELAGO_OFFSET_1: usize = 0x33110EF2;
-    const PELAGO_OFFSET_2: usize = 0x33110FDE;
-    const PELAGO_OFFSET_3: usize = 0x331110CA;
+    const PELAGO_OFFSET_1: usize = 0x3110EF2;
+    const PELAGO_OFFSET_2: usize = 0x3110FDE;
+    const PELAGO_OFFSET_3: usize = 0x31110CA;
     const EGG_READY_OFFSET: usize = 0x313EDD8;
     const EGG_OFFSET: usize = 0x313EDDC;
     const PARENT1_OFFSET: usize = 0x313EC01;

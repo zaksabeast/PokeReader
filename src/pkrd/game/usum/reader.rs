@@ -26,9 +26,9 @@ impl Gen7Reader for PokemonUSUMReader {
     const SOS_OFFSET: usize = 0x002F9A0;
     const SOS_SEED_OFFSET: usize = 0x0038E30;
     const SOS_CHAIN_LENGTH: usize = 0x00397F9;
-    const PELAGO_OFFSET_1: usize = 0x3304D342;
-    const PELAGO_OFFSET_2: usize = 0x3304D256;
-    const PELAGO_OFFSET_3: usize = 0x3304D342;
+    const PELAGO_OFFSET_1: usize = 0x304D342;
+    const PELAGO_OFFSET_2: usize = 0x304D256;
+    const PELAGO_OFFSET_3: usize = 0x304D16A;
     const EGG_READY_OFFSET: usize = 0x307B1E8;
     const EGG_OFFSET: usize = 0x307B1EC;
     const PARENT1_OFFSET: usize = 0x307B011;

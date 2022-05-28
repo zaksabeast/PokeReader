@@ -38,7 +38,7 @@ pub fn draw(screen: &mut display::DirectWriteScreen, daycare: &Daycare) -> CtrRe
         let parent2 = &daycare.parent_2;
         let is_masuda_method = daycare::is_daycare_masuda_method(parent1, parent2);
 
-        view::draw_right(
+        view::draw_top_right(
             screen,
             daycare.daycare_title,
             &[

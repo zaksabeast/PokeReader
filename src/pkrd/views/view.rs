@@ -34,7 +34,11 @@ pub fn draw_top_left(
     title: &str,
     content: &[&str],
 ) -> CtrResult<()> {
-    draw(screen, title, content, 184, 6, 10)
+    if screen.get_is_top_screen() {
+        draw(screen, title, content, 184, 6, 10)?;
+    }
+
+    Ok(())
 }
 
 pub fn draw_top_right(
@@ -42,7 +46,11 @@ pub fn draw_top_right(
     title: &str,
     content: &[&str],
 ) -> CtrResult<()> {
-    draw(screen, title, content, 192, 200, 10)
+    if screen.get_is_top_screen() {
+        draw(screen, title, content, 192, 200, 10)?;
+    }
+
+    Ok(())
 }
 
 pub fn draw_bottom(

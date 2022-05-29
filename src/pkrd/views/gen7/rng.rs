@@ -1,5 +1,5 @@
 use crate::pkrd::reader::RngSlot;
-use crate::pkrd::{display, display::Screen, reader, rng, views::view};
+use crate::pkrd::{display, reader, rng, views::view};
 use ctr::{res::CtrResult, safe_transmute};
 
 pub mod input {
@@ -37,12 +37,10 @@ pub fn draw(
     rng: &rng::Gen7Rng,
     rng_slot: RngSlot,
 ) -> CtrResult<()> {
-    if screen.get_is_top_screen() {
-        if rng_slot.value() == 0 {
-            draw_main(screen, game, rng)?;
-        } else {
-            draw_sos(screen, game)?;
-        }
+    if rng_slot.value() == 0 {
+        draw_main(screen, game, rng)?;
+    } else {
+        draw_sos(screen, game)?;
     }
 
     Ok(())

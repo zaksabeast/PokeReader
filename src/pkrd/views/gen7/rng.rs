@@ -56,6 +56,8 @@ pub fn draw_main(
     let sfmt_state_bytes = sfmt_state.to_ne_bytes();
     let sfmt_state_parts: [u32; 2] = safe_transmute::transmute_one_pedantic(&sfmt_state_bytes)?;
     let sfmt_advances = rng.get_sfmt_advances();
+    let tid = game.get_tid();
+    let tsv = game.get_tsv();
 
     view::draw_top_right(
         screen,
@@ -65,6 +67,9 @@ pub fn draw_main(
             &alloc::format!("Curr state[1]: {:08X}", sfmt_state_parts[1]),
             &alloc::format!("Curr state[0]: {:08X}", sfmt_state_parts[0]),
             &alloc::format!("Advances: {}", sfmt_advances),
+            &alloc::format!(""),
+            &alloc::format!("Gen7TID: {}", tid),
+            &alloc::format!("TSV: {}", tsv),
         ],
     )
 }

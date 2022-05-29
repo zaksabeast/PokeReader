@@ -42,11 +42,11 @@ impl Gen6Reader for PokemonXYReader {
 
     fn get_wild_offset(&self) -> usize {
         let mut pointer = self.default_read::<u32>(0x80313C) - 0xA1C;
-        if pointer < 0x8000000 || pointer > 0x8DF0000 {
+        if !(0x8000000..=0x8DF0000).contains(&pointer) {
             0x805614
         } else {
             pointer = self.default_read::<u32>(pointer as usize);
-            if pointer < 0x8000000 || pointer > 0x8DF0000 {
+            if !(0x8000000..=0x8DF0000).contains(&pointer) {
                 0x805614
             } else {
                 pointer as usize

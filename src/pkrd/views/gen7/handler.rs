@@ -74,7 +74,7 @@ impl Gen7Views {
             self.wild_slot = pkm::wild::input::next_wild_slot(self.wild_slot);
         }
 
-        if self.left_view == TopRightGen7View::RngView {
+        if self.right_view == TopRightGen7View::RngView {
             self.rng_slot = rng_view::input::next_rng_slot(self.rng_slot);
         }
 

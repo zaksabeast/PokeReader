@@ -62,10 +62,10 @@ impl Gen6Views {
         }
 
         self.left_view = match self.left_view {
-            TopLeftGen6View::PartyView if pkm::party::input::toggle() => LeftGen6View::None,
-            TopLeftGen6View::WildView if pkm::wild::input::toggle() => LeftGen6View::None,
-            _ if pkm::party::input::toggle() => LeftGen6View::PartyView,
-            _ if pkm::wild::input::toggle() => LeftGen6View::WildView,
+            TopLeftGen6View::PartyView if pkm::party::input::toggle() => TopLeftGen6View::None,
+            TopLeftGen6View::WildView if pkm::wild::input::toggle() => TopLeftGen6View::None,
+            _ if pkm::party::input::toggle() => TopLeftGen6View::PartyView,
+            _ if pkm::wild::input::toggle() => TopLeftGen6View::WildView,
             view => view,
         };
 

@@ -86,6 +86,9 @@ mod test {
         const SOS_OFFSET: usize = 0;
         const SOS_SEED_OFFSET: usize = 0;
         const SOS_CHAIN_LENGTH: usize = 0;
+        const PELAGO_OFFSET_1: usize = 0;
+        const PELAGO_OFFSET_2: usize = 0;
+        const PELAGO_OFFSET_3: usize = 0;
         const EGG_READY_OFFSET: usize = 0;
         const EGG_OFFSET: usize = 0;
         const PARENT1_OFFSET: usize = 0;
@@ -93,6 +96,11 @@ mod test {
         const IS_PARENT1_OCCUPIED_OFFSET: usize = 0;
         const IS_PARENT2_OCCUPIED_OFFSET: usize = 0;
         const SHINY_CHARM_OFFSET: usize = 0;
+        const WILD_TITLE: &'static str = "Wild";
+        const SOS_TITLE: &'static str = "SOS";
+        const PELAGO_TITLE_1: &'static str = "Pelago Slot 1";
+        const PELAGO_TITLE_2: &'static str = "Pelago Slot 2";
+        const PELAGO_TITLE_3: &'static str = "Pelago Slot 3";
     }
 
     mod update_sfmt {

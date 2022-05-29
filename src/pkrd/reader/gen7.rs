@@ -1,6 +1,14 @@
 use crate::utils::party_slot::PartySlot;
+use crate::utils::CircularCounter;
 use no_std_io::Reader;
 use pkm_rs::pkm;
+
+pub struct Wild {
+    pub title: &'static str,
+    pub pkx: pkm::Pk7,
+}
+
+pub type WildSlot = CircularCounter<0, 4>;
 
 #[cfg_attr(not(target_os = "horizon"), mocktopus::macros::mockable)]
 pub trait Gen7Reader: Reader {
@@ -14,11 +22,50 @@ pub trait Gen7Reader: Reader {
     const SOS_CHAIN_LENGTH: usize;
     const EGG_READY_OFFSET: usize;
     const EGG_OFFSET: usize;
+    const PELAGO_OFFSET_1: usize;
+    const PELAGO_OFFSET_2: usize;
+    const PELAGO_OFFSET_3: usize;
     const PARENT1_OFFSET: usize;
     const PARENT2_OFFSET: usize;
     const IS_PARENT1_OCCUPIED_OFFSET: usize;
     const IS_PARENT2_OCCUPIED_OFFSET: usize;
     const SHINY_CHARM_OFFSET: usize;
+    const WILD_TITLE: &'static str;
+    const SOS_TITLE: &'static str;
+    const PELAGO_TITLE_1: &'static str;
+    const PELAGO_TITLE_2: &'static str;
+    const PELAGO_TITLE_3: &'static str;
+
+    fn get_wild(&self, wild_slot: WildSlot) -> Wild {
+        match wild_slot.value() {
+            1 => Wild {
+                title: Self::SOS_TITLE,
+                pkx: self.default_read::<pkm::Pk7Data>(Self::SOS_OFFSET).into(),
+            },
+            2 => Wild {
+                title: Self::PELAGO_TITLE_1,
+                pkx: self
+                    .default_read::<pkm::Pk7Data>(Self::PELAGO_OFFSET_1)
+                    .into(),
+            },
+            3 => Wild {
+                title: Self::PELAGO_TITLE_2,
+                pkx: self
+                    .default_read::<pkm::Pk7Data>(Self::PELAGO_OFFSET_2)
+                    .into(),
+            },
+            4 => Wild {
+                title: Self::PELAGO_TITLE_3,
+                pkx: self
+                    .default_read::<pkm::Pk7Data>(Self::PELAGO_OFFSET_3)
+                    .into(),
+            },
+            _ => Wild {
+                title: Self::WILD_TITLE,
+                pkx: self.default_read::<pkm::Pk7Data>(Self::WILD_OFFSET).into(),
+            },
+        }
+    }
 
     fn get_initial_seed(&self) -> u32 {
         self.default_read(Self::INITIAL_SEED_OFFSET)
@@ -35,6 +82,14 @@ pub trait Gen7Reader: Reader {
 
     fn get_egg_seed(&self) -> [u32; 4] {
         self.default_read(Self::EGG_OFFSET)
+    }
+
+    fn get_sos_seed(&self) -> u32 {
+        self.default_read(Self::SOS_SEED_OFFSET)
+    }
+
+    fn get_sos_chain(&self) -> u8 {
+        self.default_read(Self::SOS_CHAIN_LENGTH)
     }
 
     fn get_party_pkm(&self, slot: PartySlot) -> pkm::Pk7 {

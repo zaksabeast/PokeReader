@@ -1,4 +1,5 @@
 use super::{daycare, help as help_view, rng as rng_view};
+use crate::pkrd::reader::WildSlot;
 use crate::{
     pkrd::{display, reader, rng, views::pkm},
     utils::party_slot::PartySlot,
@@ -30,6 +31,7 @@ pub struct Gen7Views {
     right_view: TopRightGen7View,
     entire_view: BottomGen7View,
     party_slot: PartySlot,
+    wild_slot: WildSlot,
 }
 
 impl Default for Gen7Views {
@@ -39,6 +41,7 @@ impl Default for Gen7Views {
             right_view: TopRightGen7View::None,
             entire_view: BottomGen7View::None,
             party_slot: PartySlot::default(),
+            wild_slot: WildSlot::default(),
         }
     }
 }
@@ -65,6 +68,10 @@ impl Gen7Views {
             self.party_slot = pkm::party::input::next_party_slot(self.party_slot);
         }
 
+        if self.left_view == TopLeftGen7View::WildView {
+            self.wild_slot = pkm::wild::input::next_wild_slot(self.wild_slot);
+        }
+
         self.entire_view = match self.entire_view {
             BottomGen7View::HelpView if help_view::input::toggle() => BottomGen7View::None,
             _ if help_view::input::toggle() => BottomGen7View::HelpView,
@@ -87,8 +94,8 @@ impl Gen7Views {
                 pkm::party::draw(screen, &pkx, self.party_slot)?;
             }
             TopLeftGen7View::WildView => {
-                let pkx = game.get_wild_pkm();
-                pkm::wild::draw(screen, &pkx)?
+                let wild = game.get_wild(self.wild_slot);
+                pkm::wild::draw(screen, wild)?
             }
             TopLeftGen7View::None => {}
         }

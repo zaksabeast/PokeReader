@@ -15,7 +15,7 @@ pub fn draw(
         let species = pkx.species().to_string();
         let ability = pkx.ability().to_string();
 
-        view::draw_left(
+        view::draw_top_left(
             screen,
             title,
             &[

@@ -21,7 +21,7 @@ pub fn draw(
         let sfmt_state_parts: [u32; 2] = safe_transmute::transmute_one_pedantic(&sfmt_state_bytes)?;
         let sfmt_advances = rng.get_sfmt_advances();
 
-        view::draw_right(
+        view::draw_top_right(
             screen,
             "Main RNG View",
             &[

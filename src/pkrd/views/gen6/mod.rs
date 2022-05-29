@@ -1,5 +1,6 @@
-pub mod daycare;
+mod daycare;
 mod handler;
+mod help;
 mod rng;
 
 pub use handler::*;

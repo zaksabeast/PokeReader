@@ -22,7 +22,7 @@ pub fn draw(
         let has_shiny_charm = game.get_has_shiny_charm();
         let is_masuda_method = daycare::is_daycare_masuda_method(&parent1, &parent2);
 
-        view::draw_right(
+        view::draw_top_right(
             screen,
             "Daycare View",
             &[

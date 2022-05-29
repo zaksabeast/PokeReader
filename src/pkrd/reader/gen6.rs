@@ -6,7 +6,7 @@ use pkm_rs::pkm;
 pub struct Daycare {
     pub daycare_title: &'static str,
     pub daycare_footer: &'static str,
-    pub egg_seed: [u32; 4],
+    pub egg_seed: [u32; 2],
     pub is_egg_ready: bool,
     pub parent_1: Option<pkm::Pk6>,
     pub parent_2: Option<pkm::Pk6>,

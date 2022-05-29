@@ -23,7 +23,7 @@ pub fn draw(
         let sos_seed = game.get_sos_seed();
         let sos_chain = game.get_sos_chain();
 
-        view::draw_right(
+        view::draw_top_right(
             screen,
             "Main RNG View",
             &[

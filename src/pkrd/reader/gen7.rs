@@ -42,11 +42,9 @@ pub trait Gen7Reader: Reader {
         sidtid % 1000000
     }
 
-    fn get_tsv(&self) -> u32 {
-        let sidtid = self.default_read::<u32>(Self::ID_OFFSET);
-
-        let tid = sidtid & 0xFFFF;
-        let sid = sidtid >> 0x10;
+    fn get_tsv(&self) -> u16 {
+        let sid = self.default_read::<u16>(Self::ID_OFFSET);
+        let tid = self.default_read::<u16>(Self::ID_OFFSET + 2);
 
         (tid ^ sid) >> 4
     }

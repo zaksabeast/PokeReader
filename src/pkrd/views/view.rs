@@ -58,5 +58,9 @@ pub fn draw_bottom(
     title: &str,
     content: &[&str],
 ) -> CtrResult<()> {
-    draw(screen, title, content, 308, 6, 10)
+    if screen.get_is_bottom_screen() {
+        draw(screen, title, content, 308, 6, 10)?;
+    }
+
+    Ok(())
 }

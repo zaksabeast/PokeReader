@@ -1,5 +1,7 @@
-use crate::utils::party_slot::PartySlot;
-use crate::utils::CircularCounter;
+use crate::{
+    pkrd::views::WildPokemon,
+    utils::{party_slot::PartySlot, CircularCounter},
+};
 use no_std_io::Reader;
 use pkm_rs::pkm;
 
@@ -88,9 +90,13 @@ pub trait Gen6Reader: Reader {
         self.default_read::<pkm::Pk6Data>(offset).into()
     }
 
-    fn get_wild_pkm(&self) -> pkm::Pk6 {
-        self.default_read::<pkm::Pk6Data>(self.get_wild_offset())
-            .into()
+    fn get_wild_pkm(&self) -> WildPokemon<pkm::Pk6> {
+        WildPokemon {
+            title: "Wild",
+            pkx: self
+                .default_read::<pkm::Pk6Data>(self.get_wild_offset())
+                .into(),
+        }
     }
 
     fn get_egg_parent(&self, is_present_offset: usize, pkm_offset: usize) -> Option<pkm::Pk6> {

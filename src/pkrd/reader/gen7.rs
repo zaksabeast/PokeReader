@@ -1,12 +1,9 @@
-use crate::utils::party_slot::PartySlot;
-use crate::utils::CircularCounter;
+use crate::{
+    pkrd::views::WildPokemon,
+    utils::{party_slot::PartySlot, CircularCounter},
+};
 use no_std_io::Reader;
 use pkm_rs::pkm;
-
-pub struct Wild {
-    pub title: &'static str,
-    pub pkx: pkm::Pk7,
-}
 
 pub type WildSlot = CircularCounter<0, 4>;
 
@@ -38,31 +35,31 @@ pub trait Gen7Reader: Reader {
     const PELAGO_TITLE_2: &'static str;
     const PELAGO_TITLE_3: &'static str;
 
-    fn get_wild(&self, wild_slot: WildSlot) -> Wild {
+    fn get_wild(&self, wild_slot: WildSlot) -> WildPokemon<pkm::Pk7> {
         match wild_slot.value() {
-            1 => Wild {
+            1 => WildPokemon {
                 title: Self::SOS_TITLE,
                 pkx: self.default_read::<pkm::Pk7Data>(Self::SOS_OFFSET).into(),
             },
-            2 => Wild {
+            2 => WildPokemon {
                 title: Self::PELAGO_TITLE_1,
                 pkx: self
                     .default_read::<pkm::Pk7Data>(Self::PELAGO_OFFSET_1)
                     .into(),
             },
-            3 => Wild {
+            3 => WildPokemon {
                 title: Self::PELAGO_TITLE_2,
                 pkx: self
                     .default_read::<pkm::Pk7Data>(Self::PELAGO_OFFSET_2)
                     .into(),
             },
-            4 => Wild {
+            4 => WildPokemon {
                 title: Self::PELAGO_TITLE_3,
                 pkx: self
                     .default_read::<pkm::Pk7Data>(Self::PELAGO_OFFSET_3)
                     .into(),
             },
-            _ => Wild {
+            _ => WildPokemon {
                 title: Self::WILD_TITLE,
                 pkx: self.default_read::<pkm::Pk7Data>(Self::WILD_OFFSET).into(),
             },

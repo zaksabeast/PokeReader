@@ -1,4 +1,4 @@
-use crate::pkrd::{display, reader::Wild};
+use crate::pkrd::display;
 use ctr::res::CtrResult;
 
 pub mod input {
@@ -31,6 +31,14 @@ pub mod input {
     }
 }
 
-pub fn draw(screen: &mut display::DirectWriteScreen, wild: Wild) -> CtrResult<()> {
+pub struct WildPokemon<Pkx: pkm_rs::pkm::Pkx> {
+    pub title: &'static str,
+    pub pkx: Pkx,
+}
+
+pub fn draw<Pkx: pkm_rs::pkm::Pkx>(
+    screen: &mut display::DirectWriteScreen,
+    wild: WildPokemon<Pkx>,
+) -> CtrResult<()> {
     super::pkx::draw(screen, wild.title, &wild.pkx)
 }

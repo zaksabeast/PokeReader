@@ -96,7 +96,7 @@ impl Gen6Views {
             }
             TopLeftGen6View::WildView => {
                 let pkx = game.get_wild_pkm();
-                pkm::wild::draw(screen, &pkx)?;
+                pkm::wild::draw(screen, pkx)?;
             }
             TopLeftGen6View::None => {}
         }

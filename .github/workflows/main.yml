@@ -1,4 +1,4 @@
-name: CICD
+name: Lint, Test, Build
 
 on:
   pull_request:

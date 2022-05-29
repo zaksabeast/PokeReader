@@ -39,4 +39,18 @@ impl Gen6Reader for PokemonXYReader {
     const IS_PARENT2_OCCUPIED_OFFSET_2: usize = Self::IS_PARENT2_OCCUPIED_OFFSET_1;
     const DAYCARE_TITLE_2: &'static str = Self::DAYCARE_TITLE_1;
     const DAYCARE_FOOTER_2: &'static str = Self::DAYCARE_FOOTER_1;
+
+    fn get_wild_offset(&self) -> usize {
+        let mut pointer = self.default_read::<u32>(0x80313C) - 0xA1C;
+        if !(0x8000000..=0x8DF0000).contains(&pointer) {
+            0x805614
+        } else {
+            pointer = self.default_read::<u32>(pointer as usize);
+            if !(0x8000000..=0x8DF0000).contains(&pointer) {
+                0x805614
+            } else {
+                pointer as usize
+            }
+        }
+    }
 }

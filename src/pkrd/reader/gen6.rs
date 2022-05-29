@@ -38,6 +38,8 @@ pub trait Gen6Reader: Reader {
     const DAYCARE_TITLE_2: &'static str;
     const DAYCARE_FOOTER_2: &'static str;
 
+    fn get_wild_offset(&self) -> usize;
+
     fn get_daycare(&self, daycare_slot: DaycareSlot) -> Daycare {
         if daycare_slot.value() == 0 {
             Daycare {
@@ -84,6 +86,11 @@ pub trait Gen6Reader: Reader {
     fn get_party_pkm(&self, slot: PartySlot) -> pkm::Pk6 {
         let offset = ((slot.value() as usize) * 484) + Self::PARTY_OFFSET;
         self.default_read::<pkm::Pk6Data>(offset).into()
+    }
+
+    fn get_wild_pkm(&self) -> pkm::Pk6 {
+        self.default_read::<pkm::Pk6Data>(self.get_wild_offset())
+            .into()
     }
 
     fn get_egg_parent(&self, is_present_offset: usize, pkm_offset: usize) -> Option<pkm::Pk6> {

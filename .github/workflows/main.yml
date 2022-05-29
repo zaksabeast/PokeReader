@@ -6,8 +6,8 @@ on:
     branches: [main]
 
 jobs:
-  lint-build-deploy:
-    name: Lint, test, and build
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     container: zaksabeast/devkit3ds-rust
     steps:
@@ -17,8 +17,25 @@ jobs:
       - name: Lint
         run: make lint
 
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    container: zaksabeast/devkit3ds-rust
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Test
         run: make test
+
+  build:
+    name: Build
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    container: zaksabeast/devkit3ds-rust
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Build PokeReader
         run: make release

@@ -34,6 +34,20 @@ pub trait Gen7Reader: Reader {
     const PELAGO_TITLE_1: &'static str;
     const PELAGO_TITLE_2: &'static str;
     const PELAGO_TITLE_3: &'static str;
+    const ID_OFFSET: usize;
+
+    fn get_tid(&self) -> u32 {
+        let sidtid = self.default_read::<u32>(Self::ID_OFFSET);
+
+        sidtid % 1000000
+    }
+
+    fn get_tsv(&self) -> u16 {
+        let sid = self.default_read::<u16>(Self::ID_OFFSET);
+        let tid = self.default_read::<u16>(Self::ID_OFFSET + 2);
+
+        (tid ^ sid) >> 4
+    }
 
     fn get_wild(&self, wild_slot: WildSlot) -> WildPokemon<pkm::Pk7> {
         match wild_slot.value() {

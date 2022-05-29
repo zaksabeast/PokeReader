@@ -41,4 +41,5 @@ impl Gen7Reader for PokemonSMReader {
     const PELAGO_TITLE_1: &'static str = "Pelago Slot 1";
     const PELAGO_TITLE_2: &'static str = "Pelago Slot 2";
     const PELAGO_TITLE_3: &'static str = "Pelago Slot 3";
+    const ID_OFFSET: usize = 0x30D67D0;
 }

@@ -55,6 +55,10 @@ pub trait Screen {
         self.get_context().is_top_screen
     }
 
+    fn get_is_bottom_screen(&self) -> bool {
+        self.get_is_top_screen() == false
+    }
+
     /// # Safety
     /// The caller needs to make sure:
     /// - The x is never above 320 for a bottom screen

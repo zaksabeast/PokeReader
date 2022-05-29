@@ -10,6 +10,8 @@ pub struct Wild {
 
 pub type WildSlot = CircularCounter<0, 4>;
 
+pub type RngSlot = CircularCounter<0, 1>;
+
 #[cfg_attr(not(target_os = "horizon"), mocktopus::macros::mockable)]
 pub trait Gen7Reader: Reader {
     const INITIAL_SEED_OFFSET: usize;

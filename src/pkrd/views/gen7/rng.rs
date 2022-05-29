@@ -1,3 +1,4 @@
+use crate::pkrd::reader::RngSlot;
 use crate::pkrd::{display, display::Screen, reader, rng, views::view};
 use ctr::{res::CtrResult, safe_transmute};
 
@@ -7,12 +8,33 @@ pub mod input {
     pub fn toggle() -> bool {
         Global::is_just_pressed(Button::Start | Button::Dup)
     }
+
+    fn increment() -> bool {
+        Global::is_just_pressed(Button::Select | Button::Dright)
+    }
+
+    fn decrement() -> bool {
+        Global::is_just_pressed(Button::Select | Button::Dleft)
+    }
+
+    pub fn next_rng_slot(mut slot: RngSlot) -> RngSlot {
+        if increment() {
+            slot.increment();
+        }
+
+        if decrement() {
+            slot.decrement();
+        }
+
+        slot
+    }
 }
 
 pub fn draw(
     screen: &mut display::DirectWriteScreen,
     game: &impl reader::Gen7Reader,
     rng: &rng::Gen7Rng,
+    rng_slot: RngSlot,
 ) -> CtrResult<()> {
     if screen.get_is_top_screen() {
         let init_seed = game.get_initial_seed();
@@ -23,18 +45,27 @@ pub fn draw(
         let sos_seed = game.get_sos_seed();
         let sos_chain = game.get_sos_chain();
 
-        view::draw_top_right(
-            screen,
-            "Main RNG View",
-            &[
-                &alloc::format!("Init seed: {:08X}", init_seed),
-                &alloc::format!("Curr state[1]: {:08X}", sfmt_state_parts[1]),
-                &alloc::format!("Curr state[0]: {:08X}", sfmt_state_parts[0]),
-                &alloc::format!("Advances: {}", sfmt_advances),
-                &alloc::format!("SOS Seed: {:08X}", sos_seed),
-                &alloc::format!("SOS Chain Length: {}", sos_chain),
-            ],
-        )?;
+        if rng_slot.value() == 0 {
+            view::draw_top_right(
+                screen,
+                "Main RNG View",
+                &[
+                    &alloc::format!("Init seed: {:08X}", init_seed),
+                    &alloc::format!("Curr state[1]: {:08X}", sfmt_state_parts[1]),
+                    &alloc::format!("Curr state[0]: {:08X}", sfmt_state_parts[0]),
+                    &alloc::format!("Advances: {}", sfmt_advances),
+                ],
+            )?;
+        } else {
+            view::draw_top_right(
+                screen,
+                "SOS RNG View",
+                &[
+                    &alloc::format!("SOS Seed: {:08X}", sos_seed),
+                    &alloc::format!("SOS Chain Length: {}", sos_chain),
+                ],
+            )?;
+        }
     }
 
     Ok(())

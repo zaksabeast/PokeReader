@@ -127,6 +127,12 @@ fn main(_argc: isize, _argv: *const *const u8) -> isize {
             handle_launch_title_notification,
         )
         .unwrap();
+    notification_manger
+        .subscribe(ptm::NotificationId::Termination, |_| {
+            ctr::svc::exit_process();
+            Ok(())
+        })
+        .unwrap();
 
     log::debug("Setting up service manager");
     let mut manager = ServiceManager::new(services, notification_manger, global_context);

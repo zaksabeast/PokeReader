@@ -1,6 +1,8 @@
+use core::convert::TryInto;
+
 use crate::pkrd::reader::RngSlot;
 use crate::pkrd::{display, reader, rng, views::view};
-use ctr::{res::CtrResult, safe_transmute};
+use ctr::{res::CtrResult};
 
 pub mod input {
     use super::*;
@@ -54,7 +56,7 @@ pub fn draw_main(
     let init_seed = game.get_initial_seed();
     let sfmt_state = game.get_sfmt_state();
     let sfmt_state_bytes = sfmt_state.to_ne_bytes();
-    let sfmt_state_parts: [u32; 2] = safe_transmute::transmute_one_pedantic(&sfmt_state_bytes)?;
+    let sfmt_state_parts: [u32; 2] = [u32::from_ne_bytes(sfmt_state_bytes[0..4].try_into().unwrap()), u32::from_ne_bytes(sfmt_state_bytes[4..8].try_into().unwrap())];
     let sfmt_advances = rng.get_sfmt_advances();
     let tid = game.get_tid();
     let tsv = game.get_tsv();

@@ -1,19 +1,20 @@
 use super::{context::PkrdServiceContext, display::Screen, frame_pause::handle_frame_pause, hook};
 use crate::{log, pkrd::notification};
-use no_std_io::{EndianRead, EndianWrite};
 use core::{
     mem, slice,
     sync::atomic::{AtomicU32, Ordering},
 };
 use ctr::{
-    hid,
+    ctr_method, hid,
     hid::InterfaceDevice,
-    res::{GenericResultCode, ResultCode, CtrResult},
+    ipc::Handles,
+    res::{CtrResult, GenericResultCode, ResultCode},
     svc,
     sysmodule::server::Service,
-    Handle, ctr_method, ipc::Handles,
+    Handle,
 };
-use num_enum::{IntoPrimitive, FromPrimitive};
+use no_std_io::{EndianRead, EndianWrite};
+use num_enum::{FromPrimitive, IntoPrimitive};
 
 static PKRD_HANDLE: AtomicU32 = AtomicU32::new(0);
 
@@ -57,7 +58,11 @@ struct GameHookParams {
 }
 
 #[ctr_method(cmd = "PkrdGameCommand::RunGameHook", normal = 0x1, translate = 0x0)]
-fn run_game_hook(context: &mut PkrdServiceContext, _session_index: usize, params: GameHookParams) -> CtrResult {
+fn run_game_hook(
+    context: &mut PkrdServiceContext,
+    _session_index: usize,
+    params: GameHookParams,
+) -> CtrResult {
     let is_top_screen = params.screen_id == 0;
 
     if notification::is_new_game_launch() {
@@ -75,8 +80,12 @@ fn run_game_hook(context: &mut PkrdServiceContext, _session_index: usize, params
 
     let screen = &mut context.screen;
 
-    if let Err(result_code) =
-        screen.set_context(is_top_screen, params.frame_buffer, params.stride, params.format) {
+    if let Err(result_code) = screen.set_context(
+        is_top_screen,
+        params.frame_buffer,
+        params.stride,
+        params.format,
+    ) {
         log::error(&alloc::format!(
             "Failed screen context {:x}",
             result_code.into_raw()
@@ -89,9 +98,7 @@ fn run_game_hook(context: &mut PkrdServiceContext, _session_index: usize, params
     let hook_result = context
         .game
         .as_mut()
-        .ok_or_else::<ResultCode, fn() -> ResultCode>(|| {
-            GenericResultCode::InvalidValue.into()
-        })?
+        .ok_or_else::<ResultCode, fn() -> ResultCode>(|| GenericResultCode::InvalidValue.into())?
         .run_hook(screen);
 
     // The game ignores the result of this, and there's not much we can

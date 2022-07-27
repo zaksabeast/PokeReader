@@ -18,7 +18,6 @@ use crate::pkrd::{
     notification::{handle_launch_title_notification, handle_sleep_notification},
 };
 use alloc::vec;
-use pkrd::request_handler::PkrdGameCommand;
 use core::convert::TryFrom;
 #[cfg(not(test))]
 use core::{arch::asm, panic::PanicInfo};
@@ -29,6 +28,7 @@ use ctr::{
         server::{Service, ServiceManager},
     },
 };
+use pkrd::request_handler::PkrdGameCommand;
 
 /// Called after main exits to clean things up.
 /// Used by 3ds toolchain.

@@ -37,13 +37,13 @@ pub enum PkrdGameCommand {
 
 impl Service for PkrdGameCommand {
     const ID: usize = 0;
-    const MAX_SESSION_COUNT: i32 = 8;
     const NAME: &'static str = "pkrd:game";
+    const MAX_SESSION_COUNT: i32 = 8;
 }
 
 #[ctr_method(cmd = "PkrdGameCommand::Setup", normal = 0x1, translate = 0x0)]
 fn setup(_context: &mut PkrdServiceContext, _session_index: usize, handles: Handles) -> CtrResult {
-    PKRD_HANDLE.store(handles.into_handle().unwrap(), Ordering::Relaxed);
+    PKRD_HANDLE.store(handles.into_raw()[0], Ordering::Relaxed);
     Ok(())
 }
 

@@ -16,9 +16,8 @@ mod utils;
 use crate::pkrd::{
     context::PkrdServiceContext,
     notification::{handle_launch_title_notification, handle_sleep_notification},
-    request_handler::handle_pkrd_game_request,
 };
-use alloc::{boxed::Box, vec};
+use alloc::vec;
 use core::convert::TryFrom;
 #[cfg(not(test))]
 use core::{arch::asm, panic::PanicInfo};
@@ -29,6 +28,7 @@ use ctr::{
         server::{Service, ServiceManager},
     },
 };
+use pkrd::request_handler::PkrdGameCommand;
 
 /// Called after main exits to clean things up.
 /// Used by 3ds toolchain.
@@ -98,9 +98,9 @@ pub extern "C" fn abort() -> ! {
 fn main(_argc: isize, _argv: *const *const u8) -> isize {
     log::debug("\n\nStarted!");
 
-    let global_context = Box::new(PkrdServiceContext::new().unwrap());
+    let global_context = PkrdServiceContext::new().unwrap();
 
-    let services = vec![Service::new("pkrd:game", 8, handle_pkrd_game_request).unwrap()];
+    let services = vec![PkrdGameCommand::register().unwrap()];
 
     log::debug("Setting up notification manager");
 

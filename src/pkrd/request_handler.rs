@@ -11,7 +11,7 @@ use ctr::{
     res::{GenericResultCode, ResultCode, CtrResult},
     svc,
     sysmodule::server::Service,
-    Handle, ctr_method,
+    Handle, ctr_method, ipc::Handles,
 };
 use num_enum::{IntoPrimitive, FromPrimitive};
 
@@ -40,15 +40,9 @@ impl Service for PkrdGameCommand {
     const NAME: &'static str = "pkrd:game";
 }
 
-#[derive(EndianRead, EndianWrite)]
-struct SetupHandles {
-    header: u32,
-    raw_handle: u32,
-}
-
 #[ctr_method(cmd = "PkrdGameCommand::Setup", normal = 0x1, translate = 0x0)]
-fn setup(_context: &mut PkrdServiceContext, _session_index: usize, handles: SetupHandles) -> CtrResult {
-    PKRD_HANDLE.store(handles.raw_handle, Ordering::Relaxed);
+fn setup(_context: &mut PkrdServiceContext, _session_index: usize, handles: Handles) -> CtrResult {
+    PKRD_HANDLE.store(handles.into_handle().unwrap(), Ordering::Relaxed);
     Ok(())
 }
 

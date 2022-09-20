@@ -23,6 +23,7 @@ pub trait Gen6Reader: Reader {
     const MT_STATE_INDEX_OFFSET: usize;
     const TINYMT_STATE_OFFSET: usize;
     const PARTY_OFFSET: usize;
+    const WILD_OFFSET: usize;
     const EGG_READY_OFFSET_1: usize;
     const EGG_SEED_OFFSET_1: usize;
     const PARENT1_OFFSET_1: usize;
@@ -39,8 +40,6 @@ pub trait Gen6Reader: Reader {
     const IS_PARENT2_OCCUPIED_OFFSET_2: usize;
     const DAYCARE_TITLE_2: &'static str;
     const DAYCARE_FOOTER_2: &'static str;
-
-    fn get_wild_offset(&self) -> usize;
 
     fn get_daycare(&self, daycare_slot: DaycareSlot) -> Daycare {
         if daycare_slot.value() == 0 {
@@ -93,9 +92,7 @@ pub trait Gen6Reader: Reader {
     fn get_wild_pkm(&self) -> WildPokemon<pkm::Pk6> {
         WildPokemon {
             title: "Wild",
-            pkx: self
-                .default_read::<pkm::Pk6Data>(self.get_wild_offset())
-                .into(),
+            pkx: self.default_read::<pkm::Pk6Data>(Self::WILD_OFFSET).into(),
         }
     }
 

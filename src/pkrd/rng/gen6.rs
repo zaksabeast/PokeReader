@@ -127,6 +127,7 @@ mod test {
         const MT_STATE_INDEX_OFFSET: usize = 0;
         const TINYMT_STATE_OFFSET: usize = 0;
         const PARTY_OFFSET: usize = 0;
+        const WILD_OFFSET: usize = 0;
         const EGG_READY_OFFSET_1: usize = 0;
         const EGG_SEED_OFFSET_1: usize = 0;
         const PARENT1_OFFSET_1: usize = 0;
@@ -143,10 +144,6 @@ mod test {
         const IS_PARENT2_OCCUPIED_OFFSET_2: usize = 0;
         const DAYCARE_TITLE_2: &'static str = "Daycare View";
         const DAYCARE_FOOTER_2: &'static str = "";
-
-        fn get_wild_offset(&self) -> usize {
-            0
-        }
     }
 
     mod update_mt {

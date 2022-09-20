@@ -23,6 +23,7 @@ impl Gen6Reader for PokemonORASReader {
     const MT_STATE_INDEX_OFFSET: usize = 0xc59e44;
     const TINYMT_STATE_OFFSET: usize = 0xC59E04;
     const PARTY_OFFSET: usize = 0xCFB26C;
+    const WILD_OFFSET: usize = 0x1FFA6C;
     const EGG_READY_OFFSET_1: usize = 0xC88358;
     const EGG_SEED_OFFSET_1: usize = 0xC88360;
     const PARENT1_OFFSET_1: usize = 0xC88180;
@@ -39,26 +40,4 @@ impl Gen6Reader for PokemonORASReader {
     const IS_PARENT2_OCCUPIED_OFFSET_2: usize = 0xC88458;
     const DAYCARE_TITLE_2: &'static str = "Daycare: Battle Resort";
     const DAYCARE_FOOTER_2: &'static str = "<- Select + Left";
-
-    fn get_wild_offset(&self) -> usize {
-        let mut pointer = self.default_read::<u32>(0x80313C) - 0x22C0;
-        if !(0x8000000..=0x8DF0000).contains(&pointer) {
-            if self.default_read::<u32>(0x804060) == 0 {
-                0x804064
-            } else {
-                0x804060
-            }
-        } else {
-            pointer = self.default_read::<u32>((pointer - 0x8000000) as usize);
-            if !(0x8000000..=0x8DF0000).contains(&pointer) {
-                if self.default_read::<u32>(0x804060) == 0 {
-                    0x804064
-                } else {
-                    0x804060
-                }
-            } else {
-                (pointer - 0x8000000) as usize
-            }
-        }
-    }
 }

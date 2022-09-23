@@ -2,8 +2,9 @@ use crate::{
     pkrd::views::WildPokemon,
     utils::{party_slot::PartySlot, CircularCounter},
 };
+use core::convert::TryFrom;
 use no_std_io::Reader;
-use pkm_rs::pkm;
+use pkm_rs::{Pk7, Pk7Bytes, Pkx};
 
 pub type WildSlot = CircularCounter<0, 4>;
 
@@ -49,33 +50,27 @@ pub trait Gen7Reader: Reader {
         (tid ^ sid) >> 4
     }
 
-    fn get_wild(&self, wild_slot: WildSlot) -> WildPokemon<pkm::Pk7> {
+    fn get_wild(&self, wild_slot: WildSlot) -> WildPokemon<Pk7> {
         match wild_slot.value() {
             1 => WildPokemon {
                 title: Self::SOS_TITLE,
-                pkx: self.default_read::<pkm::Pk7Data>(Self::SOS_OFFSET).into(),
+                pkx: self.read_pk7(Self::SOS_OFFSET),
             },
             2 => WildPokemon {
                 title: Self::PELAGO_TITLE_1,
-                pkx: self
-                    .default_read::<pkm::Pk7Data>(Self::PELAGO_OFFSET_1)
-                    .into(),
+                pkx: self.read_pk7(Self::PELAGO_OFFSET_1),
             },
             3 => WildPokemon {
                 title: Self::PELAGO_TITLE_2,
-                pkx: self
-                    .default_read::<pkm::Pk7Data>(Self::PELAGO_OFFSET_2)
-                    .into(),
+                pkx: self.read_pk7(Self::PELAGO_OFFSET_2),
             },
             4 => WildPokemon {
                 title: Self::PELAGO_TITLE_3,
-                pkx: self
-                    .default_read::<pkm::Pk7Data>(Self::PELAGO_OFFSET_3)
-                    .into(),
+                pkx: self.read_pk7(Self::PELAGO_OFFSET_3),
             },
             _ => WildPokemon {
                 title: Self::WILD_TITLE,
-                pkx: self.default_read::<pkm::Pk7Data>(Self::WILD_OFFSET).into(),
+                pkx: self.read_pk7(Self::WILD_OFFSET),
             },
         }
     }
@@ -105,32 +100,41 @@ pub trait Gen7Reader: Reader {
         self.default_read(Self::SOS_CHAIN_LENGTH)
     }
 
-    fn get_party_pkm(&self, slot: PartySlot) -> pkm::Pk7 {
-        let offset = ((slot.value() as usize) * 484) + Self::PARTY_OFFSET;
-        self.default_read::<pkm::Pk7Data>(offset).into()
+    fn read_pk7(&self, offset: usize) -> Pk7 {
+        let bytes = self
+            .read_byte_vec(offset, Pk7::STORED_SIZE)
+            .unwrap_or_default();
+        Pk7Bytes::try_from(bytes)
+            .unwrap_or([0; Pk7::STORED_SIZE])
+            .into()
     }
 
-    fn get_egg_parent(&self, is_present_offset: usize, pkm_offset: usize) -> Option<pkm::Pk7> {
+    fn get_party_pkm(&self, slot: PartySlot) -> Pk7 {
+        let offset = ((slot.value() as usize) * 484) + Self::PARTY_OFFSET;
+        self.read_pk7(offset)
+    }
+
+    fn get_egg_parent(&self, is_present_offset: usize, pkm_offset: usize) -> Option<Pk7> {
         let is_parent_present = self.default_read::<u8>(is_present_offset) != 0;
 
         if !is_parent_present {
             return None;
         }
 
-        let parent = self.default_read::<pkm::Pk7Data>(pkm_offset).into();
+        let parent = self.read_pk7(pkm_offset);
         Some(parent)
     }
 
-    fn get_egg_parent_1(&self) -> Option<pkm::Pk7> {
+    fn get_egg_parent_1(&self) -> Option<Pk7> {
         self.get_egg_parent(Self::IS_PARENT1_OCCUPIED_OFFSET, Self::PARENT1_OFFSET)
     }
 
-    fn get_egg_parent_2(&self) -> Option<pkm::Pk7> {
+    fn get_egg_parent_2(&self) -> Option<Pk7> {
         self.get_egg_parent(Self::IS_PARENT2_OCCUPIED_OFFSET, Self::PARENT2_OFFSET)
     }
 
-    fn get_wild_pkm(&self) -> pkm::Pk7 {
-        self.default_read::<pkm::Pk7Data>(Self::WILD_OFFSET).into()
+    fn get_wild_pkm(&self) -> Pk7 {
+        self.read_pk7(Self::WILD_OFFSET)
     }
 
     fn get_is_egg_ready(&self) -> bool {

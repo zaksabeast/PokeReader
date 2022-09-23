@@ -1,5 +1,5 @@
-use super::{context::PkrdServiceContext, display::Screen, frame_pause::handle_frame_pause, hook};
-use crate::{log, pkrd::notification};
+use super::{display::Screen, frame_pause::handle_frame_pause, hook};
+use crate::{log, pkrd::notification, PkrdSysmodule};
 use core::{
     mem, slice,
     sync::atomic::{AtomicU32, Ordering},
@@ -42,13 +42,19 @@ impl Service for PkrdGameCommand {
 }
 
 #[ctr_method(cmd = "PkrdGameCommand::Setup", normal = 0x1, translate = 0x0)]
-fn setup(_context: &mut PkrdServiceContext, _session_index: usize, handles: Handles) -> CtrResult {
-    PKRD_HANDLE.store(handles.into_raw()[0], Ordering::Relaxed);
+fn setup(
+    _server: &mut PkrdSysmodule,
+    _session_index: usize,
+    pkrd_session_handles: Handles,
+) -> CtrResult {
+    if let Some(raw_handle) = pkrd_session_handles.into_raw().get(0) {
+        PKRD_HANDLE.store(*raw_handle, Ordering::Relaxed);
+    }
     Ok(())
 }
 
 #[derive(EndianRead, EndianWrite)]
-struct GameHookParams {
+struct RunGameHookIn {
     frame_buffer: u32,
     screen_id: u32,
     stride: u32,
@@ -59,32 +65,30 @@ struct GameHookParams {
 
 #[ctr_method(cmd = "PkrdGameCommand::RunGameHook", normal = 0x1, translate = 0x0)]
 fn run_game_hook(
-    context: &mut PkrdServiceContext,
+    server: &mut PkrdSysmodule,
     _session_index: usize,
-    params: GameHookParams,
+    input: RunGameHookIn,
 ) -> CtrResult {
-    let is_top_screen = params.screen_id == 0;
-
     if notification::is_new_game_launch() {
         // Get heap
-        let heap_ptr = params.heap_ptr as *mut u8;
-        let heap_len = params.heap_len as usize;
+        let heap_ptr = input.heap_ptr as *mut u8;
+        let heap_len = input.heap_len as usize;
 
         // We're trusting our patch works and nothing else is using this command
         let physical_heap_ptr = svc::convert_pa_to_uncached_pa(heap_ptr)?;
         let heap = unsafe { slice::from_raw_parts_mut(physical_heap_ptr, heap_len) };
 
         // Since this is a physical address, it is static memory
-        context.game = hook::get_hooked_process(heap);
+        server.context.game = hook::get_hooked_process(heap);
     }
 
-    let screen = &mut context.screen;
-
+    let screen = &mut server.context.screen;
+    let is_top_screen = input.screen_id == 0;
     if let Err(result_code) = screen.set_context(
         is_top_screen,
-        params.frame_buffer,
-        params.stride,
-        params.format,
+        input.frame_buffer,
+        input.stride,
+        input.format,
     ) {
         log::error(&alloc::format!(
             "Failed screen context {:x}",
@@ -95,7 +99,8 @@ fn run_game_hook(
     // The input needs to be scanned here so we can use it in the hook
     hid::Global::scan_input();
 
-    let hook_result = context
+    let hook_result = server
+        .context
         .game
         .as_mut()
         .ok_or_else::<ResultCode, fn() -> ResultCode>(|| GenericResultCode::InvalidValue.into())?
@@ -110,7 +115,7 @@ fn run_game_hook(
         ));
     }
 
-    handle_frame_pause(context, is_top_screen);
+    handle_frame_pause(&mut server.context, is_top_screen);
 
     Ok(())
 }

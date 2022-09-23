@@ -1,6 +1,6 @@
 use crate::{pkrd::display, utils::party_slot::PartySlot};
 use ctr::res::CtrResult;
-use pkm_rs::pkm;
+use pkm_rs::Pkx;
 
 pub mod input {
     use super::*;
@@ -33,7 +33,7 @@ pub mod input {
 
 pub fn draw(
     screen: &mut display::DirectWriteScreen,
-    pkx: &impl pkm::Pkx,
+    pkx: &impl Pkx,
     slot: PartySlot,
 ) -> CtrResult<()> {
     let title = &alloc::format!("Party {}", slot);

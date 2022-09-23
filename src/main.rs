@@ -16,19 +16,22 @@ mod utils;
 use crate::pkrd::{
     context::PkrdServiceContext,
     notification::{handle_launch_title_notification, handle_sleep_notification},
+    request_handler::PkrdGameCommand,
 };
 use alloc::vec;
-use core::convert::TryFrom;
 #[cfg(not(test))]
 use core::{arch::asm, panic::PanicInfo};
 use ctr::{
-    fs, ptm, srv, svc,
+    fs,
+    ipc::WrittenCommand,
+    match_ctr_route, ptm,
+    res::CtrResult,
+    srv, svc,
     sysmodule::{
         notification::NotificationManager,
-        server::{Service, ServiceManager},
+        server::{Service, ServiceManager, ServiceRouter},
     },
 };
-use pkrd::request_handler::PkrdGameCommand;
 
 /// Called after main exits to clean things up.
 /// Used by 3ds toolchain.
@@ -93,13 +96,43 @@ pub extern "C" fn abort() -> ! {
     ctr::svc::break_execution(ctr::svc::UserBreakType::Panic)
 }
 
+struct PkrdSysmodule {
+    context: PkrdServiceContext,
+}
+
+impl PkrdSysmodule {
+    fn new() -> Self {
+        Self {
+            context: PkrdServiceContext::new().unwrap(),
+        }
+    }
+}
+
+impl ServiceRouter for PkrdSysmodule {
+    fn handle_request(
+        &mut self,
+        service_id: usize,
+        session_index: usize,
+    ) -> CtrResult<WrittenCommand> {
+        match_ctr_route!(
+            PkrdSysmodule,
+            service_id,
+            session_index,
+            PkrdGameCommand::Setup,
+            PkrdGameCommand::RunGameHook,
+        )
+    }
+
+    fn accept_session(&mut self, _session_index: usize) {}
+    fn close_session(&mut self, _session_index: usize) {}
+}
+
 #[doc(hidden)]
 #[start]
 fn main(_argc: isize, _argv: *const *const u8) -> isize {
     log::debug("\n\nStarted!");
 
-    let global_context = PkrdServiceContext::new().unwrap();
-
+    let router = PkrdSysmodule::new();
     let services = vec![PkrdGameCommand::register().unwrap()];
 
     log::debug("Setting up notification manager");
@@ -130,12 +163,11 @@ fn main(_argc: isize, _argv: *const *const u8) -> isize {
     notification_manger
         .subscribe(ptm::NotificationId::Termination, |_| {
             ctr::svc::exit_process();
-            Ok(())
         })
         .unwrap();
 
     log::debug("Setting up service manager");
-    let mut manager = ServiceManager::new(services, notification_manger, global_context);
+    let mut manager = ServiceManager::new(services, notification_manger, router);
     log::debug("Set up service manager");
     let result = manager.run();
 
@@ -144,7 +176,7 @@ fn main(_argc: isize, _argv: *const *const u8) -> isize {
         Err(result_code) => {
             let raw_code = result_code.into_raw();
             log::error(&alloc::format!("manager.run error {:x}", raw_code));
-            isize::try_from(raw_code).unwrap()
+            svc::exit_process()
         }
     }
 }

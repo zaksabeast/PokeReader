@@ -1,9 +1,9 @@
 CRATE_NAME	= pkrd
 TITLE_ID = 000401300000CB02
 
-CARGO_BUILD_FLAGS = -Z build-std=core,alloc --target armv6k-nintendo-3ds
+CARGO_BUILD_FLAGS = -Z build-std=core,alloc --target 3ds.json
 
-RUST_OUT_DIR	=	target/armv6k-nintendo-3ds
+RUST_OUT_DIR	=	target/3ds
 RUST_RELEASE_DIR	=	$(RUST_OUT_DIR)/release
 RUST_DEBUG_DIR	=	$(RUST_OUT_DIR)/debug
 

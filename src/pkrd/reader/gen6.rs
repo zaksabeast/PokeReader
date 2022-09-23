@@ -2,16 +2,17 @@ use crate::{
     pkrd::views::WildPokemon,
     utils::{party_slot::PartySlot, CircularCounter},
 };
+use core::convert::TryFrom;
 use no_std_io::Reader;
-use pkm_rs::pkm;
+use pkm_rs::{Pk6, Pk6Bytes, Pkx};
 
 pub struct Daycare {
     pub daycare_title: &'static str,
     pub daycare_footer: &'static str,
     pub egg_seed: [u32; 2],
     pub is_egg_ready: bool,
-    pub parent_1: Option<pkm::Pk6>,
-    pub parent_2: Option<pkm::Pk6>,
+    pub parent_1: Option<Pk6>,
+    pub parent_2: Option<Pk6>,
 }
 
 pub type DaycareSlot = CircularCounter<0, 1>;
@@ -84,26 +85,35 @@ pub trait Gen6Reader: Reader {
         self.default_read(Self::TINYMT_STATE_OFFSET)
     }
 
-    fn get_party_pkm(&self, slot: PartySlot) -> pkm::Pk6 {
-        let offset = ((slot.value() as usize) * 484) + Self::PARTY_OFFSET;
-        self.default_read::<pkm::Pk6Data>(offset).into()
+    fn read_pk6(&self, offset: usize) -> Pk6 {
+        let bytes = self
+            .read_byte_vec(offset, Pk6::STORED_SIZE)
+            .unwrap_or_default();
+        Pk6Bytes::try_from(bytes)
+            .unwrap_or([0; Pk6::STORED_SIZE])
+            .into()
     }
 
-    fn get_wild_pkm(&self) -> WildPokemon<pkm::Pk6> {
+    fn get_party_pkm(&self, slot: PartySlot) -> Pk6 {
+        let offset = ((slot.value() as usize) * 484) + Self::PARTY_OFFSET;
+        self.read_pk6(offset)
+    }
+
+    fn get_wild_pkm(&self) -> WildPokemon<Pk6> {
         WildPokemon {
             title: "Wild",
-            pkx: self.default_read::<pkm::Pk6Data>(Self::WILD_OFFSET).into(),
+            pkx: self.read_pk6(Self::WILD_OFFSET),
         }
     }
 
-    fn get_egg_parent(&self, is_present_offset: usize, pkm_offset: usize) -> Option<pkm::Pk6> {
+    fn get_egg_parent(&self, is_present_offset: usize, pkm_offset: usize) -> Option<Pk6> {
         let is_parent_present = self.default_read::<u8>(is_present_offset) != 0;
 
         if !is_parent_present {
             return None;
         }
 
-        let parent = self.default_read::<pkm::Pk6Data>(pkm_offset).into();
+        let parent = self.read_pk6(pkm_offset);
         Some(parent)
     }
 }

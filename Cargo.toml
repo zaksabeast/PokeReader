@@ -6,12 +6,12 @@ edition = "2018"
 publish = false
 
 [dependencies]
-ctr = { package = "libctr-rs", git = "https://github.com/zaksabeast/libctr-rs", rev = "9a6585c" }
+ctr = { package = "libctr-rs", git = "https://github.com/zaksabeast/libctr-rs", rev = "8edf31a" }
 lazy_static = { version = "1.4.0", default-features = false, features = ["spin_no_std"] }
-num_enum = { version = "0.5.7", default-features = false }
+num_enum = { version = "0.5", default-features = false }
 safe-transmute = { version = "0.11", default-features = false }
-no_std_io = { git = "https://github.com/zaksabeast/no_std_io.git", rev = "d1b5523" }
-pkm-rs = { git = "https://github.com/zaksabeast/pkm-rs.git", rev = "e7e85c9" }
+no_std_io = { git = "https://github.com/zaksabeast/no_std_io.git", rev = "4bc5adf" }
+pkm-rs = { git = "https://github.com/zaksabeast/pkm-rs.git", rev = "e08bb4e" }
 
 [dev-dependencies]
 mocktopus = "0.7.11"

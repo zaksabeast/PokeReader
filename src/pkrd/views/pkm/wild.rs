@@ -31,12 +31,12 @@ pub mod input {
     }
 }
 
-pub struct WildPokemon<Pkx: pkm_rs::pkm::Pkx> {
+pub struct WildPokemon<Pkx: pkm_rs::Pkx> {
     pub title: &'static str,
     pub pkx: Pkx,
 }
 
-pub fn draw<Pkx: pkm_rs::pkm::Pkx>(
+pub fn draw<Pkx: pkm_rs::Pkx>(
     screen: &mut display::DirectWriteScreen,
     wild: WildPokemon<Pkx>,
 ) -> CtrResult<()> {

@@ -1,7 +1,7 @@
 use super::hook;
 use crate::log;
 use core::sync::atomic::{AtomicBool, Ordering};
-use ctr::{ptm, res::CtrResult, sysmodule::notification::NotificationHandlerResult};
+use ctr::{ptm, res::CtrResult, svc, sysmodule::notification::NotificationHandlerResult};
 
 static IS_NEW_GAME_LAUNCH: AtomicBool = AtomicBool::new(false);
 
@@ -14,6 +14,8 @@ pub fn is_new_game_launch() -> bool {
 pub fn handle_launch_title_notification(_notification_id: u32) -> CtrResult<()> {
     IS_NEW_GAME_LAUNCH.store(true, Ordering::Relaxed);
     if let Some(title) = hook::SupportedTitle::from_running_app() {
+        // Prevent race condition between loading and patching game
+        svc::sleep_thread(1000000000);
         let hook_result = hook::install_hook(title);
 
         if hook_result.is_err() {

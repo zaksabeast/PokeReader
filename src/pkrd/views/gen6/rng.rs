@@ -20,6 +20,9 @@ pub fn draw(
     let tinymt_advances = rng.get_tinymt_advances();
     let initial_state = rng.get_initial_tinymt_state();
     let current_state = game.get_tinymt_state();
+    let tid = game.get_tid();
+    let sid = game.get_sid();
+    let tsv = game.get_tsv();
 
     view::draw_top_right(
         screen,
@@ -33,6 +36,8 @@ pub fn draw(
             &alloc::format!("[1]{:08X} [0]{:08X}", initial_state[1], initial_state[0]),
             &alloc::format!("[3]{:08X} [2]{:08X}", current_state[3], current_state[2]),
             &alloc::format!("[1]{:08X} [0]{:08X}", current_state[1], current_state[0]),
+            &alloc::format!("TID/SID: {}/{}", tid, sid),
+            &alloc::format!("TSV: {}", tsv),
         ],
     )?;
 

@@ -40,4 +40,5 @@ impl Gen6Reader for PokemonXYReader {
     const IS_PARENT2_OCCUPIED_OFFSET_2: usize = Self::IS_PARENT2_OCCUPIED_OFFSET_1;
     const DAYCARE_TITLE_2: &'static str = Self::DAYCARE_TITLE_1;
     const DAYCARE_FOOTER_2: &'static str = Self::DAYCARE_FOOTER_1;
+    const ID_OFFSET: usize = 0xC79C3C;
 }

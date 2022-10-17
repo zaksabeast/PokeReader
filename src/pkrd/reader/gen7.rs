@@ -44,8 +44,8 @@ pub trait Gen7Reader: Reader {
     }
 
     fn get_tsv(&self) -> u16 {
-        let sid = self.default_read::<u16>(Self::ID_OFFSET);
-        let tid = self.default_read::<u16>(Self::ID_OFFSET + 2);
+        let tid = self.default_read::<u16>(Self::ID_OFFSET);
+        let sid = self.default_read::<u16>(Self::ID_OFFSET + 2);
 
         (tid ^ sid) >> 4
     }

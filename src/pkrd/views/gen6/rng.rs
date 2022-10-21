@@ -36,6 +36,7 @@ pub fn draw(
             &alloc::format!("[1]{:08X} [0]{:08X}", initial_state[1], initial_state[0]),
             &alloc::format!("[3]{:08X} [2]{:08X}", current_state[3], current_state[2]),
             &alloc::format!("[1]{:08X} [0]{:08X}", current_state[1], current_state[0]),
+            &alloc::format!(""),
             &alloc::format!("TID/SID: {}/{}", tid, sid),
             &alloc::format!("TSV: {}", tsv),
         ],

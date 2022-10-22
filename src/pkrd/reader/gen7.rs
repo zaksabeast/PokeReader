@@ -6,7 +6,7 @@ use core::convert::TryFrom;
 use no_std_io::Reader;
 use pkm_rs::{Pk7, Pk7Bytes, Pkx};
 
-pub type WildSlot = CircularCounter<0, 4>;
+pub type WildSlot = CircularCounter<0, 5>;
 
 pub type RngSlot = CircularCounter<0, 1>;
 
@@ -36,6 +36,8 @@ pub trait Gen7Reader: Reader {
     const PELAGO_TITLE_2: &'static str;
     const PELAGO_TITLE_3: &'static str;
     const ID_OFFSET: usize;
+    const BOX_CURSOR_OFFSET: usize;
+    const BOX_CURSOR_TITLE: &'static str;
 
     fn get_tid(&self) -> u32 {
         let sidtid = self.default_read::<u32>(Self::ID_OFFSET);
@@ -67,6 +69,10 @@ pub trait Gen7Reader: Reader {
             4 => WildPokemon {
                 title: Self::PELAGO_TITLE_3,
                 pkx: self.read_pk7(Self::PELAGO_OFFSET_3),
+            },
+            5 => WildPokemon {
+                title: Self::BOX_CURSOR_TITLE,
+                pkx: self.read_pk7(Self::BOX_CURSOR_OFFSET),
             },
             _ => WildPokemon {
                 title: Self::WILD_TITLE,

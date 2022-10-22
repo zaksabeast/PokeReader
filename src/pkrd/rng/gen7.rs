@@ -102,6 +102,8 @@ mod test {
         const PELAGO_TITLE_2: &'static str = "Pelago Slot 2";
         const PELAGO_TITLE_3: &'static str = "Pelago Slot 3";
         const ID_OFFSET: usize = 0;
+        const BOX_CURSOR_OFFSET: usize = 0;
+        const BOX_CURSOR_TITLE: &'static str = "Box View";
     }
 
     mod update_sfmt {

@@ -41,6 +41,19 @@ pub trait Gen6Reader: Reader {
     const IS_PARENT2_OCCUPIED_OFFSET_2: usize;
     const DAYCARE_TITLE_2: &'static str;
     const DAYCARE_FOOTER_2: &'static str;
+    const ID_OFFSET: usize;
+
+    fn get_tid(&self) -> u16 {
+        self.default_read::<u16>(Self::ID_OFFSET)
+    }
+
+    fn get_sid(&self) -> u16 {
+        self.default_read::<u16>(Self::ID_OFFSET + 2)
+    }
+
+    fn get_tsv(&self) -> u16 {
+        (self.get_tid() ^ self.get_sid()) >> 4
+    }
 
     fn get_daycare(&self, daycare_slot: DaycareSlot) -> Daycare {
         if daycare_slot.value() == 0 {

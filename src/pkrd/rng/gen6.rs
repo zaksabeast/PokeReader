@@ -144,6 +144,7 @@ mod test {
         const IS_PARENT2_OCCUPIED_OFFSET_2: usize = 0;
         const DAYCARE_TITLE_2: &'static str = "Daycare View";
         const DAYCARE_FOOTER_2: &'static str = "";
+        const ID_OFFSET: usize = 0;
     }
 
     mod update_mt {

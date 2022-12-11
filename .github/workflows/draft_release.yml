@@ -18,7 +18,7 @@ jobs:
           rustup component add clippy
 
       - name: Build
-        run: cargo build --release
+        run: cargo build --release --target wasm32-unknown-unknown
 
       - name: Draft release
         if: github.event_name == 'workflow_dispatch'

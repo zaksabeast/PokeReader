@@ -1,0 +1,36 @@
+name: Lint, Test, Build
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  lint-test-build:
+    name: Lint, test, and build
+    runs-on: ubuntu-latest
+    container: rust
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Add wasm target
+        run: |
+          rustup target add wasm32-unknown-unknown
+          rustup component add clippy
+
+      - name: Lint
+        run: cargo clippy
+
+      - name: Test
+        run: cargo test
+
+      - name: Build
+        run: cargo build --release --target wasm32-unknown-unknown
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: PokeReader
+          retention-days: 5
+          path: target/wasm32-unknown-unknown/release/pokereader.wasm

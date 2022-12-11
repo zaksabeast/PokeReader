@@ -1,4 +1,3 @@
-use alloc::string::String;
 use pkm_rs::{types, Pkx};
 
 pub fn is_masuda_method(parent1: &impl Pkx, parent2: &impl Pkx) -> bool {
@@ -15,15 +14,13 @@ pub fn is_daycare_masuda_method(parent1: &Option<impl Pkx>, parent2: &Option<imp
 }
 
 pub fn format_egg_parent(parent_num: u8, parent: &Option<impl Pkx>) -> String {
-    let formatted_parent = match parent {
-        Some(parent) => alloc::format!(
+    match parent {
+        Some(parent) => format!(
             "Par{}: {} {}",
             parent_num,
             parent.species(),
             parent.gender_ratio()
         ),
-        None => alloc::format!("Par{}: {}", parent_num, types::Species::None),
-    };
-
-    formatted_parent
+        None => format!("Par{}: {}", parent_num, types::Species::None),
+    }
 }

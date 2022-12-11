@@ -1,14 +1,14 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct CircularCounter<const MIN: u32, const MAX: u32> {
-    value: u32,
+pub struct CircularCounter<const MIN: usize, const MAX: usize> {
+    value: usize,
 }
 
-impl<const MIN: u32, const MAX: u32> CircularCounter<MIN, MAX> {
-    pub fn value(&self) -> u32 {
+impl<const MIN: usize, const MAX: usize> CircularCounter<MIN, MAX> {
+    pub fn value(&self) -> usize {
         self.value
     }
 
-    pub fn increment(&mut self) -> u32 {
+    pub fn increment(&mut self) -> usize {
         if self.value == MAX {
             self.value = MIN;
         } else {
@@ -18,7 +18,7 @@ impl<const MIN: u32, const MAX: u32> CircularCounter<MIN, MAX> {
         self.value
     }
 
-    pub fn decrement(&mut self) -> u32 {
+    pub fn decrement(&mut self) -> usize {
         if self.value == MIN {
             self.value = MAX;
         } else {
@@ -29,7 +29,7 @@ impl<const MIN: u32, const MAX: u32> CircularCounter<MIN, MAX> {
     }
 }
 
-impl<const MIN: u32, const MAX: u32> Default for CircularCounter<MIN, MAX> {
+impl<const MIN: usize, const MAX: usize> Default for CircularCounter<MIN, MAX> {
     fn default() -> Self {
         Self { value: MIN }
     }

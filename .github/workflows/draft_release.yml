@@ -1,0 +1,28 @@
+name: Draft release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  draft-release:
+    name: Draft release
+    runs-on: ubuntu-latest
+    container: rust
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Add wasm target
+        run: |
+          rustup target add wasm32-unknown-unknown
+          rustup component add clippy
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Draft release
+        if: github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: target/wasm32-unknown-unknown/release/pokereader.wasm

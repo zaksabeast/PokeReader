@@ -1,30 +1,18 @@
 [package]
-name = "pkrd"
+name = "pokereader"
 version = "0.1.0"
-authors = ["zaksabeast <19464008+zaksabeast@users.noreply.github.com>"]
-edition = "2018"
-publish = false
+edition = "2021"
 
 [dependencies]
-ctr = { package = "libctr-rs", git = "https://github.com/zaksabeast/libctr-rs", rev = "8edf31a" }
-lazy_static = { version = "1.4.0", default-features = false, features = ["spin_no_std"] }
-num_enum = { version = "0.5", default-features = false }
-safe-transmute = { version = "0.11", default-features = false }
 no_std_io = { git = "https://github.com/zaksabeast/no_std_io.git", rev = "4bc5adf" }
-pkm-rs = { git = "https://github.com/zaksabeast/pkm-rs.git", rev = "e08bb4e" }
+num_enum = { version = "0.5", default-features = false }
+once_cell = "1.16"
+pkm-rs = { git = "https://github.com/zaksabeast/pkm-rs.git", rev = "b8e739f" }
+pnp = { git = "https://github.com/zaksabeast/3ds-Plug-n-play.git", rev = "a5e7a51" }
 
-[dev-dependencies]
-mocktopus = "0.7.11"
-
-[target.'cfg(target_os = "horizon")'.dependencies]
-linked_list_allocator = "0.9.0"
-
-[target.'cfg(not(target_os = "horizon"))'.dependencies]
-mocktopus = { version = "0.7.11" }
-
-[profile.dev]
-panic = "abort"
+[lib]
+crate-type = ["cdylib", "staticlib"]
 
 [profile.release]
+opt-level = 3
 lto = true
-panic = "abort"

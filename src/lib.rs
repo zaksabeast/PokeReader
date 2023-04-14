@@ -4,6 +4,7 @@ mod gen7;
 mod menu;
 mod rng;
 mod title;
+mod transporter;
 mod utils;
 
 use title::{title_id, SupportedTitle};
@@ -15,6 +16,7 @@ pub extern "C" fn run_frame() {
         SupportedTitle::Us | SupportedTitle::Um => gen7::run_usum_frame(),
         SupportedTitle::Or | SupportedTitle::As => gen6::run_oras_frame(),
         SupportedTitle::X | SupportedTitle::Y => gen6::run_xy_frame(),
+        SupportedTitle::Transporter => transporter::run_frame(),
         SupportedTitle::Invalid => {}
     }
 }

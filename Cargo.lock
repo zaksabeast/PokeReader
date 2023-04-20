@@ -114,7 +114,7 @@ dependencies = [
 [[package]]
 name = "pnp"
 version = "0.1.0"
-source = "git+https://github.com/zaksabeast/3ds-Plug-n-play.git?rev=a5e7a51#a5e7a515ab14bdac26ca857ed1d149afbe168a95"
+source = "git+https://github.com/zaksabeast/3ds-Plug-n-play.git?rev=e39f5eb#e39f5eb79a4c5b477a3bb4e119a16bbf8e20c8cd"
 dependencies = [
  "no_std_io",
  "num_enum",

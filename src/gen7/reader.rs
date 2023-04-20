@@ -22,6 +22,28 @@ struct Gen7Addresses {
     npc_list: u32,
 }
 
+const SM_ADDRESSES_MODE3: Gen7Addresses = Gen7Addresses {
+    initial_seed: 0x325a01c4,
+    sfmt_state_index: 0x3319653c,
+    sfmt_state: 0x33195b7c,
+    party: 0x34195e10,
+    wild: 0x3002f7b8,
+    sos: 0x3002f7b8,
+    sos_seed: 0x30038c44,
+    sos_chain_length: 0x3003960d,
+    pelago: 0x331110ca,
+    egg_ready: 0x3313edd8,
+    egg: 0x3313eddc,
+    parent1: 0x3313ec01,
+    parent2: 0x3313ecea,
+    is_parent1_occupied: 0x3313ec00,
+    is_parent2_occupied: 0x3313ece9,
+    shiny_charm: 0x330d5930,
+    id: 0x330d67d0,
+    box_cursor: 0x30000298,
+    npc_list: 0x341977b8,
+};
+
 const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     initial_seed: 0x325a3878,
     sfmt_state_index: 0x33196548,
@@ -66,6 +88,28 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     npc_list: 0x33f81438,
 };
 
+const USUM_ADDRESSES_MODE3: Gen7Addresses = Gen7Addresses {
+    initial_seed: 0x326601c4,
+    sfmt_state_index: 0x330d3f8c,
+    sfmt_state: 0x330d35cc,
+    party: 0x33f7fa44,
+    wild: 0x3002f9a0,
+    sos: 0x3002f9a0,
+    sos_seed: 0x30038e30,
+    sos_chain_length: 0x300397f9,
+    pelago: 0x3304d16a,
+    egg_ready: 0x3307b1e8,
+    egg: 0x3307b1ec,
+    parent1: 0x3307b011,
+    parent2: 0x3307b0fa,
+    is_parent1_occupied: 0x3307b010,
+    is_parent2_occupied: 0x3307b0f9,
+    shiny_charm: 0x33012008,
+    id: 0x33012818,
+    box_cursor: 0x30000298,
+    npc_list: 0x33f81438,
+};
+
 pub struct Gen7Reader {
     addrs: &'static Gen7Addresses,
 }
@@ -77,9 +121,21 @@ impl Gen7Reader {
         }
     }
 
+    pub fn sm_mode3() -> Self {
+        Self {
+            addrs: &SM_ADDRESSES_MODE3,
+        }
+    }
+
     pub fn usum() -> Self {
         Self {
             addrs: &USUM_ADDRESSES,
+        }
+    }
+
+    pub fn usum_mode3() -> Self {
+        Self {
+            addrs: &USUM_ADDRESSES_MODE3,
         }
     }
 

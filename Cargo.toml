@@ -8,7 +8,7 @@ no_std_io = { git = "https://github.com/zaksabeast/no_std_io.git", rev = "4bc5ad
 num_enum = { version = "0.5", default-features = false }
 once_cell = "1.16"
 pkm-rs = { git = "https://github.com/zaksabeast/pkm-rs.git", rev = "b8e739f" }
-pnp = { git = "https://github.com/zaksabeast/3ds-Plug-n-play.git", rev = "a5e7a51" }
+pnp = { git = "https://github.com/zaksabeast/3ds-Plug-n-play.git", rev = "e39f5eb" }
 
 [lib]
 crate-type = ["cdylib", "staticlib"]

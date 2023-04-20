@@ -126,9 +126,17 @@ fn run_frame(reader: Gen7Reader) {
 }
 
 pub fn run_sm_frame() {
-    run_frame(Gen7Reader::sm())
+    let reader = match pnp::is_mode_3() {
+        true => Gen7Reader::sm_mode3(),
+        false => Gen7Reader::sm(),
+    };
+    run_frame(reader)
 }
 
 pub fn run_usum_frame() {
-    run_frame(Gen7Reader::usum())
+    let reader = match pnp::is_mode_3() {
+        true => Gen7Reader::usum_mode3(),
+        false => Gen7Reader::usum(),
+    };
+    run_frame(reader)
 }

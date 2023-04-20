@@ -9,6 +9,11 @@ mod utils;
 
 use title::{title_id, SupportedTitle};
 
+// We could use the default allocator,
+// but this makes the module more efficient.
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
 #[no_mangle]
 pub extern "C" fn run_frame() {
     match title_id() {

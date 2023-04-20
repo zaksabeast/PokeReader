@@ -2,6 +2,7 @@ use crate::utils::CircularCounter;
 use pnp::Button;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+const GIT_HASH: &str = env!("GIT_HASH");
 
 pub trait MenuOptionValue: Copy {
     fn get_label(option: Self) -> &'static str;
@@ -60,7 +61,7 @@ impl<const MAX: usize, Value: MenuOptionValue> Menu<MAX, Value> {
             pnp::println!("{} {}", self.cursor_str(index + 1), option.label);
         }
         pnp::println!("");
-        pnp::println!("PokeReader {}", VERSION);
+        pnp::println!("Ver {} ({})", VERSION, GIT_HASH);
     }
 
     pub fn update_view(&mut self) {

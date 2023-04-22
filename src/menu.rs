@@ -61,7 +61,7 @@ impl<const MAX: usize, Value: MenuOptionValue> Menu<MAX, Value> {
             pnp::println!("{} {}", self.cursor_str(index + 1), option.label);
         }
         pnp::println!("");
-        pnp::println!("Ver {} ({})", VERSION, GIT_HASH);
+        pnp::println!("Ver {} {}", VERSION, GIT_HASH);
     }
 
     pub fn update_view(&mut self) {

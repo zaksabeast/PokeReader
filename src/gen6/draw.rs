@@ -20,11 +20,15 @@ pub fn draw_tinymt(rng: &Gen6Rng) {
     pnp::println!("Advances: {}", tinymt.advances());
 }
 
-pub fn draw_rng(reader: &Gen6Reader, rng: &Gen6Rng) {
+pub fn draw_mt(rng: &Gen6Rng) {
     let mt = rng.mt();
     pnp::println!("Init seed: {:08X}", mt.init_seed());
     pnp::println!("Curr state: {:08X}", mt.current_state());
     pnp::println!("MT Advances: {}", mt.advances());
+}
+
+pub fn draw_rng(reader: &Gen6Reader, rng: &Gen6Rng) {
+    draw_mt(rng);
     pnp::println!("");
     draw_tinymt(rng);
     pnp::println!("");
@@ -56,8 +60,10 @@ pub fn draw_dex_nav(reader: &Gen6Reader, rng: &Gen6Rng) {
     let step = reader.dex_nav_step();
     let chain = reader.dex_nav_chain();
 
-    pnp::println!("Step {}", step);
-    pnp::println!("Chain {}", chain);
+    draw_mt(rng);
     pnp::println!("");
     draw_tinymt(rng);
+    pnp::println!("");
+    pnp::println!("Step {}", step);
+    pnp::println!("Chain {}", chain);
 }

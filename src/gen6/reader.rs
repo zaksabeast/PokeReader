@@ -117,8 +117,8 @@ impl Gen6Reader {
     pub fn daycare1(&self) -> Daycare {
         Daycare {
             egg_seed: [
-                pnp::read(self.addrs.egg_seed_1),
                 pnp::read(self.addrs.egg_seed_1 + 0x4),
+                pnp::read(self.addrs.egg_seed_1),
             ],
             is_egg_ready: pnp::read::<u8>(self.addrs.egg_ready_1) != 0,
             parent1: self.egg_parent(self.addrs.is_parent1_occupied_1, self.addrs.parent1_1),
@@ -129,8 +129,8 @@ impl Gen6Reader {
     pub fn daycare2(&self) -> Daycare {
         Daycare {
             egg_seed: [
-                pnp::read(self.addrs.egg_seed_2),
                 pnp::read(self.addrs.egg_seed_2 + 0x4),
+                pnp::read(self.addrs.egg_seed_2),
             ],
             is_egg_ready: pnp::read::<u8>(self.addrs.egg_ready_2) != 0,
             parent1: self.egg_parent(self.addrs.is_parent1_occupied_2, self.addrs.parent1_2),

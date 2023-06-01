@@ -95,9 +95,10 @@ pub fn run_oras_frame() {
         return;
     }
 
+    state.main_menu.update_lock();
     state.view = state.main_menu.next_view(OrasView::MainMenu, state.view);
 
-    draw_header(OrasView::MainMenu, state.view);
+    draw_header(OrasView::MainMenu, state.view, state.main_menu.is_locked());
 
     match state.view {
         OrasView::Rng => draw_rng(&reader, &state.rng),

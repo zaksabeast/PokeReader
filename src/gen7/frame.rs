@@ -99,9 +99,10 @@ fn run_frame(reader: Gen7Reader) {
         return;
     }
 
+    state.main_menu.update_lock();
     state.view = state.main_menu.next_view(Gen7View::MainMenu, state.view);
 
-    draw_header(Gen7View::MainMenu, state.view);
+    draw_header(Gen7View::MainMenu, state.view, state.main_menu.is_locked());
 
     match state.view {
         Gen7View::Rng => draw_rng(&reader, &state.sfmt),

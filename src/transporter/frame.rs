@@ -68,11 +68,16 @@ pub fn run_frame() {
         return;
     }
 
+    state.main_menu.update_lock();
     state.view = state
         .main_menu
         .next_view(TransporterView::MainMenu, state.view);
 
-    draw_header(TransporterView::MainMenu, state.view);
+    draw_header(
+        TransporterView::MainMenu,
+        state.view,
+        state.main_menu.is_locked(),
+    );
 
     match state.view {
         TransporterView::Pokemon => draw_pkx(&reader.transported_pkm(0)),

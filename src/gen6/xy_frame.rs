@@ -92,9 +92,10 @@ pub fn run_xy_frame() {
         return;
     }
 
+    state.main_menu.update_lock();
     state.view = state.main_menu.next_view(XyView::MainMenu, state.view);
 
-    draw_header(XyView::MainMenu, state.view);
+    draw_header(XyView::MainMenu, state.view, state.main_menu.is_locked());
 
     match state.view {
         XyView::Rng => draw_rng(&reader, &state.rng),

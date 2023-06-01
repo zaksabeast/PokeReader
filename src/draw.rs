@@ -14,12 +14,14 @@ pub fn draw_pkx(pkx: &impl Pkx) {
     pnp::println!("HPower: {}", pkx.hidden_power());
 }
 
-pub fn draw_header<T: MenuOptionValue + Eq>(main_menu: T, current_view: T) {
-    if current_view == main_menu {
-        pnp::println!("-> Accept");
-        pnp::println!("");
+pub fn draw_header<T: MenuOptionValue + Eq>(main_menu: T, current_view: T, is_locked: bool) {
+    if is_locked {
+        pnp::println!("Unlock X+Y");
+    } else if current_view == main_menu {
+        pnp::println!("-> Accept / Lock X+Y");
     } else {
-        pnp::println!("<- Back - {}", T::get_label(current_view));
-        pnp::println!("");
+        pnp::println!("<- Back / Lock X+Y");
     }
+
+    pnp::println!("");
 }

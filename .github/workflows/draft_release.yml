@@ -23,14 +23,18 @@ jobs:
 
       - name: "Set build timestamp"
         run: echo "build_timestamp=$(date +'%Y-%m-%d %H:%M')" >> $GITHUB_OUTPUT
-        id: version
+        id: build_timestamp
+
+      - name: "Set tag name"
+        run: echo "tag_name=canary-$(date +'%Y-%m-%d-%H-%M')" >> $GITHUB_OUTPUT
+        id: tag_name
 
       - name: Draft release
         uses: softprops/action-gh-release@v1
         with:
           draft: false
           prerelease: true
-          tag_name: ${{ github.sha }}
-          name: ${{ format('Canary {0}', steps.version.outputs.build_timestamp) }}
+          tag_name: ${{ steps.tag_name.outputs.tag_name }}
+          name: ${{ format('Canary {0}', steps.build_timestamp.outputs.build_timestamp) }}
           body: ${{ github.event.head_commit.message }}
           files: target/wasm32-unknown-unknown/release/pokereader.wasm

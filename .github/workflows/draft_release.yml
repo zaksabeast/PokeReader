@@ -13,10 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set outputs
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: Add wasm target
         run: |
           rustup target add wasm32-unknown-unknown
@@ -25,11 +21,15 @@ jobs:
       - name: Build
         run: cargo build --release --target wasm32-unknown-unknown
 
+      - name: "Set build timestamp"
+        run: echo "build_timestamp=$(date +'%Y-%m-%d %H:%M')" >> $GITHUB_OUTPUT
+        id: version
+
       - name: Draft release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
           prerelease: true
-          name: ${{ format('Canary {0}', steps.vars.outputs.sha_short) }}
+          name: ${{ format('Canary {0}', steps.version.outputs.build_timestamp) }}
           body: ${{ github.event.head_commit.message }}
           files: target/wasm32-unknown-unknown/release/pokereader.wasm

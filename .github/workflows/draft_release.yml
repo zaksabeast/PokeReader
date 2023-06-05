@@ -28,7 +28,7 @@ jobs:
       - name: Draft release
         uses: softprops/action-gh-release@v1
         with:
-          draft: true
+          draft: false
           prerelease: true
           name: ${{ format('Canary {0}', steps.version.outputs.build_timestamp) }}
           body: ${{ github.event.head_commit.message }}

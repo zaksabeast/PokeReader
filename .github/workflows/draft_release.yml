@@ -30,6 +30,7 @@ jobs:
         with:
           draft: false
           prerelease: true
+          tag_name: ${{ format('Canary {0}', steps.version.outputs.build_timestamp) }}
           name: ${{ format('Canary {0}', steps.version.outputs.build_timestamp) }}
           body: ${{ github.event.head_commit.message }}
           files: target/wasm32-unknown-unknown/release/pokereader.wasm

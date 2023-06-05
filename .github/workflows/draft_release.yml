@@ -30,6 +30,6 @@ jobs:
         with:
           draft: true
           prerelease: true
-          name: format('Canary {0}', steps.vars.outputs.sha_short)
+          name: ${{ format('Canary {0}', steps.vars.outputs.sha_short) }}
           body: ${{ github.event.head_commit.message }}
           files: target/wasm32-unknown-unknown/release/pokereader.wasm

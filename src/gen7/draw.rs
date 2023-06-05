@@ -39,10 +39,10 @@ pub fn draw_daycare(reader: &Gen7Reader) {
     pnp::println!("{}", format_egg_parent(1, &parent1));
     pnp::println!("{}", format_egg_parent(2, &parent2));
     pnp::println!("");
-    pnp::println!("Egg[0]: {:08X}", egg_seed[3]);
-    pnp::println!("Egg[1]: {:08X}", egg_seed[2]);
-    pnp::println!("Egg[2]: {:08X}", egg_seed[1]);
-    pnp::println!("Egg[3]: {:08X}", egg_seed[0]);
+    pnp::println!("Egg[3]: {:08X}", egg_seed[3]);
+    pnp::println!("Egg[2]: {:08X}", egg_seed[2]);
+    pnp::println!("Egg[1]: {:08X}", egg_seed[1]);
+    pnp::println!("Egg[0]: {:08X}", egg_seed[0]);
     pnp::println!("");
     pnp::println!("Shiny Charm: {}", has_shiny_charm);
     pnp::println!("Masuda Method: {}", is_masuda_method);

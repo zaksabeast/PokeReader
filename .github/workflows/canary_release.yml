@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  draft-release:
+  canary-release:
     name: Canary release
     runs-on: ubuntu-latest
     container: rust
@@ -29,7 +29,7 @@ jobs:
         run: echo "tag_name=canary-$(date +'%Y-%m-%d-%H-%M')" >> $GITHUB_OUTPUT
         id: tag_name
 
-      - name: Draft release
+      - name: Publish canary release
         uses: softprops/action-gh-release@v1
         with:
           draft: false

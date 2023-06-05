@@ -34,19 +34,18 @@ impl MT {
     }
 
     pub fn next(&mut self) -> u32 {
+        self.index += 1;
+
         if self.index == 624 {
             self.shuffle();
         }
-
-        let y = self.mt[self.index];
-        self.index += 1;
 
         // Game doesn't store tempered in memory
         //y ^= y >> 11;
         //y ^= (y << 7) & 0x9d2c5680;
         //y ^= (y << 15) & 0xefc60000;
         //y ^= y >> 18;
-        y
+        self.mt[self.index]
     }
 
     fn shuffle(&mut self) {
@@ -102,6 +101,10 @@ impl Rng for MT {
     fn next_state(&mut self) -> Self::CurrentState {
         self.next()
     }
+
+    fn current_state(&mut self) -> Self::CurrentState {
+        self.mt[self.index]
+    }
 }
 
 #[cfg(test)]
@@ -116,6 +119,6 @@ mod test {
         }
 
         let result = rng.next();
-        assert_eq!(result, 0xd80fcb47);
+        assert_eq!(result, 0xc66f33c9);
     }
 }

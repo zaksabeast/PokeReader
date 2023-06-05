@@ -40,6 +40,10 @@ impl Rng for TinyMT {
         self.next_state();
         self.get_state()
     }
+
+    fn current_state(&mut self) -> Self::CurrentState {
+        self.get_state()
+    }
 }
 
 #[cfg(test)]

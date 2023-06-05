@@ -29,6 +29,7 @@ impl<T: rng::Rng + Copy> RngWrapper<T> {
         self.rng = T::new(seed);
         self.init_seed = seed;
         self.advances = 0;
+        self.current_state = self.rng.current_state();
     }
 
     pub fn reinit_if_needed(&mut self, seed: T::Seed) -> bool {
@@ -53,5 +54,61 @@ impl<T: rng::Rng + Copy> RngWrapper<T> {
                 return;
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::rng::{Rng, Sfmt, TinyMT, MT};
+
+    #[test]
+    fn should_track_sfmt_advances() {
+        let seed = 0x92845c35;
+        let mut rng = Sfmt::new(seed);
+
+        for _ in 0..478 {
+            rng.next_state();
+        }
+        assert_eq!(rng.current_state(), 0x5a1ef513d10eccfb);
+
+        let mut wrapper = RngWrapper::<Sfmt>::default();
+        wrapper.reinit(seed);
+        wrapper.update_advances(rng.current_state());
+        assert_eq!(wrapper.advances(), 478);
+    }
+
+    fn should_track_mt_advances() {
+        let seed = 0x4fa7c9da;
+        let mut rng = MT::new(seed);
+
+        for _ in 0..346 {
+            rng.next_state();
+        }
+        assert_eq!(rng.current_state(), 0xc81fa608);
+
+        let mut wrapper = RngWrapper::<MT>::default();
+        wrapper.reinit(seed);
+        wrapper.update_advances(rng.current_state());
+        assert_eq!(wrapper.advances(), 346);
+    }
+
+    #[test]
+    fn should_track_tinymt_advances() {
+        let seed = [0x97ae4a88, 0xb2109ba7, 0x42da3974, 0x2f868185];
+        let mut rng = TinyMT::new(seed);
+
+        for _ in 0..15 {
+            rng.next_state();
+        }
+        assert_eq!(
+            rng.current_state(),
+            [0x9a964db3, 0x59be7544, 0xc1661d33, 0x9496f640]
+        );
+
+        let mut wrapper = RngWrapper::<TinyMT>::default();
+        wrapper.reinit(seed);
+        wrapper.update_advances(rng.current_state());
+        assert_eq!(wrapper.advances(), 15);
     }
 }

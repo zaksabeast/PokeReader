@@ -38,7 +38,7 @@ impl Sfmt {
         self.sfmt[0] ^= !inner & 1;
     }
 
-    pub(crate) fn get_current_state(&self) -> u64 {
+    fn get_current_state(&self) -> u64 {
         let index = if self.index != 624 { self.index } else { 0 };
         let low = self.sfmt[index] as u64;
         let high = self.sfmt[index + 1] as u64;
@@ -47,17 +47,13 @@ impl Sfmt {
     }
 
     pub fn next(&mut self) -> u64 {
-        // Get state before shuffle
-        // Needed for gen 7 compatbility
-        let state = self.get_current_state();
-
         if self.index == 624 {
             self.shuffle();
         }
 
         self.index += 2;
 
-        state
+        self.get_current_state()
     }
 
     fn shuffle(&mut self) {
@@ -121,6 +117,10 @@ impl Rng for Sfmt {
     fn next_state(&mut self) -> Self::CurrentState {
         self.next()
     }
+
+    fn current_state(&mut self) -> Self::CurrentState {
+        self.get_current_state()
+    }
 }
 
 #[cfg(test)]
@@ -135,7 +135,7 @@ mod test {
         }
 
         let result = rng.next();
-        assert_eq!(result, 0xd7efa47e23000ac8);
+        assert_eq!(result, 0xf37f2d8313a9eeac);
     }
 
     #[test]
@@ -146,6 +146,6 @@ mod test {
         }
 
         let result = rng.next();
-        assert_eq!(result, 0xb5618d99ce90d534);
+        assert_eq!(result, 0xf05d06ac9b22b08f);
     }
 }

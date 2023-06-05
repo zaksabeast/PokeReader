@@ -14,4 +14,5 @@ pub trait Rng: Default {
 
     fn new(seed: Self::Seed) -> Self;
     fn next_state(&mut self) -> Self::CurrentState;
+    fn current_state(&mut self) -> Self::CurrentState;
 }

@@ -1,6 +1,6 @@
 # PokeReader
 
-PokeReader is a [Plug-n-play plugin](https://github.com/zaksabeast/3ds-Plug-n-play) that allows viewing information about 3ds Pokemon games, such as:
+PokeReader is a 3gx plugin that allows viewing information about 3ds Pokemon games, such as:
 
 - RNG states
 - Party/Wild Pokemon
@@ -10,20 +10,15 @@ This information can be used to RNG shiny and high IV Pokemon, similar to lua sc
 
 ## Installing
 
-1. Install [Plug-n-play](https://github.com/zaksabeast/3ds-Plug-n-play)
+1. Update to the latest [Luma](https://github.com/LumaTeam/Luma3DS/releases) or set up [Citra](https://github.com/citra-emu/citra)
 1. Download the [latest PokeReader release](https://github.com/zaksabeast/PokeReader/releases/latest)
-1. Copy pokereader.wasm to `/pnp/pokereader.wasm` on your sd card (create the directory if it doesn't exist)
-
-## Usage notes
-
-PokeReader keeps track of the game's internal RNG state. If other pnp plugins are used and the RNG advances too far without PokeReader running, PokeReader will not be able to keep track of the RNG.
-
-For Gen 6 games, PokeReader needs to be opened at least one time before the title screen so it can patch the game to get the initial seed.
+1. Copy pokereader.3gx to `/luma/plugins/default.3gx` on your sd card (create the directory if it doesn't exist)
+   - Optionally, copy it to `/luma/plugins/<title_id>/plugin.3gx` for every Pokemon game
 
 ## Building
 
-1. Install rust and the wasm32-unknown-unknown target
-1. Run `cargo build --release --target wasm32-unknown-unknown`
+1. Install rust and the armv6k-nintendo-3ds target, devkitarm, and [3gxtool](https://gitlab.com/thepixellizeross/3gxtool)
+1. Run `make`
 
 ## Credits
 

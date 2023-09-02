@@ -7,28 +7,26 @@ jobs:
   lint-test-build:
     name: Lint, test, and build
     runs-on: ubuntu-latest
-    container: rust
+    container: zaksabeast/devkitarm-rust
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Add wasm target
-        run: |
-          rustup target add wasm32-unknown-unknown
-          rustup component add clippy
+      - name: Add 3ds target
+        run: rustup toolchain install nightly --component rust-src --component clippy
 
       - name: Lint
-        run: cargo clippy
+        run: make lint
 
       - name: Test
-        run: cargo test
+        run: make test
 
       - name: Build
-        run: cargo build --release --target wasm32-unknown-unknown
+        run: make
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: PokeReader
           retention-days: 3
-          path: target/wasm32-unknown-unknown/release/pokereader.wasm
+          path: out/pokereader.3gx

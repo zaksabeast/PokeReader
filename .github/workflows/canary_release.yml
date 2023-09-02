@@ -8,18 +8,16 @@ jobs:
   canary-release:
     name: Canary release
     runs-on: ubuntu-latest
-    container: rust
+    container: zaksabeast/devkitarm-rust
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Add wasm target
-        run: |
-          rustup target add wasm32-unknown-unknown
-          rustup component add clippy
+      - name: Add 3ds target
+        run: rustup toolchain install nightly --component rust-src --component clippy
 
       - name: Build
-        run: cargo build --release --target wasm32-unknown-unknown
+        run: make
 
       - name: "Set build timestamp"
         run: echo "build_timestamp=$(date +'%Y-%m-%d %H:%M')" >> $GITHUB_OUTPUT
@@ -37,4 +35,4 @@ jobs:
           tag_name: ${{ steps.tag_name.outputs.tag_name }}
           name: ${{ format('Canary {0}', steps.build_timestamp.outputs.build_timestamp) }}
           body: ${{ github.event.head_commit.message }}
-          files: target/wasm32-unknown-unknown/release/pokereader.wasm
+          files: out/pokereader.3gx

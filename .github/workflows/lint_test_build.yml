@@ -12,9 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Add 3ds target
-        run: rustup toolchain install nightly --component rust-src --component clippy
-
       - name: Lint
         run: make lint
 

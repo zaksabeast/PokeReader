@@ -151,12 +151,12 @@ void main(void)
         break;
     case GAME_OR:
         present_buffer_ptr = 0x148758;
-        get_screen_jump_inst = 0xeb006fc9;
+        get_screen_jump_inst = 0xeb0071d4;
         map_input_memory_block = 0x1331e8;
         break;
     case GAME_AS:
         present_buffer_ptr = 0x148758;
-        get_screen_jump_inst = 0xeb006fc9;
+        get_screen_jump_inst = 0xeb0071d4;
         map_input_memory_block = 0x1331e8;
         break;
     case GAME_S:

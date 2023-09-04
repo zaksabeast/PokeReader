@@ -42,7 +42,6 @@ void draw_to_screen(u32 screenId, u8 *framebuffer, u32 stride, u32 format)
     print_y += 12;
   }
 
-  svcFlushDataCacheRange(framebuffer, SCREEN_WIDTH * SCREEN_HEIGHT * 4);
   host_reset_print();
 }
 

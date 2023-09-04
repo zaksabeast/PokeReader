@@ -65,6 +65,13 @@ void run_hook(u32 _1, u32 _2, u32 _3, u32 _4, u32 screenId, u32 swap, u8 *fb_a, 
         draw_to_screen(screenId, fb_a, stride, format);
     }
 
+    svcFlushProcessDataCache(CUR_PROCESS_HANDLE, (u32)fb_a, SCREEN_WIDTH * SCREEN_HEIGHT);
+    // Thanks to https://github.com/44670/NTR/blob/c764c0f68c08f3518a9f284f5fda1bf3b2636123/source/plg.c#L868-L870
+    if (isTopScreen && fb_a != fb_b && fb_b != 0)
+    {
+        svcFlushProcessDataCache(CUR_PROCESS_HANDLE, (u32)fb_b, SCREEN_WIDTH * SCREEN_HEIGHT);
+    }
+
     handle_freeze(isTopScreen);
 }
 

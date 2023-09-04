@@ -32,6 +32,7 @@ struct Gen6Addresses {
     dex_nav_step: u32,
     dex_nav_chain: u32,
     radar_chain: u32,
+    seed_save_variable: u32,
 }
 
 const XY_ADDRESSES: Gen6Addresses = Gen6Addresses {
@@ -58,6 +59,7 @@ const XY_ADDRESSES: Gen6Addresses = Gen6Addresses {
     dex_nav_step: 0,
     dex_nav_chain: 0,
     radar_chain: 0x8d1b2b8,
+    seed_save_variable: 0x8c6a6a4,
 };
 
 const ORAS_ADDRESSES: Gen6Addresses = Gen6Addresses {
@@ -84,6 +86,7 @@ const ORAS_ADDRESSES: Gen6Addresses = Gen6Addresses {
     dex_nav_step: 0x8d3b508,
     dex_nav_chain: 0x8d3b57c,
     radar_chain: 0,
+    seed_save_variable: 0x8c71db8,
 };
 
 pub struct Gen6Reader {
@@ -196,6 +199,10 @@ impl Gen6Reader {
 
     pub fn dex_nav_chain(&self) -> u8 {
         pnp::read(self.addrs.dex_nav_chain)
+    }
+
+    pub fn seed_save_variable(&self) -> u32 {
+        pnp::read(self.addrs.seed_save_variable)
     }
 
     pub fn patch_inital_seed_read(&self) {

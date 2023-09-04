@@ -28,14 +28,14 @@ static Handle memLayoutChanged;
 static u8 stack[STACK_SIZE] ALIGN(8);
 static bool is_paused = false;
 
-void handle_freeze()
+void handle_freeze(bool isTopScreen)
 {
     if (host_is_just_pressed(BUTTON_START | BUTTON_SELECT))
     {
         is_paused = true;
     }
 
-    while (is_paused)
+    while (is_paused && !isTopScreen)
     {
         scan_input();
 
@@ -63,8 +63,9 @@ void run_hook(u32 _1, u32 _2, u32 _3, u32 _4, u32 screenId, u32 swap, u8 *fb_a, 
         scan_input();
         run_frame();
         draw_to_screen(screenId, fb_a, stride, format);
-        handle_freeze();
     }
+
+    handle_freeze(isTopScreen);
 }
 
 Result map_input_hook(u32 memblock_handle, u32 addr, u32 _r2, u32 _r3, u32 _r4, u32 _r5)

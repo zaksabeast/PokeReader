@@ -31,7 +31,7 @@ void draw_to_screen(u32 screenId, u8 *framebuffer, u32 stride, u32 format)
     return;
   }
 
-  ovDrawRect((u32)framebuffer, stride, format, print_y, print_x, buffer_index * 12 + 4, print_max_len * 8 + 8, 0x00, 0x00, 0x00);
+  ovDrawTranspartBlackRect((u32)framebuffer, stride, format, print_y, print_x, buffer_index * 12 + 4, print_max_len * 8 + 8, 1);
 
   print_x += 4;
   print_y += 4;

@@ -26,6 +26,34 @@ typedef enum SupportedTitle
 static Handle thread;
 static Handle memLayoutChanged;
 static u8 stack[STACK_SIZE] ALIGN(8);
+static bool is_paused = false;
+
+void handle_freeze()
+{
+    if (host_is_just_pressed(BUTTON_START | BUTTON_SELECT))
+    {
+        is_paused = true;
+    }
+
+    while (is_paused)
+    {
+        scan_input();
+
+        u32 just_pressed = host_just_pressed();
+
+        if (just_pressed == BUTTON_SELECT)
+        {
+            break;
+        }
+
+        if (just_pressed == BUTTON_A || just_pressed == BUTTON_START)
+        {
+            is_paused = false;
+        }
+
+        svcSleepThread(50000000);
+    }
+}
 
 void run_hook(u32 _1, u32 _2, u32 _3, u32 _4, u32 screenId, u32 swap, u8 *fb_a, u8 *fb_b, u32 stride, u32 format)
 {
@@ -35,6 +63,7 @@ void run_hook(u32 _1, u32 _2, u32 _3, u32 _4, u32 screenId, u32 swap, u8 *fb_a, 
         scan_input();
         run_frame();
         draw_to_screen(screenId, fb_a, stride, format);
+        handle_freeze();
     }
 }
 

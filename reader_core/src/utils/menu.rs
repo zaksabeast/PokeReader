@@ -77,13 +77,10 @@ impl<const MAX: usize, Value: MenuOptionValue> Menu<MAX, Value> {
         }
     }
 
-    pub fn update_lock(&mut self) {
+    pub fn update_lock(&mut self) -> bool {
         if pnp::is_just_pressed(Button::X | Button::Y) {
             self.is_locked = !self.is_locked;
         }
-    }
-
-    pub fn is_locked(&self) -> bool {
         self.is_locked
     }
 }

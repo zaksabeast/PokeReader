@@ -3,10 +3,13 @@ use super::{
     reader::Gen7Reader,
 };
 use crate::{
-    menu::{Menu, MenuOption, MenuOptionValue},
     pnp,
     rng::{RngWrapper, Sfmt},
-    utils::ShowView,
+    utils::{
+        menu::{Menu, MenuOption, MenuOptionValue},
+        sub_menu::SubMenu,
+        ShowView,
+    },
 };
 use once_cell::unsync::Lazy;
 
@@ -17,16 +20,9 @@ enum Gen7View {
     Daycare,
     WildPokemon,
     Sos,
-    PartySlot1,
-    PartySlot2,
-    PartySlot3,
-    PartySlot4,
-    PartySlot5,
-    PartySlot6,
+    Party,
     Box,
-    PelagoSlot1,
-    PelagoSlot2,
-    PelagoSlot3,
+    Pelago,
 }
 
 impl MenuOptionValue for Gen7View {
@@ -37,16 +33,9 @@ impl MenuOptionValue for Gen7View {
             Self::Daycare => "Daycare",
             Self::WildPokemon => "Wild",
             Self::Sos => "SOS",
-            Self::PartySlot1 => "Party 1",
-            Self::PartySlot2 => "Party 2",
-            Self::PartySlot3 => "Party 3",
-            Self::PartySlot4 => "Party 4",
-            Self::PartySlot5 => "Party 5",
-            Self::PartySlot6 => "Party 6",
+            Self::Party => "Party",
             Self::Box => "Box",
-            Self::PelagoSlot1 => "Pelago 1",
-            Self::PelagoSlot2 => "Pelago 2",
-            Self::PelagoSlot3 => "Pelago 3",
+            Self::Pelago => "Pelago",
         }
     }
 }
@@ -55,7 +44,9 @@ struct PersistedState {
     sfmt: RngWrapper<Sfmt>,
     show_view: ShowView,
     view: Gen7View,
-    main_menu: Menu<14, Gen7View>,
+    main_menu: Menu<7, Gen7View>,
+    party_menu: SubMenu<1, 6>,
+    pelago_menu: SubMenu<1, 3>,
 }
 
 unsafe fn get_state() -> &'static mut PersistedState {
@@ -63,21 +54,16 @@ unsafe fn get_state() -> &'static mut PersistedState {
         sfmt: RngWrapper::default(),
         show_view: ShowView::default(),
         view: Gen7View::MainMenu,
+        party_menu: SubMenu::default(),
+        pelago_menu: SubMenu::default(),
         main_menu: Menu::new([
             MenuOption::new(Gen7View::Rng),
             MenuOption::new(Gen7View::Daycare),
             MenuOption::new(Gen7View::WildPokemon),
             MenuOption::new(Gen7View::Sos),
-            MenuOption::new(Gen7View::PartySlot1),
-            MenuOption::new(Gen7View::PartySlot2),
-            MenuOption::new(Gen7View::PartySlot3),
-            MenuOption::new(Gen7View::PartySlot4),
-            MenuOption::new(Gen7View::PartySlot5),
-            MenuOption::new(Gen7View::PartySlot6),
+            MenuOption::new(Gen7View::Party),
             MenuOption::new(Gen7View::Box),
-            MenuOption::new(Gen7View::PelagoSlot1),
-            MenuOption::new(Gen7View::PelagoSlot2),
-            MenuOption::new(Gen7View::PelagoSlot3),
+            MenuOption::new(Gen7View::Pelago),
         ]),
     });
     Lazy::force_mut(&mut STATE)
@@ -100,26 +86,24 @@ fn run_frame(reader: Gen7Reader) {
         return;
     }
 
-    state.main_menu.update_lock();
+    let is_locked = state.main_menu.update_lock();
     state.view = state.main_menu.next_view(Gen7View::MainMenu, state.view);
-
-    draw_header(Gen7View::MainMenu, state.view, state.main_menu.is_locked());
+    draw_header(Gen7View::MainMenu, state.view, is_locked);
 
     match state.view {
         Gen7View::Rng => draw_rng(&reader, &state.sfmt),
         Gen7View::Daycare => draw_daycare(&reader),
         Gen7View::WildPokemon => draw_pkx(&reader.wild_pkm()),
         Gen7View::Sos => draw_sos(&reader),
-        Gen7View::PartySlot1 => draw_pkx(&reader.party_pkm(0)),
-        Gen7View::PartySlot2 => draw_pkx(&reader.party_pkm(1)),
-        Gen7View::PartySlot3 => draw_pkx(&reader.party_pkm(2)),
-        Gen7View::PartySlot4 => draw_pkx(&reader.party_pkm(3)),
-        Gen7View::PartySlot5 => draw_pkx(&reader.party_pkm(4)),
-        Gen7View::PartySlot6 => draw_pkx(&reader.party_pkm(5)),
         Gen7View::Box => draw_pkx(&reader.box_pkm()),
-        Gen7View::PelagoSlot1 => draw_pkx(&reader.pelago_pkm(0)),
-        Gen7View::PelagoSlot2 => draw_pkx(&reader.pelago_pkm(1)),
-        Gen7View::PelagoSlot3 => draw_pkx(&reader.pelago_pkm(2)),
+        Gen7View::Party => {
+            let slot = state.party_menu.update_and_draw(is_locked);
+            draw_pkx(&reader.party_pkm((slot - 1) as u32));
+        }
+        Gen7View::Pelago => {
+            let slot = state.pelago_menu.update_and_draw(is_locked);
+            draw_pkx(&reader.pelago_pkm((slot - 1) as u32))
+        }
         Gen7View::MainMenu => {
             state.main_menu.update_view();
             state.main_menu.draw();

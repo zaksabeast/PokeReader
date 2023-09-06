@@ -4,9 +4,12 @@ use super::{
     rng::Gen6Rng,
 };
 use crate::{
-    menu::{Menu, MenuOption, MenuOptionValue},
     pnp,
-    utils::ShowView,
+    utils::{
+        menu::{Menu, MenuOption, MenuOptionValue},
+        sub_menu::SubMenu,
+        ShowView,
+    },
 };
 use once_cell::unsync::Lazy;
 
@@ -18,12 +21,7 @@ enum OrasView {
     Daycare2,
     Wild,
     DexNav,
-    PartySlot1,
-    PartySlot2,
-    PartySlot3,
-    PartySlot4,
-    PartySlot5,
-    PartySlot6,
+    Party,
 }
 
 impl MenuOptionValue for OrasView {
@@ -35,12 +33,7 @@ impl MenuOptionValue for OrasView {
             Self::Daycare2 => "Daycare 2",
             Self::Wild => "Wild",
             Self::DexNav => "DexNav",
-            Self::PartySlot1 => "Party 1",
-            Self::PartySlot2 => "Party 2",
-            Self::PartySlot3 => "Party 3",
-            Self::PartySlot4 => "Party 4",
-            Self::PartySlot5 => "Party 5",
-            Self::PartySlot6 => "Party 6",
+            Self::Party => "Party",
         }
     }
 }
@@ -49,7 +42,8 @@ struct PersistedState {
     rng: Gen6Rng,
     show_view: ShowView,
     view: OrasView,
-    main_menu: Menu<11, OrasView>,
+    main_menu: Menu<6, OrasView>,
+    party_menu: SubMenu<1, 6>,
     patched_init_seed_read: bool,
 }
 
@@ -59,18 +53,14 @@ unsafe fn get_state() -> &'static mut PersistedState {
         show_view: ShowView::default(),
         view: OrasView::MainMenu,
         patched_init_seed_read: false,
+        party_menu: SubMenu::default(),
         main_menu: Menu::new([
             MenuOption::new(OrasView::Rng),
             MenuOption::new(OrasView::Daycare1),
             MenuOption::new(OrasView::Daycare2),
             MenuOption::new(OrasView::Wild),
             MenuOption::new(OrasView::DexNav),
-            MenuOption::new(OrasView::PartySlot1),
-            MenuOption::new(OrasView::PartySlot2),
-            MenuOption::new(OrasView::PartySlot3),
-            MenuOption::new(OrasView::PartySlot4),
-            MenuOption::new(OrasView::PartySlot5),
-            MenuOption::new(OrasView::PartySlot6),
+            MenuOption::new(OrasView::Party),
         ]),
     });
     Lazy::force_mut(&mut STATE)
@@ -96,10 +86,9 @@ pub fn run_oras_frame() {
         return;
     }
 
-    state.main_menu.update_lock();
+    let is_locked = state.main_menu.update_lock();
     state.view = state.main_menu.next_view(OrasView::MainMenu, state.view);
-
-    draw_header(OrasView::MainMenu, state.view, state.main_menu.is_locked());
+    draw_header(OrasView::MainMenu, state.view, is_locked);
 
     match state.view {
         OrasView::Rng => draw_rng(&reader, &state.rng),
@@ -107,12 +96,10 @@ pub fn run_oras_frame() {
         OrasView::Daycare2 => draw_daycare(&reader.daycare2()),
         OrasView::Wild => draw_pkx(&reader.wild_pkm()),
         OrasView::DexNav => draw_dex_nav(&reader, &state.rng),
-        OrasView::PartySlot1 => draw_pkx(&reader.party_pkm(0)),
-        OrasView::PartySlot2 => draw_pkx(&reader.party_pkm(1)),
-        OrasView::PartySlot3 => draw_pkx(&reader.party_pkm(2)),
-        OrasView::PartySlot4 => draw_pkx(&reader.party_pkm(3)),
-        OrasView::PartySlot5 => draw_pkx(&reader.party_pkm(4)),
-        OrasView::PartySlot6 => draw_pkx(&reader.party_pkm(5)),
+        OrasView::Party => {
+            let slot = state.party_menu.update_and_draw(is_locked);
+            draw_pkx(&reader.party_pkm((slot - 1) as u32));
+        }
         OrasView::MainMenu => {
             state.main_menu.update_view();
             state.main_menu.draw();

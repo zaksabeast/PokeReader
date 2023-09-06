@@ -1,5 +1,5 @@
 use crate::alloc::string::ToString;
-use crate::{menu::MenuOptionValue, pnp};
+use crate::{pnp, utils::menu::MenuOptionValue};
 use pkm_rs::Pkx;
 
 pub fn draw_pkx(pkx: &impl Pkx) {

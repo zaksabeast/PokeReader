@@ -8,7 +8,6 @@ mod allocator;
 mod draw;
 mod gen6;
 mod gen7;
-mod menu;
 mod pnp;
 mod rng;
 mod title;

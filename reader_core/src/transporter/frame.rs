@@ -4,9 +4,12 @@ use super::{
     rng::TransporterRng,
 };
 use crate::{
-    menu::{Menu, MenuOption, MenuOptionValue},
     pnp,
-    utils::ShowView,
+    utils::{
+        menu::{Menu, MenuOption, MenuOptionValue},
+        sub_menu::SubMenu,
+        ShowView,
+    },
 };
 use once_cell::unsync::Lazy;
 
@@ -21,7 +24,7 @@ impl MenuOptionValue for TransporterView {
     fn get_label(view: Self) -> &'static str {
         match view {
             Self::MainMenu => "Main Menu",
-            Self::Pokemon => "Slot 1 Pokemon",
+            Self::Pokemon => "Pokemon",
             Self::Rng => "RNG",
         }
     }
@@ -33,6 +36,7 @@ struct PersistedState {
     patched_init_seed_read: bool,
     view: TransporterView,
     main_menu: Menu<2, TransporterView>,
+    pokemon_menu: SubMenu<1, 30>,
 }
 
 unsafe fn get_state() -> &'static mut PersistedState {
@@ -41,6 +45,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
         show_view: ShowView::default(),
         patched_init_seed_read: false,
         view: TransporterView::MainMenu,
+        pokemon_menu: SubMenu::default(),
         main_menu: Menu::new([
             MenuOption::new(TransporterView::Rng),
             MenuOption::new(TransporterView::Pokemon),
@@ -69,20 +74,18 @@ pub fn run_frame() {
         return;
     }
 
-    state.main_menu.update_lock();
+    let is_locked = state.main_menu.update_lock();
     state.view = state
         .main_menu
         .next_view(TransporterView::MainMenu, state.view);
-
-    draw_header(
-        TransporterView::MainMenu,
-        state.view,
-        state.main_menu.is_locked(),
-    );
+    draw_header(TransporterView::MainMenu, state.view, is_locked);
 
     match state.view {
-        TransporterView::Pokemon => draw_pkx(&reader.transported_pkm(0)),
         TransporterView::Rng => draw_rng(&state.rng),
+        TransporterView::Pokemon => {
+            let slot = state.pokemon_menu.update_and_draw(is_locked);
+            draw_pkx(&reader.transported_pkm((slot - 1) as u32));
+        }
         TransporterView::MainMenu => {
             state.main_menu.update_view();
             state.main_menu.draw();

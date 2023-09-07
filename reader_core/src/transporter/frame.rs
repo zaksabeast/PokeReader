@@ -13,6 +13,10 @@ use crate::{
 };
 use once_cell::unsync::Lazy;
 
+pub fn init_transporter() {
+    TransporterReader::new().patch_inital_seed_read();
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum TransporterView {
     MainMenu,
@@ -33,7 +37,6 @@ impl MenuOptionValue for TransporterView {
 struct PersistedState {
     rng: TransporterRng,
     show_view: ShowView,
-    patched_init_seed_read: bool,
     view: TransporterView,
     main_menu: Menu<2, TransporterView>,
     pokemon_menu: SubMenu<1, 30>,
@@ -43,7 +46,6 @@ unsafe fn get_state() -> &'static mut PersistedState {
     static mut STATE: Lazy<PersistedState> = Lazy::new(|| PersistedState {
         rng: TransporterRng::default(),
         show_view: ShowView::default(),
-        patched_init_seed_read: false,
         view: TransporterView::MainMenu,
         pokemon_menu: SubMenu::default(),
         main_menu: Menu::new([
@@ -62,11 +64,6 @@ pub fn run_frame() {
     // This is safe as long as this is guaranteed to run single threaded.
     // A lock hinders performance too much on a 3ds.
     let state = unsafe { get_state() };
-
-    if !state.patched_init_seed_read {
-        reader.patch_inital_seed_read();
-        state.patched_init_seed_read = true;
-    }
 
     state.rng.update(&reader);
 

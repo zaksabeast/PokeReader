@@ -44,6 +44,15 @@ fn my_panic(info: &core::panic::PanicInfo) -> ! {
 #[no_mangle]
 pub extern "C" fn initialize() {
     unsafe { allocator::init_heap() };
+
+    match title_id() {
+        SupportedTitle::S | SupportedTitle::M => {}
+        SupportedTitle::Us | SupportedTitle::Um => {}
+        SupportedTitle::Or | SupportedTitle::As => gen6::init_oras(),
+        SupportedTitle::X | SupportedTitle::Y => gen6::init_xy(),
+        SupportedTitle::Transporter => transporter::init_transporter(),
+        SupportedTitle::Invalid => {}
+    }
 }
 
 #[no_mangle]

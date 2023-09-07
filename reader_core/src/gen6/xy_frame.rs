@@ -13,6 +13,10 @@ use crate::{
 };
 use once_cell::unsync::Lazy;
 
+pub fn init_xy() {
+    Gen6Reader::xy().patch_inital_seed_read();
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum XyView {
     MainMenu,
@@ -42,7 +46,6 @@ struct PersistedState {
     view: XyView,
     main_menu: Menu<5, XyView>,
     party_menu: SubMenu<1, 6>,
-    patched_init_seed_read: bool,
 }
 
 unsafe fn get_state() -> &'static mut PersistedState {
@@ -50,7 +53,6 @@ unsafe fn get_state() -> &'static mut PersistedState {
         rng: Gen6Rng::default(),
         show_view: ShowView::default(),
         view: XyView::MainMenu,
-        patched_init_seed_read: false,
         party_menu: SubMenu::default(),
         main_menu: Menu::new([
             MenuOption::new(XyView::Rng),
@@ -71,11 +73,6 @@ pub fn run_xy_frame() {
     // This is safe as long as this is guaranteed to run single threaded.
     // A lock hinders performance too much on a 3ds.
     let state = unsafe { get_state() };
-
-    if !state.patched_init_seed_read {
-        reader.patch_inital_seed_read();
-        state.patched_init_seed_read = true;
-    }
 
     state.rng.update(&reader);
 

@@ -1,3 +1,4 @@
+use super::hook;
 use crate::pnp;
 use pkm_rs::{Pk7, Pkx};
 
@@ -8,7 +9,6 @@ struct Gen7Addresses {
     party: u32,
     wild: u32,
     sos: u32,
-    sos_seed: u32,
     sos_chain_length: u32,
     pelago: u32,
     egg_ready: u32,
@@ -30,7 +30,6 @@ const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     party: 0x34195e10,
     wild: 0x3002f7b8,
     sos: 0x3002f7b8,
-    sos_seed: 0x30038c44,
     sos_chain_length: 0x3003960d,
     pelago: 0x331110ca,
     egg_ready: 0x3313edd8,
@@ -52,7 +51,6 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     party: 0x33f7fa44,
     wild: 0x3002f9a0,
     sos: 0x3002f9a0,
-    sos_seed: 0x30038e30,
     sos_chain_length: 0x300397f9,
     pelago: 0x3304d16a,
     egg_ready: 0x3307b1e8,
@@ -120,7 +118,7 @@ impl Gen7Reader {
     }
 
     pub fn sos_seed(&self) -> u32 {
-        pnp::read(self.addrs.sos_seed)
+        hook::sos_seed()
     }
 
     pub fn sos_chain(&self) -> u8 {
@@ -201,5 +199,13 @@ impl Gen7Reader {
         }
 
         npc_count.saturating_sub(1)
+    }
+
+    pub fn main_rng_seed_ticks(&self) -> u32 {
+        hook::main_rng_seed_ticks()
+    }
+
+    pub fn main_rng_ms_epoch(&self) -> (u32, u32) {
+        hook::main_rng_ms_epoch()
     }
 }

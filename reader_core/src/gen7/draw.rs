@@ -21,6 +21,13 @@ pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt>) {
     pnp::println!("NPC count: {}", reader.npc_count());
 }
 
+pub fn draw_citra_info(reader: &Gen7Reader) {
+    let (ms_epoch_high, ms_epoch_low) = reader.main_rng_ms_epoch();
+    pnp::println!("Seed ticks: {:08X}", reader.main_rng_seed_ticks());
+    pnp::println!("MS Epoch High: {:08X}", ms_epoch_high);
+    pnp::println!("MS Epoch Low: {:08X}", ms_epoch_low);
+}
+
 pub fn draw_sos(reader: &Gen7Reader) {
     pnp::println!("SOS Seed: {:08X}", reader.sos_seed());
     pnp::println!("SOS Chain Length: {}", reader.sos_chain());

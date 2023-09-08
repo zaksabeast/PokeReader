@@ -1,5 +1,5 @@
 use super::{
-    draw::{draw_daycare, draw_header, draw_pkx, draw_rng, draw_sos},
+    draw::{draw_citra_info, draw_daycare, draw_header, draw_pkx, draw_rng, draw_sos},
     reader::Gen7Reader,
 };
 use crate::{
@@ -23,6 +23,7 @@ enum Gen7View {
     Party,
     Box,
     Pelago,
+    Citra,
 }
 
 impl MenuOptionValue for Gen7View {
@@ -36,6 +37,7 @@ impl MenuOptionValue for Gen7View {
             Self::Party => "Party",
             Self::Box => "Box",
             Self::Pelago => "Pelago",
+            Self::Citra => "Citra",
         }
     }
 }
@@ -44,7 +46,7 @@ struct PersistedState {
     sfmt: RngWrapper<Sfmt>,
     show_view: ShowView,
     view: Gen7View,
-    main_menu: Menu<7, Gen7View>,
+    main_menu: Menu<8, Gen7View>,
     party_menu: SubMenu<1, 6>,
     pelago_menu: SubMenu<1, 3>,
 }
@@ -64,6 +66,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
             MenuOption::new(Gen7View::Party),
             MenuOption::new(Gen7View::Box),
             MenuOption::new(Gen7View::Pelago),
+            MenuOption::new(Gen7View::Citra),
         ]),
     });
     Lazy::force_mut(&mut STATE)
@@ -96,6 +99,7 @@ fn run_frame(reader: Gen7Reader) {
         Gen7View::WildPokemon => draw_pkx(&reader.wild_pkm()),
         Gen7View::Sos => draw_sos(&reader),
         Gen7View::Box => draw_pkx(&reader.box_pkm()),
+        Gen7View::Citra => draw_citra_info(&reader),
         Gen7View::Party => {
             let slot = state.party_menu.update_and_draw(is_locked);
             draw_pkx(&reader.party_pkm((slot - 1) as u32));

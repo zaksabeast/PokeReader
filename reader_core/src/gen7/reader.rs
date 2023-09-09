@@ -204,11 +204,7 @@ impl Gen7Reader {
         npc_count.saturating_sub(1)
     }
 
-    pub fn main_rng_seed_ticks(&self) -> u32 {
-        hook::main_rng_seed_ticks()
-    }
-
-    pub fn main_rng_ms_epoch(&self) -> (u32, u32) {
-        hook::main_rng_ms_epoch()
+    pub fn main_rng_seed_context(&self) -> hook::RngSeedContext {
+        hook::main_rng_seed_context()
     }
 }

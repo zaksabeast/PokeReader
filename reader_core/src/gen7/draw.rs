@@ -22,10 +22,10 @@ pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt>) {
 }
 
 pub fn draw_citra_info(reader: &Gen7Reader) {
-    let (ms_epoch_high, ms_epoch_low) = reader.main_rng_ms_epoch();
-    pnp::println!("Seed ticks: {:08X}", reader.main_rng_seed_ticks());
-    pnp::println!("MS Epoch High: {:08X}", ms_epoch_high);
-    pnp::println!("MS Epoch Low: {:08X}", ms_epoch_low);
+    let main_rng_seed_context = reader.main_rng_seed_context();
+    pnp::println!("Seed ticks: {:08X}", main_rng_seed_context.ticks);
+    pnp::println!("MS Epoch High: {:08X}", main_rng_seed_context.epoch_high);
+    pnp::println!("MS Epoch Low: {:08X}", main_rng_seed_context.epoch_low);
 }
 
 pub fn draw_sos(reader: &Gen7Reader) {

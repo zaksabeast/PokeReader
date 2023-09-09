@@ -1,4 +1,4 @@
-use super::hook;
+use super::{game_lib, hook};
 use crate::pnp;
 use pkm_rs::{Pk7, Pkx};
 
@@ -59,25 +59,28 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     parent2: 0x3307b0fa,
     is_parent1_occupied: 0x3307b010,
     is_parent2_occupied: 0x3307b0f9,
-    shiny_charm: 0x33012008,
+    shiny_charm: 0x33011930,
     id: 0x33012818,
     box_cursor: 0x30000298,
     npc_list: 0x33f81438,
 };
 
 pub struct Gen7Reader {
+    is_usum: bool,
     addrs: &'static Gen7Addresses,
 }
 
 impl Gen7Reader {
     pub fn sm() -> Self {
         Self {
+            is_usum: false,
             addrs: &SM_ADDRESSES,
         }
     }
 
     pub fn usum() -> Self {
         Self {
+            is_usum: true,
             addrs: &USUM_ADDRESSES,
         }
     }
@@ -175,11 +178,11 @@ impl Gen7Reader {
     }
 
     fn has_item(&self, offset: u32, item_id: u32, count: u32) -> bool {
-        let item_info = pnp::read::<u32>(offset);
-        let found_item_id = item_info & 0x3ff;
-        let found_item_count = (item_info << 12) >> 22;
-
-        found_item_id == item_id && found_item_count >= count
+        if self.is_usum {
+            game_lib::usum_has_item(offset, item_id, count)
+        } else {
+            game_lib::sm_has_item(offset, item_id, count)
+        }
     }
 
     pub fn has_shiny_charm(&self) -> bool {

@@ -1,5 +1,6 @@
 mod draw;
 mod frame;
+mod game_lib;
 mod hook;
 mod reader;
 

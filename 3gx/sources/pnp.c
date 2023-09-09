@@ -24,6 +24,15 @@ u32 print_max_len = default_print_max_len;
 char print_buffer[MAX_LINES][MAX_LINE_LENGTH];
 u32 buffer_index = 0;
 
+void reset_print()
+{
+  print_x = default_print_x;
+  print_y = default_print_y;
+  print_max_len = default_print_max_len;
+  memset(print_buffer, 0x00, MAX_LINES * MAX_LINE_LENGTH);
+  buffer_index = 0;
+}
+
 void draw_to_screen(u32 screenId, u8 *framebuffer, u32 stride, u32 format)
 {
   if (buffer_index == 0)
@@ -42,7 +51,7 @@ void draw_to_screen(u32 screenId, u8 *framebuffer, u32 stride, u32 format)
     print_y += 12;
   }
 
-  host_reset_print();
+  reset_print();
 }
 
 void host_print(u32 ptr, u32 size)
@@ -78,43 +87,13 @@ u32 host_is_just_pressed(u32 io_bits)
   return (u32)is_just_pressed;
 }
 
-void host_reset_print()
-{
-  print_x = default_print_x;
-  print_y = default_print_y;
-  print_max_len = default_print_max_len;
-  memset(print_buffer, 0x00, MAX_LINES * MAX_LINE_LENGTH);
-  buffer_index = 0;
-}
-
-void host_set_print_colors(u32 text_color, u32 background_color)
-{
-  // stubbed
-}
-
 void host_set_print_max_len(u32 max_len)
 {
   u32 max_len_with_terminator = max_len + 1;
   print_max_len = max_len_with_terminator > MAX_LINE_LENGTH ? MAX_LINE_LENGTH : max_len_with_terminator;
 }
 
-void host_set_print_x(u32 x)
-{
-  print_x = x;
-}
-
-void host_set_print_y(u32 y)
-{
-  print_y = y;
-}
-
 u64 host_get_game_title_id()
 {
   return get_title_id();
-}
-
-u32 host_get_is_mode3()
-{
-  // Stubbed - doesn't matter with 3gx
-  return 0;
 }

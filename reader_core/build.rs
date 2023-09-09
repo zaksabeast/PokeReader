@@ -3,7 +3,7 @@ use std::process::Command;
 
 fn get_tree_state() -> &'static str {
     let is_clean = Command::new("git")
-        .args(&["diff", "--stat"])
+        .args(["diff", "--stat"])
         .output()
         .unwrap()
         .stdout
@@ -23,7 +23,7 @@ fn get_hash() -> String {
 
     // Everything else
     let output = Command::new("git")
-        .args(&["rev-parse", "--short=6", "HEAD"])
+        .args(["rev-parse", "--short=6", "HEAD"])
         .output()
         .unwrap();
     String::from_utf8(output.stdout).unwrap()

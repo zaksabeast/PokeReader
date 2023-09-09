@@ -1,5 +1,4 @@
-use crate::{pnp, title::SupportedTitle, utils};
-use core::slice;
+use crate::utils;
 
 static mut MAIN_RNG_SEED_TICKS: u32 = 0;
 static mut MAIN_RNG_MS_EPOCH_LOW: u32 = 0;

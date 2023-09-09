@@ -67,7 +67,7 @@ macro_rules! hook_game_branch {
 
       unsafe {
           $(
-              $fn_name::return_addr = crate::utils::hook_addr($address, $router);
+              $fn_name::return_addr = $crate::utils::hook_addr($address, $router);
           )*
       }
 
@@ -82,7 +82,7 @@ macro_rules! hook_game_branch {
           )*
       }
 
-      crate::utils::install_hook_router($router, route_hook as u32);
+      $crate::utils::install_hook_router($router, route_hook as u32);
   };
 }
 

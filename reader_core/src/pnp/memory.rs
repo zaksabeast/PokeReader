@@ -57,19 +57,6 @@ pub fn read<T: EndianRead + Default>(addr: u32) -> T {
     read_vec(addr, mem::size_of::<T>() as u32).default_read_le(0)
 }
 
-/// Reads a bool.
-///
-/// # Examples
-/// ```
-/// use pnp::read_bool;
-///
-/// let data = read_bool(0x8000000);
-/// assert_eq!(data, false);
-/// ```
-pub fn read_bool(addr: u32) -> bool {
-    read_array::<1>(addr)[0] != 0
-}
-
 /// Writes a slice.
 ///
 /// # Examples

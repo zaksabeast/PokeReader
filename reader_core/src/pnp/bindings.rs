@@ -2,15 +2,9 @@ extern "C" {
     pub fn host_print(ptr: u32, size: u32);
     pub fn host_read_mem(game_addr: u32, size: u32, out_ptr: u32);
     pub fn host_write_mem(game_addr: u32, size: u32, in_ptr: u32);
-    pub fn host_just_pressed() -> u32;
     pub fn host_is_just_pressed(io_bits: u32) -> u32;
-    pub fn host_reset_print();
-    pub fn host_set_print_colors(text_color: u32, background_color: u32);
     pub fn host_set_print_max_len(max_len: u32);
-    pub fn host_set_print_x(x: u32);
-    pub fn host_set_print_y(y: u32);
     pub fn host_get_game_title_id() -> u64;
-    pub fn host_get_is_mode3() -> u32;
 }
 
 #[cfg(feature = "test_stubs")]

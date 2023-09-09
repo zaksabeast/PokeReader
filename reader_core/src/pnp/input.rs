@@ -51,25 +51,6 @@ impl BitOr for Button {
     }
 }
 
-/// Get buttons that were just pressed.
-/// This is great for getting buttons once and
-/// doing multiple checks on the buttons.
-///
-/// # Examples
-/// ```
-/// use pnp::{Button, just_pressed};
-///
-/// let pressed = just_pressed();
-/// if pressed == Button::Dup | Button::Ddown {
-///   // Do something
-/// } else if pressed == Button::Start {
-///   // Do something else
-/// }
-/// ```
-pub fn just_pressed() -> u32 {
-    unsafe { bindings::host_just_pressed() }
-}
-
 /// Check if buttons were just pressed.
 /// Convenient for one time checks.
 ///

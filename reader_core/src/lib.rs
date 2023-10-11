@@ -47,7 +47,8 @@ pub extern "C" fn initialize() {
 
     match title_id() {
         SupportedTitle::S | SupportedTitle::M => gen7::init_sm(),
-        SupportedTitle::Us | SupportedTitle::Um => gen7::init_usum(),
+        SupportedTitle::Us => gen7::init_us(),
+        SupportedTitle::Um => gen7::init_um(),
         SupportedTitle::Or | SupportedTitle::As => gen6::init_oras(),
         SupportedTitle::X | SupportedTitle::Y => gen6::init_xy(),
         SupportedTitle::Transporter => transporter::init_transporter(),

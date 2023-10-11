@@ -42,11 +42,19 @@ fn init_main_rng_hook(_regs: &[u32], stack_pointer: *mut u32) {
     }
 }
 
-pub fn init_usum() {
+pub fn init_um() {
     utils::hook_game_branch! {
         hook_router_addr = 0x5bbfdc,
         init_sfmt_hook = 0x361e60,
         init_main_rng_hook = 0x3fcbc0,
+    }
+}
+
+pub fn init_us() {
+    utils::hook_game_branch! {
+        hook_router_addr = 0x5bbfdc,
+        init_sfmt_hook = 0x361e60,
+        init_main_rng_hook = 0x3fcbbc,
     }
 }
 

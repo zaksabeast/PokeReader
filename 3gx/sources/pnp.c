@@ -77,7 +77,7 @@ void host_write_mem(u32 game_addr, u32 size, u32 in_ptr)
 
 u32 host_just_pressed()
 {
-  return (get_previous_keys() ^ 0xfff) & get_current_keys();
+  return (get_previous_keys() ^ 0xffffffff) & get_current_keys();
 }
 
 u32 host_is_just_pressed(u32 io_bits)

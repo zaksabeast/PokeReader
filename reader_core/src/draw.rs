@@ -1,14 +1,21 @@
 use crate::alloc::string::ToString;
 use crate::{pnp, utils::menu::MenuOptionValue};
-use pkm_rs::Pkx;
+use pkm_rs::{types::Shiny, Pkx};
 
 pub fn draw_pkx(pkx: &impl Pkx) {
     let species = pkx.species().to_string();
     let ability = pkx.ability().to_string();
 
+    let shiny_type = match pkx.shiny_type() {
+        Some(Shiny::Star) => "Star",
+        Some(Shiny::Square) => "Square",
+        None => "None",
+    };
+
     pnp::println!("Species: {}", species);
     pnp::println!("PID: {:08X}", pkx.pid());
     pnp::println!("PSV: {:04}", pkx.psv());
+    pnp::println!("Shiny: {}", shiny_type);
     pnp::println!("Nature: {}", pkx.nature());
     pnp::println!("Ability: ({}) {}", pkx.ability_number(), ability);
     pnp::println!("IVs: {}", pkx.ivs());

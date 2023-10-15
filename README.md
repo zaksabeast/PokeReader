@@ -10,10 +10,10 @@ This information can be used to RNG shiny and high IV Pokemon, similar to lua sc
 
 ## Installing
 
-1. Update to the latest [Luma](https://github.com/LumaTeam/Luma3DS/releases) or set up [Citra](https://github.com/citra-emu/citra)
-1. Download the [latest PokeReader release](https://github.com/zaksabeast/PokeReader/releases/latest)
-1. Copy pokereader.3gx to `/luma/plugins/default.3gx` on your sd card (create the directory if it doesn't exist)
-   - Optionally, copy it to `/luma/plugins/<title_id>/plugin.3gx` for every Pokemon game
+1. Update to the latest [Luma](https://github.com/LumaTeam/Luma3DS/releases) or set up [Citra](https://github.com/citra-emu/citra).
+1. Download the [latest PokeReader release](https://github.com/zaksabeast/PokeReader/releases/latest).
+1. Rename the `pokereader.3gx` file to `default.3gx`, then copy it to `/luma/plugins/` on your sd card (create the directory if it doesn't exist).
+   - Optionally, rename the `pokereader.3gx` file to `plugin.3gx`, then copy it to `/luma/plugins/<title_id>/` for every Pokemon game.
 
 ## Building
 

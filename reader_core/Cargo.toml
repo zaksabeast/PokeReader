@@ -7,7 +7,7 @@ edition = "2021"
 no_std_io = { git = "https://github.com/zaksabeast/no_std_io.git", rev = "4bc5adf" }
 num_enum = { version = "0.5", default-features = false }
 once_cell = { version = "1.16", default-features = false }
-pkm-rs = { git = "https://github.com/zaksabeast/pkm-rs.git", rev = "a95045f" }
+pkm-rs = { git = "https://github.com/zaksabeast/pkm-rs.git", rev = "08ad621" }
 linked_list_allocator = "0.10"
 
 [features]

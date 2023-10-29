@@ -130,7 +130,7 @@ checksum = "86f0b0d4bf799edbc74508c1e8bf170ff5f41238e5f8225603ca7caaae2b7860"
 [[package]]
 name = "pkm-rs"
 version = "0.1.0"
-source = "git+https://github.com/zaksabeast/pkm-rs.git?rev=a95045f#a95045fedc8e6178e3a7c1e2eeebd33af3dfa4a3"
+source = "git+https://github.com/zaksabeast/pkm-rs.git?rev=08ad621#08ad621ff12a2217c9aa1522984336d336823850"
 dependencies = [
  "no_std_io",
  "num_enum",

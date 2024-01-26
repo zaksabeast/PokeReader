@@ -49,6 +49,7 @@ void handle_freeze(bool isTopScreen)
         if (just_pressed == BUTTON_A || just_pressed == BUTTON_START)
         {
             is_paused = false;
+            break;
         }
 
         svcSleepThread(50000000);

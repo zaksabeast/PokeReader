@@ -43,8 +43,6 @@ fn my_panic(info: &core::panic::PanicInfo) -> ! {
 #[cfg(target_os = "horizon")]
 #[no_mangle]
 pub extern "C" fn initialize() {
-    unsafe { allocator::init_heap() };
-
     match title_id() {
         SupportedTitle::S | SupportedTitle::M => gen7::init_sm(),
         SupportedTitle::Us => gen7::init_us(),

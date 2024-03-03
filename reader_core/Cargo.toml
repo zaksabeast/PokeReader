@@ -8,7 +8,7 @@ no_std_io = { git = "https://github.com/zaksabeast/no_std_io.git", rev = "4bc5ad
 num_enum = { version = "0.5", default-features = false }
 once_cell = { version = "1.16", default-features = false }
 pkm-rs = { git = "https://github.com/zaksabeast/pkm-rs.git", rev = "a993592" }
-linked_list_allocator = "0.10"
+libc_alloc = "1.0.6"
 chrono = { version = "0.4.34", default-features = false, features = ["alloc"] }
 
 [features]

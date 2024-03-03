@@ -26,8 +26,9 @@ pub fn draw_citra_info(reader: &Gen7Reader) {
     let main_rng_seed_context = reader.main_rng_seed_context();
     let date = main_rng_seed_context.init_datetime;
     pnp::println!("Seed ticks: {:08X}", main_rng_seed_context.ticks);
-    pnp::println!("Init date: {}", date.format("%b %d %Y"));
-    pnp::println!("Init time: {}", date.format("%H:%M:%S"));
+    pnp::println!("Seed date: {}", date.format("%b %d %Y"));
+    pnp::println!("Seed time: {}", date.format("%H:%M:%S"));
+    pnp::println!("Time offset: {}", main_rng_seed_context.time_offset_ms);
 }
 
 pub fn draw_sos(reader: &Gen7Reader) {

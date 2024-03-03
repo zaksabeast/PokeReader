@@ -17,6 +17,7 @@ const u32 default_print_max_len = 30;
 u32 print_x = default_print_x;
 u32 print_y = default_print_y;
 u32 print_max_len = default_print_max_len;
+u64 game_start_ms = 0;
 
 #define MAX_LINES 18
 #define MAX_LINE_LENGTH 46
@@ -96,4 +97,14 @@ void host_set_print_max_len(u32 max_len)
 u64 host_get_game_title_id()
 {
   return get_title_id();
+}
+
+void set_game_start_ms(u64 ms)
+{
+  game_start_ms = ms;
+}
+
+u64 host_game_start_ms()
+{
+  return game_start_ms;
 }

@@ -168,6 +168,12 @@ void main(void)
     plgLdrInit();
     initialize();
 
+    // NTP epoch (milliseconds since 1st Jan 1900 00:00)
+    u64 ms = osGetTime();
+    // Adjust to Jan 2000, which is what the games use.
+    u64 game_ms = ms - 3155673600000;
+    set_game_start_ms(game_ms);
+
     // Get memory layout changed event
     svcControlProcess(CUR_PROCESS_HANDLE, PROCESSOP_GET_ON_MEMORY_CHANGE_EVENT, (u32)&memLayoutChanged, 0);
 

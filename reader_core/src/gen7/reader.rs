@@ -1,6 +1,6 @@
 use super::{game_lib, hook};
 use crate::pnp;
-use pkm_rs::{Pk7, Pkx};
+use pkm_rs::{Pk7, PokeCrypto};
 
 struct Gen7Addresses {
     initial_seed: u32,
@@ -130,7 +130,7 @@ impl Gen7Reader {
 
     fn read_pk7(&self, offset: u32) -> Pk7 {
         let bytes = pnp::read_array::<{ Pk7::STORED_SIZE }>(offset);
-        Pk7::new_or_default(bytes)
+        Pk7::new(bytes)
     }
 
     pub fn party_pkm(&self, slot: u32) -> Pk7 {

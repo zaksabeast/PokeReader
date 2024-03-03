@@ -1,5 +1,5 @@
 use crate::pnp;
-use pkm_rs::{Pk7, Pkx};
+use pkm_rs::{Pk7, Pkx, PokeCrypto};
 
 struct TransporterAddresses {
     initial_seed_patch: u32,
@@ -43,7 +43,7 @@ impl TransporterReader {
 
     fn read_pk7(&self, offset: u32) -> Pk7 {
         let bytes = pnp::read_array::<{ Pk7::STORED_SIZE }>(offset);
-        Pk7::new_or_default(bytes)
+        Pk7::new(bytes)
     }
 
     pub fn transported_pkm(&self, slot: u32) -> Pk7 {

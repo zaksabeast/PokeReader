@@ -1,10 +1,10 @@
 use alloc::{format, string::String};
-use pkm_rs::{types, Pkx};
+use pkm_rs::{Language, Pkx, Species};
 
 pub fn is_masuda_method(parent1: &impl Pkx, parent2: &impl Pkx) -> bool {
-    parent1.language() != parent2.language()
-        && parent1.language() != types::Language::Invalid
-        && parent2.language() != types::Language::Invalid
+    parent1.language_t() != parent2.language_t()
+        && parent1.language_t() != Language::Invalid
+        && parent2.language_t() != Language::Invalid
 }
 
 pub fn is_daycare_masuda_method(parent1: &Option<impl Pkx>, parent2: &Option<impl Pkx>) -> bool {
@@ -19,9 +19,9 @@ pub fn format_egg_parent(parent_num: u8, parent: &Option<impl Pkx>) -> String {
         Some(parent) => format!(
             "Par{}: {} {}",
             parent_num,
-            parent.species(),
+            parent.species_t(),
             parent.gender_ratio()
         ),
-        None => format!("Par{}: {}", parent_num, types::Species::None),
+        None => format!("Par{}: {}", parent_num, Species::None),
     }
 }

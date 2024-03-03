@@ -1,5 +1,5 @@
 use crate::pnp;
-use pkm_rs::{Pk6, Pkx};
+use pkm_rs::{Pk6, PokeCrypto};
 
 pub struct Daycare {
     pub egg_seed: [u32; 2],
@@ -166,7 +166,7 @@ impl Gen6Reader {
 
     fn read_pk6(&self, offset: u32) -> Pk6 {
         let bytes = pnp::read_array::<{ Pk6::STORED_SIZE }>(offset);
-        Pk6::new_or_default(bytes)
+        Pk6::new(bytes)
     }
 
     pub fn party_pkm(&self, slot: u32) -> Pk6 {

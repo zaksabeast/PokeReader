@@ -1,5 +1,5 @@
 use crate::pnp;
-use pkm_rs::{Pk7, Pkx, PokeCrypto};
+use pkm_rs::{Pk7, PokeCrypto};
 
 struct TransporterAddresses {
     initial_seed_patch: u32,

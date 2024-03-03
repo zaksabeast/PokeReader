@@ -4,7 +4,6 @@ use crate::{
     rng::{RngWrapper, Sfmt},
     utils::{format_egg_parent, is_daycare_masuda_method},
 };
-use chrono::DateTime;
 
 pub use crate::draw::{draw_header, draw_pkx};
 

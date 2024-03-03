@@ -1,8 +1,7 @@
 use crate::utils;
-
+use chrono::NaiveDateTime;
 static mut MAIN_RNG_SEED_TICKS: u32 = 0;
-static mut MAIN_RNG_MS_EPOCH_LOW: u32 = 0;
-static mut MAIN_RNG_MS_EPOCH_HIGH: u32 = 0;
+static mut MAIN_RNG_DATE_TIME: NaiveDateTime = NaiveDateTime::MIN;
 static mut SOS_SEED: u32 = 0;
 
 pub fn sos_seed() -> u32 {
@@ -16,29 +15,34 @@ fn init_sfmt_hook(regs: &[u32], _stack_pointer: *mut u32) {
 }
 
 pub struct RngSeedContext {
-    pub epoch_high: u32,
-    pub epoch_low: u32,
+    pub init_datetime: NaiveDateTime,
     pub ticks: u32,
 }
 
 pub fn main_rng_seed_context() -> RngSeedContext {
     unsafe {
         RngSeedContext {
-            epoch_high: MAIN_RNG_MS_EPOCH_HIGH,
-            epoch_low: MAIN_RNG_MS_EPOCH_LOW,
+            init_datetime: MAIN_RNG_DATE_TIME,
             ticks: MAIN_RNG_SEED_TICKS,
         }
     }
 }
 
+const THIRTY_YEARS_MS: u64 = 946684800000;
+
 fn init_main_rng_hook(_regs: &[u32], stack_pointer: *mut u32) {
     let ticks = unsafe { stack_pointer.add(4).read() };
-    let ms_epoch_low = unsafe { stack_pointer.add(12).read() };
-    let ms_epoch_high = unsafe { stack_pointer.add(13).read() };
+    let console_ms_epoch_low = unsafe { stack_pointer.add(12).read() };
+    let console_ms_epoch_high = unsafe { stack_pointer.add(13).read() };
+    let console_ms_epoch = ((console_ms_epoch_high as u64) << 32) | (console_ms_epoch_low as u64);
+    let standard_ms_epoch = console_ms_epoch.saturating_add(THIRTY_YEARS_MS);
+    let ms_epoch: i64 = standard_ms_epoch.try_into().unwrap_or_default();
+
     unsafe {
         MAIN_RNG_SEED_TICKS = ticks;
-        MAIN_RNG_MS_EPOCH_HIGH = ms_epoch_high;
-        MAIN_RNG_MS_EPOCH_LOW = ms_epoch_low;
+        if let Some(date_time) = NaiveDateTime::from_timestamp_millis(ms_epoch) {
+            MAIN_RNG_DATE_TIME = date_time;
+        }
     }
 }
 

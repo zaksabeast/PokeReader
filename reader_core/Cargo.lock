@@ -44,6 +44,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2ef034f05691a48569bd920a96c81b9d91bbad1ab5ac7c4616c1f6ef36cb79f"
 
 [[package]]
+name = "chrono"
+version = "0.4.34"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5bc015644b92d5890fab7489e49d21f879d5c990186827d42ec511919404f38b"
+dependencies = [
+ "num-traits",
+]
+
+[[package]]
 name = "darling"
 version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -113,9 +122,9 @@ dependencies = [
 
 [[package]]
 name = "lock_api"
-version = "0.4.10"
+version = "0.4.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c1cc9717a20b1bb222f333e6a92fd32f7d8a18ddc5a3191a11af45dcbf4dcd16"
+checksum = "3c168f8615b12bc01f9c17e2eb0cc07dcae1940121185446edc3744920e8ef45"
 dependencies = [
  "autocfg",
  "scopeguard",
@@ -140,6 +149,15 @@ dependencies = [
  "macros",
  "safe-transmute",
  "snafu",
+]
+
+[[package]]
+name = "num-traits"
+version = "0.2.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "da0df0e5185db44f69b44f26786fe401b6c293d1907744beaa7fa62b2e5a517a"
+dependencies = [
+ "autocfg",
 ]
 
 [[package]]
@@ -181,6 +199,7 @@ dependencies = [
 name = "pokereader"
 version = "0.4.1"
 dependencies = [
+ "chrono",
  "linked_list_allocator",
  "no_std_io",
  "num_enum",

@@ -4,6 +4,7 @@ use crate::{
     rng::{RngWrapper, Sfmt},
     utils::{format_egg_parent, is_daycare_masuda_method},
 };
+use chrono::DateTime;
 
 pub use crate::draw::{draw_header, draw_pkx};
 
@@ -23,9 +24,10 @@ pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt>) {
 
 pub fn draw_citra_info(reader: &Gen7Reader) {
     let main_rng_seed_context = reader.main_rng_seed_context();
+    let date = main_rng_seed_context.init_datetime;
     pnp::println!("Seed ticks: {:08X}", main_rng_seed_context.ticks);
-    pnp::println!("MS Epoch High: {:08X}", main_rng_seed_context.epoch_high);
-    pnp::println!("MS Epoch Low: {:08X}", main_rng_seed_context.epoch_low);
+    pnp::println!("Init date: {}", date.format("%b %d %Y"));
+    pnp::println!("Init time: {}", date.format("%H:%M:%S"));
 }
 
 pub fn draw_sos(reader: &Gen7Reader) {

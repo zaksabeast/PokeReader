@@ -43,7 +43,7 @@ impl TransporterReader {
 
     fn read_pk7(&self, offset: u32) -> Pk7 {
         let bytes = pnp::read_array::<{ Pk7::STORED_SIZE }>(offset);
-        Pk7::new(bytes)
+        Pk7::new_valid(bytes)
     }
 
     pub fn transported_pkm(&self, slot: u32) -> Pk7 {

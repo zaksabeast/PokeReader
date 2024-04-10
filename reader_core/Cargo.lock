@@ -176,7 +176,7 @@ checksum = "86f0b0d4bf799edbc74508c1e8bf170ff5f41238e5f8225603ca7caaae2b7860"
 [[package]]
 name = "pkm-rs"
 version = "0.1.0"
-source = "git+https://github.com/zaksabeast/pkm-rs.git?rev=a993592#a993592ab28e21ca3996bcd332f3f896875f3c07"
+source = "git+https://github.com/zaksabeast/pkm-rs.git?rev=9d1c647#9d1c647db485fd794166577f2e527b2d0068cce8"
 dependencies = [
  "binrw",
  "num_enum",

@@ -166,7 +166,7 @@ impl Gen6Reader {
 
     fn read_pk6(&self, offset: u32) -> Pk6 {
         let bytes = pnp::read_array::<{ Pk6::STORED_SIZE }>(offset);
-        Pk6::new(bytes)
+        Pk6::new_valid(bytes)
     }
 
     pub fn party_pkm(&self, slot: u32) -> Pk6 {

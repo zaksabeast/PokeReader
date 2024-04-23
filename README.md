@@ -8,6 +8,14 @@ PokeReader is a 3gx plugin that allows viewing information about 3ds Pokemon gam
 
 This information can be used to RNG shiny and high IV Pokemon, similar to lua scripts on emulators.
 
+## Commands
+- Start + Up (D-Pad): Show/Hide the plugin
+- X + Y: Lock/Unlock inputs to the plugin
+- D-Pad keys: Navigate the plugin when unlocked (right & left to get in and out of the different tabs)
+- Start + Select: Pause game and enable manual frame advancing
+- Select: Advance one frame while paused
+- Start or A: Unpause game
+
 ## Installing
 
 1. Update to the latest [Luma](https://github.com/LumaTeam/Luma3DS/releases) or set up [Citra](https://github.com/citra-emu/citra).

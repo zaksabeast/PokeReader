@@ -1,5 +1,5 @@
 #![no_std]
-#![allow(static_mut_ref)]
+#![allow(static_mut_refs)]
 
 extern crate alloc;
 

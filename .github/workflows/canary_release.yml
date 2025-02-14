@@ -25,11 +25,11 @@ jobs:
         id: tag_name
 
       - name: Publish canary release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           draft: false
           prerelease: true
           tag_name: ${{ steps.tag_name.outputs.tag_name }}
           name: ${{ format('Canary {0}', steps.build_timestamp.outputs.build_timestamp) }}
           body: ${{ github.event.head_commit.message }}
-          files: out/pokereader.3gx
+          files: out/default.3gx

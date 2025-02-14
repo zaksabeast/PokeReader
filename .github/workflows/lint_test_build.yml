@@ -26,8 +26,8 @@ jobs:
         run: make
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: PokeReader
           retention-days: 3
-          path: out/pokereader.3gx
+          path: out/default.3gx

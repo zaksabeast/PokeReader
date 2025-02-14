@@ -4,7 +4,7 @@ all:
 	cargo +nightly build --release -Z build-std=core,alloc --target armv6k-nintendo-3ds --manifest-path reader_core/Cargo.toml
 	make -C 3gx
 	mkdir -p out
-	cp 3gx/build/3gx.3gx out/pokereader.3gx
+	cp 3gx/build/3gx.3gx out/default.3gx
 
 clean:
 	cargo clean --manifest-path reader_core/Cargo.toml

@@ -1,5 +1,6 @@
 use super::{game_lib, hook};
 use crate::pnp;
+use core::num::{NonZeroU32, NonZeroU8};
 use pkm_rs::{Pk7, PokeCrypto};
 
 struct Gen7Addresses {
@@ -21,6 +22,7 @@ struct Gen7Addresses {
     id: u32,
     box_cursor: u32,
     npc_list: u32,
+    npc_head_blinking_offset: u32,
 }
 
 const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
@@ -41,7 +43,8 @@ const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     shiny_charm: 0x330d5930,
     id: 0x330d67d0,
     box_cursor: 0x30000298,
-    npc_list: 0x341977b8,
+    npc_list: 0x341977c4,
+    npc_head_blinking_offset: 0x2f4,
 };
 
 const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
@@ -63,6 +66,7 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     id: 0x33012818,
     box_cursor: 0x30000298,
     npc_list: 0x33f81438,
+    npc_head_blinking_offset: 0x2fc,
 };
 
 pub struct Gen7Reader {
@@ -197,7 +201,20 @@ impl Gen7Reader {
             let can_blink = pnp::read::<u32>(npc + 0xe8) == 0;
 
             if is_present && can_blink {
-                npc_count += 1;
+                let blink_type =
+                    NonZeroU32::new(pnp::read::<u32>(npc + self.addrs.npc_head_blinking_offset))
+                        .and_then(|struct_ptr| {
+                            NonZeroU32::new(pnp::read::<u32>(struct_ptr.get() + 0x114))
+                        })
+                        .and_then(|struct_ptr| {
+                            NonZeroU8::new(pnp::read::<u8>(struct_ptr.get() + 0xde))
+                        })
+                        .map(|blink_setting| blink_setting.get())
+                        .unwrap_or_default();
+                let is_blinking = blink_type == 1 || blink_type == 2;
+                if is_blinking {
+                    npc_count += 1;
+                }
             }
         }
 

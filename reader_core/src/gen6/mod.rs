@@ -1,4 +1,5 @@
 mod draw;
+mod hook;
 mod oras_frame;
 mod reader;
 mod rng;

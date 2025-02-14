@@ -10,7 +10,7 @@ fn replace_arm_branch(
     branch_instruction: u32,
     new_jump_address: u32,
 ) -> ReplacedBranch {
-    let original_offset = ((branch_instruction & 0x00FFFFFF) << 2) as i32;
+    let original_offset = (branch_instruction << 8) as i32 >> 6;
     let original_address = (instruction_address as i32 + original_offset + 8) as u32;
 
     if branch_instruction >> 24 != 0xeb {
@@ -87,3 +87,15 @@ macro_rules! hook_game_branch {
 }
 
 pub use hook_game_branch;
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn replacement() {
+        let result = replace_arm_branch(0x2a5a2c, 0xebfffed3, 0x3abac4);
+        assert_eq!(result.original_address, 0x2a5580);
+        assert_eq!(result.new_branch_instruction, 0xeb041824);
+    }
+}

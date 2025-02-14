@@ -1,5 +1,6 @@
 use super::{
     draw::{draw_daycare, draw_header, draw_pkx, draw_radar, draw_rng},
+    hook,
     reader::Gen6Reader,
     rng::Gen6Rng,
 };
@@ -15,6 +16,7 @@ use once_cell::unsync::Lazy;
 
 pub fn init_xy() {
     Gen6Reader::xy().patch_inital_seed_read();
+    hook::init_xy();
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -21,6 +21,7 @@ typedef enum SupportedTitle
     GAME_US = 0x00040000001B5000,
     GAME_UM = 0x00040000001B5100,
     GAME_TRANSPORTER = 0x00040000000C9C00,
+    GAME_CRYSTAL = 0x0004000000172800,
 } SupportedTitle;
 
 static Handle thread;
@@ -30,7 +31,7 @@ static bool is_paused = false;
 
 void handle_freeze(bool isTopScreen)
 {
-    if (host_is_just_pressed(KEY_START | KEY_SELECT))
+    if (host_is_just_pressed(KEY_START | KEY_SELECT) || host_is_just_pressed(KEY_L | KEY_R))
     {
         is_paused = true;
     }
@@ -41,12 +42,12 @@ void handle_freeze(bool isTopScreen)
 
         u32 just_pressed = host_just_pressed();
 
-        if (just_pressed == KEY_SELECT)
+        if (just_pressed == KEY_SELECT || just_pressed == KEY_L)
         {
             break;
         }
 
-        if (just_pressed == KEY_A || just_pressed == KEY_START)
+        if (just_pressed == KEY_A || just_pressed == KEY_START || just_pressed == KEY_R)
         {
             is_paused = false;
             break;
@@ -226,6 +227,11 @@ void main(void)
         present_buffer_ptr = 0x12b7ec;
         get_screen_jump_inst = 0xeb02cbd4;
         map_input_memory_block = 0x11f63c;
+        break;
+    case GAME_CRYSTAL:
+        present_buffer_ptr = 0x14aa24;
+        get_screen_jump_inst = 0xeb00b512;
+        map_input_memory_block = 0x146a28;
         break;
     default:
         return;

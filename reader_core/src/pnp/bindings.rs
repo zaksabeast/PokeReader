@@ -6,6 +6,7 @@ extern "C" {
     pub fn host_set_print_max_len(max_len: u32);
     pub fn host_get_game_title_id() -> u64;
     pub fn host_game_start_ms() -> u64;
+    pub fn get_current_keys() -> u32;
 }
 
 #[cfg(feature = "test_stubs")]
@@ -28,6 +29,10 @@ pub mod test_stubs {
     }
     #[no_mangle]
     pub extern "C" fn host_game_start_ms() -> u64 {
+        0
+    }
+    #[no_mangle]
+    pub extern "C" fn get_current_keys() -> u32 {
         0
     }
 }

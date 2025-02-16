@@ -1,0 +1,6 @@
+[target.armv6k-nintendo-3ds]
+cc = "/opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc"
+cxx = "/opt/devkitpro/devkitARM/bin/arm-none-eabi-g++"
+ar = "/opt/devkitpro/devkitARM/bin/arm-none-eabi-ar"
+ranlib = "/opt/devkitpro/devkitARM/bin/arm-none-eabi-ranlib"
+linker = "/opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc"

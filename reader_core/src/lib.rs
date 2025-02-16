@@ -6,6 +6,7 @@ extern crate alloc;
 #[cfg(target_os = "horizon")]
 mod allocator;
 
+mod crystal;
 mod draw;
 mod gen6;
 mod gen7;
@@ -51,6 +52,7 @@ pub extern "C" fn initialize() {
         SupportedTitle::Or | SupportedTitle::As => gen6::init_oras(),
         SupportedTitle::X | SupportedTitle::Y => gen6::init_xy(),
         SupportedTitle::Transporter => transporter::init_transporter(),
+        SupportedTitle::Crytal => crystal::init_crystal(),
         SupportedTitle::Invalid => {}
     }
 }
@@ -63,6 +65,7 @@ pub extern "C" fn run_frame() {
         SupportedTitle::Or | SupportedTitle::As => gen6::run_oras_frame(),
         SupportedTitle::X | SupportedTitle::Y => gen6::run_xy_frame(),
         SupportedTitle::Transporter => transporter::run_frame(),
+        SupportedTitle::Crytal => crystal::run_frame(),
         SupportedTitle::Invalid => {}
     }
 }

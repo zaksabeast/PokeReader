@@ -23,6 +23,21 @@ void ovDrawTranspartBlackRect(u32 addr, u32 stride, u32 format, int r, int c, in
         sp++;
       }
     }
+    else if (format == 3)
+    {
+      u16 *sp = (u16 *)(addr + stride * posC + 240 * 2 - 2 * (r + h - 1));
+      u16 *spEnd = sp + h;
+      while (sp < spEnd)
+      {
+        u16 pix = *sp;
+        u16 r = (pix >> 11) & 0x1f;
+        u16 b = (pix >> 6) & 0x1f;
+        u16 g = (pix & 0x3f);
+        pix = ((r >> level) << 11) | ((b >> level) << 6) | (g >> level);
+        *sp = pix;
+        sp++;
+      }
+    }
     else if (format == 1)
     {
       u8 *sp = (u8 *)(addr + stride * posC + 240 * 3 - 3 * (r + h - 1));
@@ -41,9 +56,14 @@ void ovDrawTranspartBlackRect(u32 addr, u32 stride, u32 format, int r, int c, in
 void ovDrawPixel(u32 addr, u32 stride, u32 format, int posR, int posC, u32 r, u32 g, u32 b)
 {
   format &= 0x0f;
-  if (format == 2)
+  if (format == 2 || format == 3)
   {
     u16 pix = ((r) << 11) | ((g) << 5) | (b);
+    *(u16 *)(addr + stride * posC + 480 - 2 * posR) = pix;
+  }
+  else if (format == 3)
+  {
+    u16 pix = ((r) << 11) | ((b) << 6) | (g);
     *(u16 *)(addr + stride * posC + 480 - 2 * posR) = pix;
   }
   else

@@ -15,6 +15,7 @@ pub enum SupportedTitle {
     Us = 0x00040000001B5000,
     Um = 0x00040000001B5100,
     Transporter = 0x00040000000C9C00,
+    Crytal = 0x0004000000172800,
 }
 
 pub fn title_id() -> SupportedTitle {

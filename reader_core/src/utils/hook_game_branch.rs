@@ -10,7 +10,7 @@ fn replace_arm_branch(
     branch_instruction: u32,
     new_jump_address: u32,
 ) -> ReplacedBranch {
-    let original_offset = ((branch_instruction & 0x00FFFFFF) << 2) as i32;
+    let original_offset = (branch_instruction << 8) as i32 >> 6;
     let original_address = (instruction_address as i32 + original_offset + 8) as u32;
 
     if branch_instruction >> 24 != 0xeb {

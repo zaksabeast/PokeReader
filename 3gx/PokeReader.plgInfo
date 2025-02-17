@@ -16,6 +16,7 @@ Targets: # Low TitleId of games which are compatibles with this plugin (empty fo
     0x001B5100
     0x000C9C00
     0x00172800
+    0x00172E00
 
 Title: PokeReader
 

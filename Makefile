@@ -1,7 +1,7 @@
 .PHONY: all clean lint test
 
 all:
-	cargo +nightly build --release -Z build-std=core,alloc --target armv6k-nintendo-3ds --manifest-path reader_core/Cargo.toml
+	cargo +nightly-2024-03-21 build --release -Z build-std=core,alloc --target armv6k-nintendo-3ds --manifest-path reader_core/Cargo.toml
 	make -C 3gx
 	mkdir -p out
 	cp 3gx/build/3gx.3gx out/default.3gx
@@ -12,7 +12,7 @@ clean:
 	rm -rf out
 
 lint:
-	cargo +nightly clippy --release -Z build-std=core,alloc --target armv6k-nintendo-3ds --manifest-path reader_core/Cargo.toml
+	cargo +nightly-2024-03-21 clippy --release -Z build-std=core,alloc --target armv6k-nintendo-3ds --manifest-path reader_core/Cargo.toml
 
 test:
 	cargo test --manifest-path reader_core/Cargo.toml

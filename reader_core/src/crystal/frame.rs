@@ -70,7 +70,7 @@ pub fn run_frame() {
     state.frame = match (measured_div(), reader.rng_state()) {
         (0x0101, 0x01ff) => {
             reset_rng_advance();
-            0
+            1
         }
         _ => state.frame.wrapping_add(1),
     };

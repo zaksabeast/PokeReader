@@ -22,7 +22,10 @@ typedef enum SupportedTitle
     GAME_UM = 0x00040000001B5100,
     GAME_TRANSPORTER = 0x00040000000C9C00,
     GAME_CRYSTAL_EN = 0x0004000000172800,
+    GAME_CRYSTAL_DE = 0x0004000000172B00,
     GAME_CRYSTAL_FR = 0x0004000000172E00,
+    GAME_CRYSTAL_ES = 0x0004000000173100,
+    GAME_CRYSTAL_IT = 0x0004000000173400,
 } SupportedTitle;
 
 static Handle thread;
@@ -230,7 +233,10 @@ void main(void)
         map_input_memory_block = 0x11f63c;
         break;
     case GAME_CRYSTAL_EN:
+    case GAME_CRYSTAL_DE:
     case GAME_CRYSTAL_FR:
+    case GAME_CRYSTAL_ES:
+    case GAME_CRYSTAL_IT:
         present_buffer_ptr = 0x14aa24;
         get_screen_jump_inst = 0xeb00b512;
         map_input_memory_block = 0x146a28;

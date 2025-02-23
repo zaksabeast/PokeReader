@@ -259,6 +259,11 @@ const NATURE_LOOKUP: [&str; 25] = [
     "Calm", "Gentle", "Sassy", "Careful", "Quirky",
 ];
 
+const HIDDEN_POWER_LOOKUP: [&str; 16] = [
+    "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water",
+    "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark",
+];
+
 pub struct Pk2 {
     pub spec_index: u8,
     pub species: &'static str,
@@ -270,6 +275,8 @@ pub struct Pk2 {
     pub spc: u8,
     pub hp: u8,
     pub shiny: bool,
+    pub hidden_power_type: &'static str,
+    pub hidden_power_base: u8,
 }
 
 impl Pk2 {
@@ -302,6 +309,16 @@ impl Pk2 {
             spc,
             hp: ((atk & 1) * 8) + ((def & 1) * 4) + ((spe & 1) * 2) + (spc & 1),
             shiny,
+            hidden_power_type: HIDDEN_POWER_LOOKUP
+                .get(((atk & 3) << 2 | def & 3) as usize)
+                .unwrap_or(&"Unknown"),
+            hidden_power_base: 31
+                + (5 * (((atk >= 8) as u8) << 3
+                    | ((def >= 8) as u8) << 2
+                    | ((spe >= 8) as u8) << 1
+                    | ((spc >= 8) as u8))
+                    + spc % 4)
+                    / 2,
         }
     }
 }

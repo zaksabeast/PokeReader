@@ -41,6 +41,7 @@ pub fn draw_pkx(pkx: &impl Pkx) {
     pnp::println!("Species: {}", species);
     pnp::println!("Nature: {}", pkx.nature_t());
     pnp::println!("Ability: ({}) {}", pkx.ability_number_t(), ability);
+    pnp::println!("PID: {:08X}", pkx.pid());
     pnp::println!(color = shiny_color, "PSV: {:04}, {}", pkx.psv(), shiny_type);
     pnp::println!("");
     pnp::println!("HPower: {}", pkx.hidden_power_t());

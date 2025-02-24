@@ -47,9 +47,35 @@ pub fn draw_pkx(pkx: &Pk2) {
     pnp::println!(color = get_iv_color(pkx.spe), "Spe DV: {}", pkx.spe);
 }
 
+const DAYS: [&'static str; 7] = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+];
+
 pub fn draw_non_cfw(reader: &Gen2Reader, frame: usize) {
+    let day = DAYS.get(reader.time_day() as usize).unwrap_or(&"Invalid");
+
     draw_rng(reader);
     pnp::println!("");
     pnp::println!("Frame {}", frame);
     pnp::println!("A Press {}", pnp::is_pressing(Button::A));
+    pnp::println!("DST {}", reader.dst());
+    pnp::println!("Day {}", day);
+    pnp::println!(
+        "IGT {}:{:02}:{:02}",
+        reader.time_hours(),
+        reader.time_minutes(),
+        reader.time_seconds()
+    );
+    pnp::println!(
+        "Play time {}:{:02}:{:02}",
+        reader.play_hours(),
+        reader.play_minutes(),
+        reader.play_seconds()
+    );
 }

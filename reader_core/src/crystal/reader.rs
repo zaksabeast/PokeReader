@@ -52,4 +52,36 @@ impl Gen2Reader {
     pub fn rng_state(&self) -> u16 {
         gb_mem::read_u16(self.addrs.gb_rng_ptr)
     }
+
+    pub fn time_seconds(&self) -> u8 {
+        gb_mem::read_u8(0xff98)
+    }
+
+    pub fn time_minutes(&self) -> u8 {
+        gb_mem::read_u8(0xff96)
+    }
+
+    pub fn time_hours(&self) -> u8 {
+        gb_mem::read_u8(0xff94)
+    }
+
+    pub fn time_day(&self) -> u8 {
+        gb_mem::read_u8(0xd4cb) % 7
+    }
+
+    pub fn dst(&self) -> bool {
+        gb_mem::read_u8(0xd4bc) != 0
+    }
+
+    pub fn play_seconds(&self) -> u8 {
+        gb_mem::read_u8(0xD4C7)
+    }
+
+    pub fn play_minutes(&self) -> u8 {
+        gb_mem::read_u8(0xD4C6)
+    }
+
+    pub fn play_hours(&self) -> u8 {
+        gb_mem::read_u8(0xD4C5)
+    }
 }

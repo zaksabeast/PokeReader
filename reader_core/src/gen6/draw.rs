@@ -35,8 +35,6 @@ pub fn draw_rng(reader: &Gen6Reader, rng: &Gen6Rng) {
     pnp::println!("");
     draw_tinymt(rng);
     pnp::println!("");
-    pnp::println!("Save var: {:08X}", reader.seed_save_variable());
-    pnp::println!("TID/SID: {}/{}", reader.tid(), reader.sid());
     pnp::println!("TSV: {}", reader.tsv());
 }
 
@@ -70,4 +68,15 @@ pub fn draw_dex_nav(reader: &Gen6Reader, rng: &Gen6Rng) {
     pnp::println!("");
     pnp::println!("Step {}", step);
     pnp::println!("Chain {}", chain);
+}
+
+pub fn draw_seed_rng(reader: &Gen6Reader, rng: &Gen6Rng) {
+    let datetime = pnp::os_time();
+
+    draw_mt(rng);
+    pnp::println!("");
+    pnp::println!("");
+    pnp::println!("Save var: {:08X}", reader.seed_save_variable());
+    pnp::println!("Date: {}", datetime.format("%b %d %Y"));
+    pnp::println!("Time: {}", datetime.format("%H:%M:%S"));
 }

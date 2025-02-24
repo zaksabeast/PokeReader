@@ -1,5 +1,5 @@
 use super::{
-    draw::{draw_daycare, draw_header, draw_pkx, draw_radar, draw_rng},
+    draw::{draw_daycare, draw_header, draw_pkx, draw_radar, draw_rng, draw_seed_rng},
     reader::Gen6Reader,
     rng::Gen6Rng,
 };
@@ -25,6 +25,7 @@ enum XyView {
     Wild,
     Radar,
     Party,
+    SeedRng,
 }
 
 impl MenuOptionValue for XyView {
@@ -36,6 +37,7 @@ impl MenuOptionValue for XyView {
             Self::Wild => "Wild",
             Self::Radar => "Radar",
             Self::Party => "Party",
+            Self::SeedRng => "Seed RNG",
         }
     }
 }
@@ -44,7 +46,7 @@ struct PersistedState {
     rng: Gen6Rng,
     show_view: ShowView,
     view: XyView,
-    main_menu: Menu<5, XyView>,
+    main_menu: Menu<6, XyView>,
     party_menu: SubMenu<1, 6>,
 }
 
@@ -60,6 +62,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
             MenuOption::new(XyView::Wild),
             MenuOption::new(XyView::Radar),
             MenuOption::new(XyView::Party),
+            MenuOption::new(XyView::SeedRng),
         ]),
     });
     Lazy::force_mut(&mut STATE)
@@ -93,6 +96,7 @@ pub fn run_xy_frame() {
             let slot = state.party_menu.update_and_draw(is_locked);
             draw_pkx(&reader.party_pkm((slot - 1) as u32));
         }
+        XyView::SeedRng => draw_seed_rng(&reader, &state.rng),
         XyView::MainMenu => {
             state.main_menu.update_view();
             state.main_menu.draw();

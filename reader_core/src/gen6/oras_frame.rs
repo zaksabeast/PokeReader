@@ -1,5 +1,5 @@
 use super::{
-    draw::{draw_daycare, draw_dex_nav, draw_header, draw_pkx, draw_rng},
+    draw::{draw_daycare, draw_dex_nav, draw_header, draw_pkx, draw_rng, draw_seed_rng},
     reader::Gen6Reader,
     rng::Gen6Rng,
 };
@@ -26,6 +26,7 @@ enum OrasView {
     Wild,
     DexNav,
     Party,
+    SeedRng,
 }
 
 impl MenuOptionValue for OrasView {
@@ -38,6 +39,7 @@ impl MenuOptionValue for OrasView {
             Self::Wild => "Wild",
             Self::DexNav => "DexNav",
             Self::Party => "Party",
+            Self::SeedRng => "Seed RNG",
         }
     }
 }
@@ -46,7 +48,7 @@ struct PersistedState {
     rng: Gen6Rng,
     show_view: ShowView,
     view: OrasView,
-    main_menu: Menu<6, OrasView>,
+    main_menu: Menu<7, OrasView>,
     party_menu: SubMenu<1, 6>,
 }
 
@@ -63,6 +65,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
             MenuOption::new(OrasView::Wild),
             MenuOption::new(OrasView::DexNav),
             MenuOption::new(OrasView::Party),
+            MenuOption::new(OrasView::SeedRng),
         ]),
     });
     Lazy::force_mut(&mut STATE)
@@ -97,6 +100,7 @@ pub fn run_oras_frame() {
             let slot = state.party_menu.update_and_draw(is_locked);
             draw_pkx(&reader.party_pkm((slot - 1) as u32));
         }
+        OrasView::SeedRng => draw_seed_rng(&reader, &state.rng),
         OrasView::MainMenu => {
             state.main_menu.update_view();
             state.main_menu.draw();

@@ -56,14 +56,14 @@ void ovDrawTranspartBlackRect(u32 addr, u32 stride, u32 format, int r, int c, in
 void ovDrawPixel(u32 addr, u32 stride, u32 format, int posR, int posC, u32 r, u32 g, u32 b)
 {
   format &= 0x0f;
-  if (format == 2 || format == 3)
+  if (format == 2)
   {
     u16 pix = ((r) << 11) | ((g) << 5) | (b);
     *(u16 *)(addr + stride * posC + 480 - 2 * posR) = pix;
   }
   else if (format == 3)
   {
-    u16 pix = ((r) << 11) | ((b) << 6) | (g);
+    u16 pix = ((r) << 11) | ((g) << 6) | (b);
     *(u16 *)(addr + stride * posC + 480 - 2 * posR) = pix;
   }
   else

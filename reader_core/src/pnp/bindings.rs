@@ -1,5 +1,5 @@
 extern "C" {
-    pub fn host_print(ptr: u32, size: u32);
+    pub fn host_print(ptr: u32, size: u32, color: u32);
     pub fn host_read_mem(game_addr: u32, size: u32, out_ptr: u32);
     pub fn host_write_mem(game_addr: u32, size: u32, in_ptr: u32);
     pub fn host_is_just_pressed(io_bits: u32) -> u32;
@@ -12,7 +12,7 @@ extern "C" {
 #[cfg(feature = "test_stubs")]
 pub mod test_stubs {
     #[no_mangle]
-    pub extern "C" fn host_print(_ptr: u32, _size: u32) {}
+    pub extern "C" fn host_print(_ptr: u32, _size: u32, _color: u32) {}
     #[no_mangle]
     pub extern "C" fn host_read_mem(_game_addr: u32, _size: u32, _out_ptr: u32) {}
     #[no_mangle]

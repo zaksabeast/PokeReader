@@ -6,7 +6,7 @@
 #include <3ds.h>
 
 void draw_to_screen(u32 screenId, u8 *framebuffer, u32 stride, u32 format);
-void host_print(u32 ptr, u32 size);
+void host_print(u32 ptr, u32 size, u32 color);
 void host_read_mem(u32 game_addr, u32 size, u32 out_ptr);
 void host_write_mem(u32 game_addr, u32 size, u32 in_ptr);
 void scan_input();

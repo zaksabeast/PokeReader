@@ -9,8 +9,7 @@ pub struct SubMenu<const MIN: usize, const MAX: usize> {
 impl<const MIN: usize, const MAX: usize> SubMenu<MIN, MAX> {
     fn draw_header(&self) {
         pnp::println!("Slot {}", self.counter.value());
-        pnp::println!("^ Previous slot");
-        pnp::println!("v Next slot");
+        pnp::println!("[v] Next | Prev [^]");
         pnp::println!("");
     }
 

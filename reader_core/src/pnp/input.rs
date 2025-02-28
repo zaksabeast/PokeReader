@@ -68,5 +68,6 @@ pub fn is_just_pressed(io_bits: impl Into<u32>) -> bool {
 }
 
 pub fn is_pressing(io_bits: impl Into<u32>) -> bool {
-    unsafe { bindings::get_current_keys() == io_bits.into() }
+    let current_keys = unsafe { bindings::get_current_keys() };
+    (current_keys & io_bits.into()) != 0
 }

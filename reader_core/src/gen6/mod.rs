@@ -1,4 +1,5 @@
 mod draw;
+mod game_lib;
 mod oras_frame;
 mod reader;
 mod rng;

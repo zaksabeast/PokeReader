@@ -1,4 +1,5 @@
 use super::{
+    game_lib::get_seed_hash,
     reader::{Daycare, Gen6Reader},
     rng::Gen6Rng,
 };
@@ -73,10 +74,13 @@ pub fn draw_dex_nav(reader: &Gen6Reader, rng: &Gen6Rng) {
 
 pub fn draw_seed_rng(reader: &Gen6Reader, rng: &Gen6Rng) {
     let datetime = pnp::os_time();
+    let hash = get_seed_hash();
+    let seed_hash = (hash as u32) ^ (hash >> 32) as u32;
 
     draw_mt(rng);
     pnp::println!("");
     pnp::println!("");
+    pnp::println!("Seed hash: {:08X}", seed_hash);
     pnp::println!("Save var: {:08X}", reader.seed_save_variable());
     pnp::println!("Date: {}", datetime.format("%b %d %Y"));
     pnp::println!("Time: {}", datetime.format("%H:%M:%S"));

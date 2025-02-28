@@ -35,6 +35,7 @@ pub fn draw_rng(reader: &Gen6Reader, rng: &Gen6Rng) {
     pnp::println!("");
     draw_tinymt(rng);
     pnp::println!("");
+    pnp::println!("Save var: {:08X}", reader.seed_save_variable());
     pnp::println!("TSV: {}", reader.tsv());
 }
 

@@ -16,7 +16,7 @@ mod title;
 mod transporter;
 mod utils;
 
-use title::{title_id, SupportedTitle};
+use title::{supported_title, SupportedTitle};
 
 #[cfg(target_os = "horizon")]
 #[panic_handler]
@@ -45,7 +45,7 @@ fn my_panic(info: &core::panic::PanicInfo) -> ! {
 #[cfg(target_os = "horizon")]
 #[no_mangle]
 pub extern "C" fn initialize() {
-    match title_id() {
+    match supported_title() {
         SupportedTitle::S | SupportedTitle::M => gen7::init_sm(),
         SupportedTitle::Us => gen7::init_us(),
         SupportedTitle::Um => gen7::init_um(),
@@ -63,7 +63,7 @@ pub extern "C" fn initialize() {
 
 #[no_mangle]
 pub extern "C" fn run_frame() {
-    match title_id() {
+    match supported_title() {
         SupportedTitle::S | SupportedTitle::M => gen7::run_sm_frame(),
         SupportedTitle::Us | SupportedTitle::Um => gen7::run_usum_frame(),
         SupportedTitle::Or | SupportedTitle::As => gen6::run_oras_frame(),
@@ -74,6 +74,11 @@ pub extern "C" fn run_frame() {
         | SupportedTitle::CrystalFr
         | SupportedTitle::CrystalEs
         | SupportedTitle::CrystalIt => crystal::run_frame(),
-        SupportedTitle::Invalid => {}
+        SupportedTitle::Invalid => {
+            pnp::println!("Unsupported game update!");
+            pnp::println!("");
+            pnp::println!("Please update your game");
+            pnp::println!("for PokeReader to run");
+        }
     }
 }

@@ -9,24 +9,7 @@
 #include "pokereader.h"
 #include "title_info.h"
 #include "hid.h"
-
-typedef enum SupportedTitle
-{
-    GAME_X = 0x0004000000055D00,
-    GAME_Y = 0x0004000000055E00,
-    GAME_OR = 0x000400000011C400,
-    GAME_AS = 0x000400000011C500,
-    GAME_S = 0x0004000000164800,
-    GAME_M = 0x0004000000175E00,
-    GAME_US = 0x00040000001B5000,
-    GAME_UM = 0x00040000001B5100,
-    GAME_TRANSPORTER = 0x00040000000C9C00,
-    GAME_CRYSTAL_EN = 0x0004000000172800,
-    GAME_CRYSTAL_DE = 0x0004000000172B00,
-    GAME_CRYSTAL_FR = 0x0004000000172E00,
-    GAME_CRYSTAL_ES = 0x0004000000173100,
-    GAME_CRYSTAL_IT = 0x0004000000173400,
-} SupportedTitle;
+#include "memmem.h"
 
 static Handle thread;
 static Handle memLayoutChanged;
@@ -142,6 +125,15 @@ u8 HID_INPUT_MAP_PATCH[0x8] = {
     0x00, 0xf0, 0x1f, 0xe5, //     ldr        pc,[pc + 0x8]
 };
 
+u8 PRESENT_FRAMEBUFFER_BYTES[0X10] = {
+    0x28, 0x00, 0x8d, 0xe2, 0x00, 0x80, 0xa0, 0xe3, 0x01, 0x70, 0xa0, 0xe1, 0x00, 0x0e, 0x90, 0xe8,
+};
+
+u8 MAP_INPUT_BLOCK[] = {
+    0x01, 0x20, 0xa0, 0x13, 0x03, 0x20, 0xa0, 0x03, 0x01, 0x32, 0xa0, 0xe3, 0x1f, 0x00,
+    0x00, 0xef, 0xa0, 0x1f, 0xb0, 0xe1, 0x01, 0x10, 0xa0, 0x03, 0x18, 0x10, 0xc4, 0x05
+};
+
 extern char *fake_heap_start;
 extern char *fake_heap_end;
 extern u32 __ctru_heap;
@@ -181,76 +173,20 @@ void main(void)
     // Get memory layout changed event
     svcControlProcess(CUR_PROCESS_HANDLE, PROCESSOP_GET_ON_MEMORY_CHANGE_EVENT, (u32)&memLayoutChanged, 0);
 
-    u32 present_buffer_ptr = 0;
-    u32 get_screen_jump_inst = 0;
-    u32 map_input_memory_block = 0;
+    MemInfo info;
+    PageInfo out;
+    svcQueryMemory(&info, &out, 0x100000);
+ 
+    u32 present_buffer_ptr = (u32)memmem((u8*)info.base_addr, info.size, PRESENT_FRAMEBUFFER_BYTES, sizeof(PRESENT_FRAMEBUFFER_BYTES)) - 8;
+    u32 map_input_memory_block = (u32)memmem((u8*)info.base_addr, info.size, MAP_INPUT_BLOCK, sizeof(MAP_INPUT_BLOCK));
 
-    switch (get_title_id())
-    {
-    case GAME_X:
-        present_buffer_ptr = 0x149354;
-        get_screen_jump_inst = 0xeb006cca;
-        map_input_memory_block = 0x133dfc;
-        break;
-    case GAME_Y:
-        present_buffer_ptr = 0x149354;
-        get_screen_jump_inst = 0xeb006cca;
-        map_input_memory_block = 0x133dfc;
-        break;
-    case GAME_OR:
-        present_buffer_ptr = 0x148758;
-        get_screen_jump_inst = 0xeb0071d4;
-        map_input_memory_block = 0x1331e8;
-        break;
-    case GAME_AS:
-        present_buffer_ptr = 0x148758;
-        get_screen_jump_inst = 0xeb0071d4;
-        map_input_memory_block = 0x1331e8;
-        break;
-    case GAME_S:
-        present_buffer_ptr = 0x278540;
-        get_screen_jump_inst = 0xeb0003d3;
-        map_input_memory_block = 0x170eac;
-        break;
-    case GAME_M:
-        present_buffer_ptr = 0x278540;
-        get_screen_jump_inst = 0xeb0003d3;
-        map_input_memory_block = 0x170eac;
-        break;
-    case GAME_US:
-        present_buffer_ptr = 0x279bb4;
-        get_screen_jump_inst = 0xeb0003d3;
-        map_input_memory_block = 0x17234c;
-        break;
-    case GAME_UM:
-        present_buffer_ptr = 0x279bb4;
-        get_screen_jump_inst = 0xeb0003d3;
-        map_input_memory_block = 0x17234c;
-        break;
-    case GAME_TRANSPORTER:
-        present_buffer_ptr = 0x12b7ec;
-        get_screen_jump_inst = 0xeb02cbd4;
-        map_input_memory_block = 0x11f63c;
-        break;
-    case GAME_CRYSTAL_EN:
-    case GAME_CRYSTAL_DE:
-    case GAME_CRYSTAL_FR:
-    case GAME_CRYSTAL_ES:
-    case GAME_CRYSTAL_IT:
-        present_buffer_ptr = 0x14aa24;
-        get_screen_jump_inst = 0xeb00b512;
-        map_input_memory_block = 0x146a28;
-        break;
-    default:
-        return;
-    }
-
+    u32 get_screen_branch = *(u32 *)(present_buffer_ptr + 0x20) - 4;
     u32 *present_buffer_pa = (u32 *)PA_FROM_VA_PTR(present_buffer_ptr);
     memcpy(present_buffer_pa, DRAW_PATCH, 0x94);
     present_buffer_pa[0x4] = (u32)run_hook;
     // 7 instructions * 4 bytes per instruction
-    present_buffer_pa[0x5] = (u32)present_buffer_ptr + (0x7 * 0x4); // set return address
-    present_buffer_pa[0xc] = get_screen_jump_inst;                  // fix get_screen branch instruction
+    present_buffer_pa[0x5] = present_buffer_ptr + (0x7 * 0x4); // set return address
+    present_buffer_pa[0xc] = get_screen_branch;                // fix get_screen branch instruction
 
     u32 *map_input_memory_block_pa = (u32 *)PA_FROM_VA_PTR(map_input_memory_block);
     memcpy(map_input_memory_block_pa, HID_INPUT_MAP_PATCH, 0x8);

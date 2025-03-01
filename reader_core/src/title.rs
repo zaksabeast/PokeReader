@@ -22,6 +22,33 @@ pub enum SupportedTitle {
     CrystalIt = 0x0004000000173400,
 }
 
-pub fn title_id() -> SupportedTitle {
-    pnp::title_id().into()
+static mut LOADED_TITLE: SupportedTitle = SupportedTitle::Invalid;
+
+pub fn supported_title() -> SupportedTitle {
+    // Reader is single-threaded, so this is safe.
+    // Even then, title and update version will also always be the same values.
+    unsafe {
+        if LOADED_TITLE == SupportedTitle::Invalid {
+            let title = pnp::title_id().into();
+            LOADED_TITLE = match (title, pnp::update_version()) {
+                (SupportedTitle::S, 2)
+                | (SupportedTitle::M, 2)
+                | (SupportedTitle::Us, 2)
+                | (SupportedTitle::Um, 2)
+                | (SupportedTitle::Or, 7)
+                | (SupportedTitle::As, 7)
+                | (SupportedTitle::X, 5)
+                | (SupportedTitle::Y, 5)
+                | (SupportedTitle::Transporter, 5)
+                | (SupportedTitle::CrystalEn, 0)
+                | (SupportedTitle::CrystalDe, 0)
+                | (SupportedTitle::CrystalFr, 0)
+                | (SupportedTitle::CrystalEs, 0)
+                | (SupportedTitle::CrystalIt, 0) => title,
+                (_, _) => SupportedTitle::Invalid,
+            };
+        }
+
+        LOADED_TITLE
+    }
 }

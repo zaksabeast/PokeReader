@@ -7,6 +7,7 @@ extern "C" {
     pub fn host_get_game_title_id() -> u64;
     pub fn host_game_start_ms() -> u64;
     pub fn get_current_keys() -> u32;
+    pub fn get_remaster_version() -> u64;
     pub fn osGetTime() -> u64;
 }
 
@@ -38,6 +39,10 @@ pub mod test_stubs {
     }
     #[no_mangle]
     pub extern "C" fn osGetTime() -> u64 {
+        0
+    }
+    #[no_mangle]
+    pub extern "C" fn get_remaster_version() -> u64 {
         0
     }
 }

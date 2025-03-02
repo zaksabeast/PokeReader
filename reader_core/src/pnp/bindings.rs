@@ -9,6 +9,8 @@ extern "C" {
     pub fn get_current_keys() -> u32;
     pub fn get_remaster_version() -> u64;
     pub fn osGetTime() -> u64;
+    pub fn get_trampoline_addr() -> u32;
+    pub fn get_route_hook_addr() -> u32;
 }
 
 #[cfg(feature = "test_stubs")]
@@ -43,6 +45,14 @@ pub mod test_stubs {
     }
     #[no_mangle]
     pub extern "C" fn get_remaster_version() -> u64 {
+        0
+    }
+    #[no_mangle]
+    pub extern "C" fn get_trampoline_addr() -> u32 {
+        0
+    }
+    #[no_mangle]
+    pub extern "C" fn get_route_hook_addr() -> u32 {
         0
     }
 }

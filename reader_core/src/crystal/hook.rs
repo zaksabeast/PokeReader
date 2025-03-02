@@ -122,7 +122,7 @@ fn gb_read_mem(regs: &[u32], _stack_pointer: *mut u32) {
 
 pub fn init_crystal() {
     utils::hook_game_branch!(
-        hook_router_addr = 0x2089e4,
+        game_name = crystal,
         update_cycle_counter = 0x1a8360,
         gb_read_mem = 0x1af17c,
     );

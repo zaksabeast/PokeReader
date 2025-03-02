@@ -1,4 +1,5 @@
 mod bindings;
+mod hook;
 /// Tools related to input from the user.
 mod input;
 /// Tools for reading game memory.
@@ -10,6 +11,7 @@ mod time;
 /// Various utilities.
 mod utils;
 
+pub use hook::*;
 pub use input::*;
 pub use memory::*;
 pub use print::*;

@@ -13,10 +13,6 @@ use crate::{
 };
 use once_cell::unsync::Lazy;
 
-pub fn init_xy() {
-    Gen6Reader::xy().patch_inital_seed_read();
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum XyView {
     MainMenu,

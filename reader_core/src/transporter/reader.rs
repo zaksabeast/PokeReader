@@ -2,7 +2,6 @@ use crate::pnp;
 use pkm_rs::{Pk7, PokeCrypto};
 
 struct TransporterAddresses {
-    initial_seed_patch: u32,
     initial_seed: u32,
     mt_start: u32,
     mt_state_index: u32,
@@ -10,7 +9,6 @@ struct TransporterAddresses {
 }
 
 const TRANSPORTER_ADDRESSES: TransporterAddresses = TransporterAddresses {
-    initial_seed_patch: 0x117fdc,
     initial_seed: 0x8afaf8c,
     mt_start: 0x8afaf94,
     mt_state_index: 0x8afaf90,
@@ -49,16 +47,5 @@ impl TransporterReader {
     pub fn transported_pkm(&self, slot: u32) -> Pk7 {
         let offset = (slot * 0xe8) + self.addrs.transported_pokemon;
         self.read_pk7(offset)
-    }
-
-    pub fn patch_inital_seed_read(&self) {
-        /*
-         * The MT table initialization in gen 6 has a very useful nop instruction at the beginning of the function.
-         * We overwrite this with str r1, [r0, #-4].
-         * r1 is the register that contains the initial seed and r0 is the register that contains the memory address for the MT table.
-         * The #-4 is to indicate write the initial seed 4 bytes before the MT table.
-         * After this instruction is executed we can read the memory address 4 bytes before the MT table to get the initial seed.
-         */
-        pnp::write(self.addrs.initial_seed_patch, &0xe5001004u32);
     }
 }

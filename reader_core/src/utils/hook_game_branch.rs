@@ -15,7 +15,7 @@ fn replace_arm_branch(
 
     if branch_instruction >> 24 != 0xeb {
         return ReplacedBranch {
-            original_address,
+            original_address: 0,
             new_branch_instruction: branch_instruction,
         };
     }
@@ -37,27 +37,9 @@ pub fn hook_addr(address: u32, new_jump_address: u32) -> u32 {
     replaced_branch.original_address
 }
 
-pub fn install_hook_router(base_addr: u32, route_hook_addr: u32) {
-    let hook_patch: [u32; 9] = [
-        0xe92d4000, // stmdb // sp!,{lr}
-        0xe92d5fff, // stmdb // sp!,{r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12
-        0xe1a0000d, // mov r0, sp
-        0xe59fe008, // ldr // lr,[0x5bbff8]
-        0xe59ff008, // ldr // pc,[0x5bbffc]
-        0xe8bd5fff, // ldmia // sp!,{r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12
-        0xe8bd8000, // ldmia // sp!,{pc}
-        base_addr + 0x14,
-        route_hook_addr,
-    ];
-
-    for (index, instruction) in hook_patch.iter().enumerate() {
-        pnp::write(base_addr + (index as u32 * 4), instruction);
-    }
-}
-
 #[macro_export]
 macro_rules! hook_game_branch {
-  (hook_router_addr = $router:expr, $($fn_name:ident = $address:expr,)+) => {
+  (game_name = $game_name:expr, $($fn_name:ident = $address:expr,)+) => {
       $(
           mod $fn_name {
               #[allow(non_upper_case_globals)]
@@ -65,9 +47,11 @@ macro_rules! hook_game_branch {
           }
       )*
 
+      let trampoline_addr = $crate::pnp::get_trampoline_addr();
+
       unsafe {
           $(
-              $fn_name::return_addr = $crate::utils::hook_addr($address, $router);
+              $fn_name::return_addr = $crate::utils::hook_addr($address, trampoline_addr);
           )*
       }
 
@@ -77,13 +61,47 @@ macro_rules! hook_game_branch {
           $(
               if regs[13] == ($address + 4) {
                   $fn_name(regs, stack_pointer.add(15));
-                  regs[14] = $fn_name::return_addr;
+                  regs[14] = regs[13];
+                  regs[13] = $fn_name::return_addr;
               }
           )*
+
+          regs.rotate_right(1);
       }
 
-      $crate::utils::install_hook_router($router, route_hook as u32);
+      let route_hook_addr = $crate::pnp::get_route_hook_addr();
+      $crate::pnp::write(route_hook_addr, &(route_hook as u32));
   };
 }
 
 pub use hook_game_branch;
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    mod replace_arm_branch {
+        use super::*;
+
+        #[test]
+        fn branch_link_before() {
+            let result = replace_arm_branch(0x1a8360, 0xeb000a86, 0x14aa9c);
+            assert_eq!(result.original_address, 0x1aad80);
+            assert_eq!(result.new_branch_instruction, 0xebfe89cd);
+        }
+
+        #[test]
+        fn branch_link_after() {
+            let result = replace_arm_branch(0x1a8360, 0xeb000a86, 0x1a93ac);
+            assert_eq!(result.original_address, 0x1aad80);
+            assert_eq!(result.new_branch_instruction, 0xeb000411);
+        }
+
+        #[test]
+        fn ignores_non_branch_instructions() {
+            let result = replace_arm_branch(0x10db0c, 0xaabbccdd, 0x1a0000);
+            assert_eq!(result.original_address, 0);
+            assert_eq!(result.new_branch_instruction, 0xaabbccdd);
+        }
+    }
+}

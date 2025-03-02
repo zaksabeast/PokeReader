@@ -16,3 +16,7 @@ void host_set_print_max_len(u32 max_len);
 u64 host_get_game_title_id();
 void set_game_start_ms(u64 time);
 u64 host_game_start_ms();
+void set_trampoline_addr(u32 trampoline);
+u32 get_trampoline_addr();
+void set_route_hook_addr(u32 route_hook);
+u32 get_route_hook_addr();

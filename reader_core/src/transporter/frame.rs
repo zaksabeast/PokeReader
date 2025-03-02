@@ -13,10 +13,6 @@ use crate::{
 };
 use once_cell::unsync::Lazy;
 
-pub fn init_transporter() {
-    TransporterReader::new().patch_inital_seed_read();
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum TransporterView {
     MainMenu,

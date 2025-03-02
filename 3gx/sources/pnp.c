@@ -116,3 +116,22 @@ u64 host_game_start_ms()
 {
   return game_start_ms;
 }
+
+u32 trampoline_addr = 0;
+u32 route_hook_addr = 0;
+
+void set_trampoline_addr(u32 trampoline) {
+  trampoline_addr = trampoline;
+}
+
+u32 get_trampoline_addr() {
+  return trampoline_addr;
+}
+
+void set_route_hook_addr(u32 route_hook) {
+  route_hook_addr = route_hook;
+}
+
+u32 get_route_hook_addr() {
+  return route_hook_addr;
+}

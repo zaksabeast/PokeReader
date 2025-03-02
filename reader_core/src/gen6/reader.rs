@@ -9,7 +9,6 @@ pub struct Daycare {
 }
 
 struct Gen6Addresses {
-    initial_seed_patch: u32,
     initial_seed: u32,
     mt_start: u32,
     mt_state_index: u32,
@@ -36,7 +35,6 @@ struct Gen6Addresses {
 }
 
 const XY_ADDRESSES: Gen6Addresses = Gen6Addresses {
-    initial_seed_patch: 0x1254f8,
     initial_seed: 0x8c52844,
     mt_start: 0x8c5284c,
     mt_state_index: 0x8c52848,
@@ -63,7 +61,6 @@ const XY_ADDRESSES: Gen6Addresses = Gen6Addresses {
 };
 
 const ORAS_ADDRESSES: Gen6Addresses = Gen6Addresses {
-    initial_seed_patch: 0x125ec8,
     initial_seed: 0x8c59e40,
     mt_start: 0x8c59e48,
     mt_state_index: 0x8c59e44,
@@ -203,16 +200,5 @@ impl Gen6Reader {
 
     pub fn seed_save_variable(&self) -> u32 {
         pnp::read(self.addrs.seed_save_variable)
-    }
-
-    pub fn patch_inital_seed_read(&self) {
-        /*
-         * The MT table initialization in gen 6 has a very useful nop instruction at the beginning of the function.
-         * We overwrite this with str r1, [r0, #-4].
-         * r1 is the register that contains the initial seed and r0 is the register that contains the memory address for the MT table.
-         * The #-4 is to indicate write the initial seed 4 bytes before the MT table.
-         * After this instruction is executed we can read the memory address 4 bytes before the MT table to get the initial seed.
-         */
-        pnp::write(self.addrs.initial_seed_patch, &0xe5001004u32);
     }
 }

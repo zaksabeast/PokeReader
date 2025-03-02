@@ -78,18 +78,11 @@ Result map_input_hook(u32 memblock_handle, u32 addr, u32 _r2, u32 _r3, u32 _r4, 
 
 u8 DRAW_PATCH[0x94] = {
     0xf0, 0x5f, 0x2d, 0xe9, // stmdb      sp!,{r4 r5 r6 r7 r8 r9 r10 r11 r12 lr}
-    // -------------------------------------------------------------------------------------
-    // Injected reader call
-    // -------------------------------------------------------------------------------------
-    0xff, 0x1f, 0x2d, 0xe9, // 0x00, 0xf0, 0x20, 0xe3, // nop
-    0x04, 0xe0, 0x9f, 0xe5, // ldr lr,[pc + 8]
-    0x04, 0xf0, 0x1f, 0xe5, // ldr pc,[pc + 4]
-    0x00, 0xf0, 0x20, 0xe3, // nop
-    0x00, 0xf0, 0x20, 0xe3, // nop
-    0x00, 0xf0, 0x20, 0xe3, // nop
-    0xff, 0x1f, 0xbd, 0xe8, // 0x00, 0xf0, 0x20, 0xe3, // nop
-                            // -------------------------------------------------------------------------------------
     0x0f, 0x00, 0x2d, 0xe9, // stmdb      sp!,{r0 r1 r2 r3}
+    // Injected reader call
+    0x64, 0xc0, 0x9f, 0xe5, // ldr        r12,[run_hook_addr]
+    0x3c, 0xff, 0x2f, 0xe1, // blx        r12
+    // End reader call
     0xf0, 0x00, 0xbd, 0xe8, // ldmia      sp!,{r4 r5 r6 r7}
     0x28, 0x00, 0x8d, 0xe2, // add        r0,sp,#0x28
     0x00, 0x0e, 0x90, 0xe8, // ldmia      r0,{r9 r10 r11}
@@ -115,9 +108,15 @@ u8 DRAW_PATCH[0x94] = {
     0x00, 0x00, 0x56, 0xe3, // cmp        r6,#0x0
     0xf6, 0xff, 0xff, 0x1a, // bne        loop
     0xf0, 0x9f, 0xbd, 0xe8, // ldmia      sp!,{r4 r5 r6 r7 r8 r9 r10 r11 r12 pc}
-    0x00, 0x00, 0x00, 0x00, // *session handle
-    0x40, 0x01, 0x01, 0x00, // *command header
-    0x00, 0x00, 0x00, 0x00, // unused
+    0x00, 0x00, 0x00, 0x00, // run_hook_addr
+    // Hook trampoline
+    0xff, 0xdf, 0x2d, 0xe9, // stmdb      sp!,{r0-r12, lr, pc}
+    0x0d, 0x00, 0xa0, 0xe1, // cpy        r0,sp
+    0x08, 0xc0, 0x9f, 0xe5, // ldr        r12,[trampoline_addr]
+    0x3c, 0xff, 0x2f, 0xe1, // blx        r12
+    0x00, 0x40, 0xbd, 0xe8, // ldmia      sp!,{lr}
+    0xff, 0x9f, 0xbd, 0xe8, // ldmia      sp!,{r0-r12, pc}    
+    0x00, 0x00, 0x00, 0x00, // trampoline_addr
 };
 
 u8 HID_INPUT_MAP_PATCH[0x8] = {
@@ -162,7 +161,6 @@ void main(void)
 
     // Init services
     srvInit();
-    initialize();
 
     // NTP epoch (milliseconds since 1st Jan 1900 00:00)
     u64 ms = osGetTime();
@@ -180,13 +178,14 @@ void main(void)
     u32 present_buffer_ptr = (u32)memmem((u8*)info.base_addr, info.size, PRESENT_FRAMEBUFFER_BYTES, sizeof(PRESENT_FRAMEBUFFER_BYTES)) - 8;
     u32 map_input_memory_block = (u32)memmem((u8*)info.base_addr, info.size, MAP_INPUT_BLOCK, sizeof(MAP_INPUT_BLOCK));
 
-    u32 get_screen_branch = *(u32 *)(present_buffer_ptr + 0x20) - 4;
+    u32 get_screen_branch = *(u32 *)(present_buffer_ptr + 0x20) + 1;
     u32 *present_buffer_pa = (u32 *)PA_FROM_VA_PTR(present_buffer_ptr);
     memcpy(present_buffer_pa, DRAW_PATCH, 0x94);
-    present_buffer_pa[0x4] = (u32)run_hook;
-    // 7 instructions * 4 bytes per instruction
-    present_buffer_pa[0x5] = present_buffer_ptr + (0x7 * 0x4); // set return address
-    present_buffer_pa[0xc] = get_screen_branch;                // fix get_screen branch instruction
+    present_buffer_pa[7] = get_screen_branch; // fix get_screen branch instruction
+    present_buffer_pa[29] = (u32)run_hook;
+    u32 trampoline_addr = (u32)present_buffer_ptr + (30 * 4);
+    set_trampoline_addr(trampoline_addr);
+    set_route_hook_addr(trampoline_addr + (6 * 4));
 
     u32 *map_input_memory_block_pa = (u32 *)PA_FROM_VA_PTR(map_input_memory_block);
     memcpy(map_input_memory_block_pa, HID_INPUT_MAP_PATCH, 0x8);
@@ -194,5 +193,6 @@ void main(void)
     map_input_memory_block_pa[0x2] = (u32)map_input_memory_block + (0x4 * 0x4); // set return address
     map_input_memory_block_pa[0x3] = (u32)map_input_hook;                       // set jump address
 
+    initialize();
     svcInvalidateEntireInstructionCache();
 }

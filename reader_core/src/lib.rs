@@ -87,11 +87,12 @@ fn run_loaded_title_frame(title: LoadedTitle) {
 pub extern "C" fn run_frame() {
     match loaded_title() {
         Ok(title) => run_loaded_title_frame(title),
-        Err(TitleError::InvalidUpdate) => {
+        Err(TitleError::InvalidUpdate { remaster_version }) => {
             pnp::println!("Unsupported game update!");
             pnp::println!("");
             pnp::println!("Please update your game");
             pnp::println!("for PokeReader to run");
+            pnp::println!("Update {}", remaster_version)
         }
         Err(TitleError::InvalidTitle) => {}
     }

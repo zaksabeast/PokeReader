@@ -23,7 +23,7 @@ pub enum LoadedTitle {
 #[derive(Debug, Clone, Copy)]
 pub enum TitleError {
     InvalidTitle,
-    InvalidUpdate,
+    InvalidUpdate { remaster_version: u64 },
 }
 
 static mut LOADED_TITLE: Result<LoadedTitle, TitleError> = Err(TitleError::InvalidTitle);
@@ -50,7 +50,7 @@ pub fn loaded_title() -> Result<LoadedTitle, TitleError> {
             | (LoadedTitle::CrystalFr, 0)
             | (LoadedTitle::CrystalEs, 0)
             | (LoadedTitle::CrystalIt, 0) => Ok(title),
-            (_, _) => Err(TitleError::InvalidUpdate),
+            (_, remaster_version) => Err(TitleError::InvalidUpdate { remaster_version }),
         };
 
         LOADED_TITLE

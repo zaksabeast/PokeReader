@@ -16,7 +16,7 @@ mod title;
 mod transporter;
 mod utils;
 
-use title::{supported_title, SupportedTitle};
+use title::{loaded_title, LoadedTitle, TitleError};
 
 #[cfg(target_os = "horizon")]
 #[panic_handler]
@@ -42,43 +42,56 @@ fn my_panic(info: &core::panic::PanicInfo) -> ! {
     loop {}
 }
 
+fn initialize_loaded_title(title: LoadedTitle) {
+    match title {
+        LoadedTitle::S | LoadedTitle::M => gen7::init_sm(),
+        LoadedTitle::Us => gen7::init_us(),
+        LoadedTitle::Um => gen7::init_um(),
+        LoadedTitle::Or | LoadedTitle::As => gen6::init_oras(),
+        LoadedTitle::X | LoadedTitle::Y => gen6::init_xy(),
+        LoadedTitle::Transporter => transporter::init_transporter(),
+        LoadedTitle::CrystalEn
+        | LoadedTitle::CrystalDe
+        | LoadedTitle::CrystalFr
+        | LoadedTitle::CrystalEs
+        | LoadedTitle::CrystalIt => crystal::init_crystal(),
+    }
+}
+
 #[cfg(target_os = "horizon")]
 #[no_mangle]
 pub extern "C" fn initialize() {
-    match supported_title() {
-        SupportedTitle::S | SupportedTitle::M => gen7::init_sm(),
-        SupportedTitle::Us => gen7::init_us(),
-        SupportedTitle::Um => gen7::init_um(),
-        SupportedTitle::Or | SupportedTitle::As => gen6::init_oras(),
-        SupportedTitle::X | SupportedTitle::Y => gen6::init_xy(),
-        SupportedTitle::Transporter => transporter::init_transporter(),
-        SupportedTitle::CrystalEn
-        | SupportedTitle::CrystalDe
-        | SupportedTitle::CrystalFr
-        | SupportedTitle::CrystalEs
-        | SupportedTitle::CrystalIt => crystal::init_crystal(),
-        SupportedTitle::Invalid => {}
+    match loaded_title() {
+        Ok(title) => initialize_loaded_title(title),
+        Err(_) => {}
+    }
+}
+
+fn run_loaded_title_frame(title: LoadedTitle) {
+    match title {
+        LoadedTitle::S | LoadedTitle::M => gen7::run_sm_frame(),
+        LoadedTitle::Us | LoadedTitle::Um => gen7::run_usum_frame(),
+        LoadedTitle::Or | LoadedTitle::As => gen6::run_oras_frame(),
+        LoadedTitle::X | LoadedTitle::Y => gen6::run_xy_frame(),
+        LoadedTitle::Transporter => transporter::run_frame(),
+        LoadedTitle::CrystalEn
+        | LoadedTitle::CrystalDe
+        | LoadedTitle::CrystalFr
+        | LoadedTitle::CrystalEs
+        | LoadedTitle::CrystalIt => crystal::run_frame(),
     }
 }
 
 #[no_mangle]
 pub extern "C" fn run_frame() {
-    match supported_title() {
-        SupportedTitle::S | SupportedTitle::M => gen7::run_sm_frame(),
-        SupportedTitle::Us | SupportedTitle::Um => gen7::run_usum_frame(),
-        SupportedTitle::Or | SupportedTitle::As => gen6::run_oras_frame(),
-        SupportedTitle::X | SupportedTitle::Y => gen6::run_xy_frame(),
-        SupportedTitle::Transporter => transporter::run_frame(),
-        SupportedTitle::CrystalEn
-        | SupportedTitle::CrystalDe
-        | SupportedTitle::CrystalFr
-        | SupportedTitle::CrystalEs
-        | SupportedTitle::CrystalIt => crystal::run_frame(),
-        SupportedTitle::Invalid => {
+    match loaded_title() {
+        Ok(title) => run_loaded_title_frame(title),
+        Err(TitleError::InvalidUpdate) => {
             pnp::println!("Unsupported game update!");
             pnp::println!("");
             pnp::println!("Please update your game");
             pnp::println!("for PokeReader to run");
         }
+        Err(TitleError::InvalidTitle) => {}
     }
 }

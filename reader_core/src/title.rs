@@ -1,11 +1,9 @@
 use crate::pnp;
-use num_enum::{FromPrimitive, IntoPrimitive};
+use num_enum::TryFromPrimitive;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, FromPrimitive, IntoPrimitive)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, TryFromPrimitive)]
 #[repr(u64)]
-pub enum SupportedTitle {
-    #[num_enum(default)]
-    Invalid = 0,
+pub enum LoadedTitle {
     X = 0x0004000000055D00,
     Y = 0x0004000000055E00,
     Or = 0x000400000011C400,
@@ -22,32 +20,38 @@ pub enum SupportedTitle {
     CrystalIt = 0x0004000000173400,
 }
 
-static mut LOADED_TITLE: SupportedTitle = SupportedTitle::Invalid;
+#[derive(Debug, Clone, Copy)]
+pub enum TitleError {
+    InvalidTitle,
+    InvalidUpdate,
+}
 
-pub fn supported_title() -> SupportedTitle {
+static mut LOADED_TITLE: Result<LoadedTitle, TitleError> = Err(TitleError::InvalidTitle);
+
+pub fn loaded_title() -> Result<LoadedTitle, TitleError> {
     // Reader is single-threaded, so this is safe.
     // Even then, title and update version will also always be the same values.
     unsafe {
-        if LOADED_TITLE == SupportedTitle::Invalid {
-            let title = pnp::title_id().into();
-            LOADED_TITLE = match (title, pnp::update_version()) {
-                (SupportedTitle::S, 2)
-                | (SupportedTitle::M, 2)
-                | (SupportedTitle::Us, 2)
-                | (SupportedTitle::Um, 2)
-                | (SupportedTitle::Or, 7)
-                | (SupportedTitle::As, 7)
-                | (SupportedTitle::X, 5)
-                | (SupportedTitle::Y, 5)
-                | (SupportedTitle::Transporter, 5)
-                | (SupportedTitle::CrystalEn, 0)
-                | (SupportedTitle::CrystalDe, 0)
-                | (SupportedTitle::CrystalFr, 0)
-                | (SupportedTitle::CrystalEs, 0)
-                | (SupportedTitle::CrystalIt, 0) => title,
-                (_, _) => SupportedTitle::Invalid,
-            };
-        }
+        let title = pnp::title_id()
+            .try_into()
+            .map_err(|_| TitleError::InvalidTitle)?;
+        LOADED_TITLE = match (title, pnp::update_version()) {
+            (LoadedTitle::S, 2)
+            | (LoadedTitle::M, 2)
+            | (LoadedTitle::Us, 2)
+            | (LoadedTitle::Um, 2)
+            | (LoadedTitle::Or, 7)
+            | (LoadedTitle::As, 7)
+            | (LoadedTitle::X, 5)
+            | (LoadedTitle::Y, 5)
+            | (LoadedTitle::Transporter, 5)
+            | (LoadedTitle::CrystalEn, 0)
+            | (LoadedTitle::CrystalDe, 0)
+            | (LoadedTitle::CrystalFr, 0)
+            | (LoadedTitle::CrystalEs, 0)
+            | (LoadedTitle::CrystalIt, 0) => Ok(title),
+            (_, _) => Err(TitleError::InvalidUpdate),
+        };
 
         LOADED_TITLE
     }

@@ -10,18 +10,16 @@ use crate::{
 
 pub use crate::draw::{draw_header, draw_pkx};
 
-pub fn draw_tinymt(rng: &Gen6Rng) {
+pub fn draw_tinymt(reader: &Gen6Reader, rng: &Gen6Rng) {
     let tinymt = rng.tinymt();
-    let tinymt_seed = tinymt.init_seed();
     let tinymt_state = tinymt.current_state();
+    let tinymt_seed = reader.tinymt_seed();
 
-    pnp::println!("TinyMT seed:");
-    pnp::println!("[3]{:08X} [2]{:08X}", tinymt_seed[3], tinymt_seed[2]);
-    pnp::println!("[1]{:08X} [0]{:08X}", tinymt_seed[1], tinymt_seed[0]);
-    pnp::println!("State:");
+    pnp::println!("TinyMT seed: {:08X}", tinymt_seed);
+    pnp::println!("Advances: {}", tinymt.advances());
+    pnp::println!("TinyMT state:");
     pnp::println!("[3]{:08X} [2]{:08X}", tinymt_state[3], tinymt_state[2]);
     pnp::println!("[1]{:08X} [0]{:08X}", tinymt_state[1], tinymt_state[0]);
-    pnp::println!("Advances: {}", tinymt.advances());
 }
 
 pub fn draw_mt(rng: &Gen6Rng) {
@@ -34,7 +32,7 @@ pub fn draw_mt(rng: &Gen6Rng) {
 pub fn draw_rng(reader: &Gen6Reader, rng: &Gen6Rng) {
     draw_mt(rng);
     pnp::println!("");
-    draw_tinymt(rng);
+    draw_tinymt(reader, rng);
     pnp::println!("");
     pnp::println!("Save var: {:08X}", reader.seed_save_variable());
     pnp::println!("TSV: {}", reader.tsv());
@@ -57,7 +55,7 @@ pub fn draw_radar(reader: &Gen6Reader, rng: &Gen6Rng) {
     let chain_count = reader.radar_chain();
     pnp::println!("Chain count {}", chain_count);
     pnp::println!("");
-    draw_tinymt(rng);
+    draw_tinymt(reader, rng);
 }
 
 pub fn draw_dex_nav(reader: &Gen6Reader, rng: &Gen6Rng) {
@@ -66,7 +64,7 @@ pub fn draw_dex_nav(reader: &Gen6Reader, rng: &Gen6Rng) {
 
     draw_mt(rng);
     pnp::println!("");
-    draw_tinymt(rng);
+    draw_tinymt(reader, rng);
     pnp::println!("");
     pnp::println!("Step {}", step);
     pnp::println!("Chain {}", chain);

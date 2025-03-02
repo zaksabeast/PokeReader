@@ -1,3 +1,4 @@
+use super::hook;
 use crate::pnp;
 use pkm_rs::{Pk6, PokeCrypto};
 
@@ -150,6 +151,10 @@ impl Gen6Reader {
     pub fn mt_state(&self) -> u32 {
         let index = self.mt_state_index();
         pnp::read(self.addrs.mt_start + if index != 624 { index * 4 } else { 0 })
+    }
+
+    pub fn tinymt_seed(&self) -> u32 {
+        hook::tinymt_seed()
     }
 
     pub fn tinymt_state(&self) -> [u32; 4] {

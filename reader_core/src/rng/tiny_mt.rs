@@ -6,8 +6,22 @@ pub struct TinyMT {
 }
 
 impl TinyMT {
-    pub fn new(state: [u32; 4]) -> Self {
-        Self { state }
+    pub fn new(seed: u32) -> Self {
+        let mut state = [seed, 0x8f7011ee, 0xfc78ff1f, 0x3793fdff];
+
+        for i in 1..8 {
+            state[i & 3] ^= (state[(i - 1) & 3] ^ (state[(i - 1) & 3] >> 30))
+                .wrapping_mul(1812433253)
+                .wrapping_add(i as u32);
+        }
+
+        let mut rng = Self { state };
+
+        for _ in 0..8 {
+            rng.next_state();
+        }
+
+        rng
     }
 
     fn next_state(&mut self) {
@@ -29,7 +43,7 @@ impl TinyMT {
 }
 
 impl Rng for TinyMT {
-    type Seed = [u32; 4];
+    type Seed = u32;
     type CurrentState = [u32; 4];
 
     fn new(seed: Self::Seed) -> Self {

@@ -23,7 +23,7 @@ pub enum LoadedTitle {
 #[derive(Debug, Clone, Copy)]
 pub enum TitleError {
     InvalidTitle,
-    InvalidUpdate { remaster_version: u64 },
+    InvalidUpdate { remaster_version: u16 },
 }
 
 static mut LOADED_TITLE: Result<LoadedTitle, TitleError> = Err(TitleError::InvalidTitle);

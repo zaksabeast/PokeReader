@@ -19,9 +19,9 @@ u64 get_title_id()
   return g_program_id;
 }
 
-u64 g_remaster_version = 0;
+u16 g_remaster_version = 0;
 
-u64 get_remaster_version() {
+u16 get_remaster_version() {
   if (g_remaster_version == 0) {
     fsInit();
     u32 processId = 0;

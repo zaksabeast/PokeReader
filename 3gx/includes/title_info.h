@@ -3,4 +3,4 @@
 #include <3ds.h>
 
 u64 get_title_id();
-u64 get_remaster_version();
+u16 get_remaster_version();

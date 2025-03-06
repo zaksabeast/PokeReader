@@ -313,11 +313,11 @@ impl Pk2 {
                 .get(((atk & 3) << 2 | def & 3) as usize)
                 .unwrap_or(&"Unknown"),
             hidden_power_base: 31
-                + (5 * (((atk >= 8) as u8) << 3
-                    | ((def >= 8) as u8) << 2
-                    | ((spe >= 8) as u8) << 1
-                    | ((spc >= 8) as u8))
-                    + spc % 4)
+                + (5 * (((atk >> 3)) << 3
+                    | ((def >> 3)) << 2
+                    | ((spe >> 3)) << 1
+                    | ((spc >> 3)))
+                    + spc & 3)
                     / 2,
         }
     }

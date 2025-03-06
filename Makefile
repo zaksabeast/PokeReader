@@ -25,4 +25,4 @@ lint:
 	cargo +nightly-2024-03-21 clippy --release -Z build-std=core,alloc --target armv6k-nintendo-3ds --manifest-path reader_core/Cargo.toml
 
 test:
-	cargo test --manifest-path reader_core/Cargo.toml
+	cargo +nightly-2024-03-21 test --manifest-path reader_core/Cargo.toml

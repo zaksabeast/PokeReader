@@ -40,6 +40,11 @@ pub fn draw_rng(reader: &Gen2Reader) {
 pub fn draw_pkx(pkx: &Pk2) {
     pnp::println!("Species: {}", pkx.species);
     pnp::println!(color = get_shiny_color(pkx.shiny), "Shiny: {}", pkx.shiny);
+    pnp::println!(
+        "HPower: {} {}",
+        pkx.hidden_power_type,
+        pkx.hidden_power_base
+    );
     pnp::println!(color = get_iv_color(pkx.hp), "HP  DV: {}", pkx.hp);
     pnp::println!(color = get_iv_color(pkx.atk), "Atk DV: {}", pkx.atk);
     pnp::println!(color = get_iv_color(pkx.def), "Def DV: {}", pkx.def);

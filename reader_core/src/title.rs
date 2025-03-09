@@ -26,16 +26,28 @@ pub enum TitleError {
     InvalidUpdate { remaster_version: u16 },
 }
 
-static mut LOADED_TITLE: Result<LoadedTitle, TitleError> = Err(TitleError::InvalidTitle);
+static mut LOADED: bool = false;
+static mut LOAD_RESULT: Result<LoadedTitle, TitleError> = Err(TitleError::InvalidTitle);
 
 pub fn loaded_title() -> Result<LoadedTitle, TitleError> {
     // Reader is single-threaded, so this is safe.
     // Even then, title and update version will also always be the same values.
     unsafe {
-        let title = pnp::title_id()
-            .try_into()
-            .map_err(|_| TitleError::InvalidTitle)?;
-        LOADED_TITLE = match (title, pnp::update_version()) {
+        if LOADED {
+            return LOAD_RESULT;
+        }
+
+        LOADED = true;
+
+        let title = match pnp::title_id().try_into() {
+            Ok(title) => title,
+            Err(_) => {
+                LOAD_RESULT = Err(TitleError::InvalidTitle);
+                return LOAD_RESULT;
+            }
+        };
+
+        LOAD_RESULT = match (title, pnp::update_version()) {
             (LoadedTitle::S, 2)
             | (LoadedTitle::M, 2)
             | (LoadedTitle::Us, 2)
@@ -53,6 +65,6 @@ pub fn loaded_title() -> Result<LoadedTitle, TitleError> {
             (_, remaster_version) => Err(TitleError::InvalidUpdate { remaster_version }),
         };
 
-        LOADED_TITLE
+        LOAD_RESULT
     }
 }

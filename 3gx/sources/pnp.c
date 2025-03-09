@@ -135,3 +135,7 @@ void set_route_hook_addr(u32 route_hook) {
 u32 get_route_hook_addr() {
   return route_hook_addr;
 }
+
+u32 pa_from_va_ptr(u32 addr) {
+  return (u32)PA_FROM_VA_PTR(addr);
+}

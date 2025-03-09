@@ -33,7 +33,10 @@ fn replace_arm_branch(
 pub fn hook_addr(address: u32, new_jump_address: u32) -> u32 {
     let branch_instruction: u32 = pnp::read(address);
     let replaced_branch = replace_arm_branch(address, branch_instruction, new_jump_address);
-    pnp::write(address, &replaced_branch.new_branch_instruction);
+    pnp::write(
+        pnp::pa_from_va_ptr(address),
+        &replaced_branch.new_branch_instruction,
+    );
     replaced_branch.original_address
 }
 
@@ -70,7 +73,7 @@ macro_rules! hook_game_branch {
       }
 
       let route_hook_addr = $crate::pnp::get_route_hook_addr();
-      $crate::pnp::write(route_hook_addr, &(route_hook as u32));
+      $crate::pnp::write($crate::pnp::pa_from_va_ptr(route_hook_addr), &(route_hook as u32));
   };
 }
 

@@ -3,6 +3,10 @@ use alloc::{vec, vec::Vec};
 use binrw::{io::Cursor, BinRead, BinWrite, BinWriterExt};
 use core::mem;
 
+pub fn pa_from_va_ptr(ptr: u32) -> u32 {
+    unsafe { bindings::pa_from_va_ptr(ptr) }
+}
+
 pub fn read_array<const SIZE: usize>(addr: u32) -> [u8; SIZE] {
     let mut out = [0; SIZE];
     unsafe {

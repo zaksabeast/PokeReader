@@ -20,3 +20,4 @@ void set_trampoline_addr(u32 trampoline);
 u32 get_trampoline_addr();
 void set_route_hook_addr(u32 route_hook);
 u32 get_route_hook_addr();
+u32 pa_from_va_ptr(u32 addr);

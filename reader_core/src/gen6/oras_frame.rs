@@ -1,5 +1,8 @@
 use super::{
-    draw::{draw_daycare, draw_dex_nav, draw_header, draw_pkx, draw_rng, draw_seed_rng},
+    draw::{
+        draw_daycare, draw_dex_nav, draw_header, draw_mirage_spot, draw_pkx, draw_rng,
+        draw_seed_rng,
+    },
     reader::Gen6Reader,
     rng::Gen6Rng,
 };
@@ -22,6 +25,7 @@ enum OrasView {
     Wild,
     DexNav,
     Party,
+    MirageSpot,
     SeedRng,
 }
 
@@ -35,6 +39,7 @@ impl MenuOptionValue for OrasView {
             Self::Wild => "Wild",
             Self::DexNav => "DexNav",
             Self::Party => "Party",
+            Self::MirageSpot => "Mirage Spot",
             Self::SeedRng => "Seed RNG",
         }
     }
@@ -44,7 +49,7 @@ struct PersistedState {
     rng: Gen6Rng,
     show_view: ShowView,
     view: OrasView,
-    main_menu: Menu<7, OrasView>,
+    main_menu: Menu<8, OrasView>,
     party_menu: SubMenu<1, 6>,
 }
 
@@ -61,6 +66,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
             MenuOption::new(OrasView::Wild),
             MenuOption::new(OrasView::DexNav),
             MenuOption::new(OrasView::Party),
+            MenuOption::new(OrasView::MirageSpot),
             MenuOption::new(OrasView::SeedRng),
         ]),
     });
@@ -97,6 +103,7 @@ pub fn run_oras_frame() {
             draw_pkx(&reader.party_pkm((slot - 1) as u32));
         }
         OrasView::SeedRng => draw_seed_rng(&reader, &state.rng),
+        OrasView::MirageSpot => draw_mirage_spot(&reader),
         OrasView::MainMenu => {
             state.main_menu.update_view();
             state.main_menu.draw();

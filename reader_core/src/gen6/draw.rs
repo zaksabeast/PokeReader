@@ -85,3 +85,98 @@ pub fn draw_seed_rng(reader: &Gen6Reader, rng: &Gen6Rng) {
     pnp::println!("Date: {}", datetime.format("%b %d %Y"));
     pnp::println!("Time: {}", datetime.format("%H:%M:%S"));
 }
+
+const MIRAGE_SPOT_NAMES: [&str; 34] = [
+    "None",
+    "Crescent Isle",
+    "East of Mossdeep",
+    "North of Route 124",
+    "West of Route 114",
+    "North of Lilycove",
+    "South of Route 132",
+    "West of Route 105",
+    "South of Route 109",
+    "North of Route 111",
+    "West of Rustboro",
+    "North of Fortree",
+    "South of Pacifidlog",
+    "South of Route 107",
+    "North of Route 124",
+    "North of Route 132",
+    "Southeast of Route 129",
+    "North of Fallarbor",
+    "West of Route 104",
+    "South of Route 134",
+    "North of Route 124",
+    "West of Dewford Town",
+    "South of Pacifidlog",
+    "South of Route 132",
+    "North of Route 113",
+    "East of Shoal Cave",
+    "West of Route 104",
+    "North of Lilycove",
+    "Northeast of Route 125",
+    "West of Route 131",
+    "North of Mossdeep",
+    "South of Route 129",
+    "Southeast of Route 129",
+    "East of Mossdeep",
+];
+
+const MIRAGE_POKEMON: [&[&str]; 34] = [
+    &["None"],
+    &["Cresselia"],
+    &["Tangela", "Sunkern", "Glameow", "Minccino"],
+    &["Tangela", "Sunkern", "Purugly", "Vulpix"],
+    &["Tangela", "Sunkern", "Purugly", "Petilil"],
+    &["Tangela", "Sunkern", "Purugly", "Cherrim"],
+    &["Sunkern", "Petilil", "Audino"],
+    &["Forretress", "Happiny"],
+    &["Audino", "Sunkern"],
+    &["Kricketune", "Larvesta"],
+    &["Tynamo", "Klink", "Boldore", "Graveler"],
+    &["Klink", "Tynamo", "Excadrill", "Onix"],
+    &["Tynamo", "Cofagrigus", "Slowpoke"],
+    &["Unown"],
+    &["Klink", "Cofagrigus", "Graveler", "Boldore"],
+    &["Ditto", "Excadrill", "Tynamo"],
+    &["Tynamo", "Onix", "Graveler", "Boldore"],
+    &["Slowpoke", "Tynamo"],
+    &["Venomoth", "Xatu", "Zebstrika", "Darmanitan"],
+    &["Venomoth", "Xatu", "Zebstrika", "Maractus"],
+    &["Venomoth", "Xatu", "Zebstrika", "Persian"],
+    &["Venomoth", "Xatu", "Zebstrika", "Tangela"],
+    &["Audino", "Xatu"],
+    &["Munna", "Ditto"],
+    &["Darmanitan", "Larvesta"],
+    &["Purugly", "Porygon"],
+    &["Forretress", "Donphan", "Kricketune", "Stantler"],
+    &["Forretress", "Donphan", "Kricketune", "Rufflet"],
+    &["Forretress", "Donphan", "Kricketune", "Vullaby"],
+    &["Donphan", "Kricketune", "Girafarig"],
+    &["Magby", "Darmanitan"],
+    &["Zebstrika", "Elekid"],
+    &["Porygon", "Xatu", "Munna"],
+    &["Audino", "Happiny", "Tangela"],
+];
+
+pub fn draw_mirage_spot(reader: &Gen6Reader) {
+    let id = reader.mirage_spot_id() as usize;
+    let current_date = pnp::os_time().format("%b %d %Y");
+    let last_save_date = reader.last_save_date().format("%b %d %Y");
+    let mirage_spot_seed = reader.mirage_spot_seed();
+    let mirage_pokemon = MIRAGE_POKEMON[id];
+
+    pnp::println!("Mirage spot {}", id);
+    pnp::println!("{}", MIRAGE_SPOT_NAMES[id]);
+    for pokemon in mirage_pokemon.iter() {
+        pnp::println!("- {}", pokemon);
+    }
+    pnp::println!("");
+    pnp::println!("Seed: {:08x}", mirage_spot_seed);
+    pnp::println!("Tid: {}", reader.tid());
+    pnp::println!("Save date: {}", last_save_date);
+    pnp::println!("Curr Date: {}", current_date);
+    pnp::println!("");
+    pnp::println!("Penalty min: {}", reader.time_penalty_hours());
+}

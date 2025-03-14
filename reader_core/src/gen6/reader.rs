@@ -1,4 +1,5 @@
 use crate::pnp;
+use chrono::NaiveDate;
 use pkm_rs::{Pk6, PokeCrypto};
 
 pub struct Daycare {
@@ -32,6 +33,9 @@ struct Gen6Addresses {
     dex_nav_chain: u32,
     radar_chain: u32,
     seed_save_variable: u32,
+    mirage_spot_id: u32,
+    mirage_spot_seed: u32,
+    last_save_date_struct: u32,
 }
 
 const XY_ADDRESSES: Gen6Addresses = Gen6Addresses {
@@ -58,6 +62,9 @@ const XY_ADDRESSES: Gen6Addresses = Gen6Addresses {
     dex_nav_chain: 0,
     radar_chain: 0x8d1b2b8,
     seed_save_variable: 0x8c6a6a4,
+    mirage_spot_id: 0,
+    mirage_spot_seed: 0,
+    last_save_date_struct: 0,
 };
 
 const ORAS_ADDRESSES: Gen6Addresses = Gen6Addresses {
@@ -84,6 +91,9 @@ const ORAS_ADDRESSES: Gen6Addresses = Gen6Addresses {
     dex_nav_chain: 0x8d3b57c,
     radar_chain: 0,
     seed_save_variable: 0x8c71db8,
+    mirage_spot_id: 0x8c9ba4a,
+    mirage_spot_seed: 0x8c6f9e0,
+    last_save_date_struct: 0x8c6f848,
 };
 
 pub struct Gen6Reader {
@@ -200,5 +210,25 @@ impl Gen6Reader {
 
     pub fn seed_save_variable(&self) -> u32 {
         pnp::read(self.addrs.seed_save_variable)
+    }
+
+    pub fn mirage_spot_id(&self) -> u16 {
+        pnp::read(self.addrs.mirage_spot_id)
+    }
+
+    pub fn mirage_spot_seed(&self) -> u32 {
+        pnp::read(self.addrs.mirage_spot_seed)
+    }
+
+    pub fn time_penalty_hours(&self) -> u32 {
+        pnp::read(self.addrs.last_save_date_struct + 0x30)
+    }
+
+    pub fn last_save_date(&self) -> NaiveDate {
+        let last_save_date = self.addrs.last_save_date_struct;
+        let year = pnp::read::<u32>(last_save_date + 0xc);
+        let month = pnp::read::<u8>(last_save_date + 0x10);
+        let day = pnp::read::<u8>(last_save_date + 0x11);
+        NaiveDate::from_ymd_opt(year as i32, month as u32, day as u32).unwrap_or_default()
     }
 }

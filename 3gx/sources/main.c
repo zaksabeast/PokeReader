@@ -18,7 +18,9 @@ static bool is_paused = false;
 
 void handle_freeze(bool isTopScreen)
 {
-    if (host_is_just_pressed(KEY_START | KEY_SELECT) || host_is_just_pressed(KEY_L | KEY_R))
+    u64 masked_title_id = get_title_id() & 0xfff000;
+    bool is_gen_2 = masked_title_id == 0x172000 || masked_title_id == 0x173000;
+    if (host_is_just_pressed(KEY_START | KEY_SELECT) || (is_gen_2 && host_is_just_pressed(KEY_L | KEY_R)))
     {
         is_paused = true;
     }

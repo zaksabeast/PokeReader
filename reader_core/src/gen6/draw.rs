@@ -80,10 +80,11 @@ pub fn draw_seed_rng(reader: &Gen6Reader, rng: &Gen6Rng) {
     draw_mt(rng);
     pnp::println!("");
     pnp::println!("");
-    pnp::println!("Seed hash: {:08X}", seed_hash);
     pnp::println!("Save var: {:08X}", reader.seed_save_variable());
     pnp::println!("Date: {}", datetime.format("%b %d %Y"));
     pnp::println!("Time: {}", datetime.format("%H:%M:%S"));
+    pnp::println!("");
+    pnp::println!("Seed hash: {:08X}", seed_hash);
 }
 
 const MIRAGE_SPOT_NAMES: [&str; 34] = [

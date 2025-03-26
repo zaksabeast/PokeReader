@@ -10,6 +10,7 @@ struct Gen2Addresses {
     time_ptr: u32,
     time_day_ptr: u32,
     play_time_ptr: u32,
+    trainer_id_ptr: u32,
 }
 
 const CRYSTAL_ADDRESSES: Gen2Addresses = Gen2Addresses {
@@ -20,6 +21,7 @@ const CRYSTAL_ADDRESSES: Gen2Addresses = Gen2Addresses {
     time_ptr: 0xff94,
     time_day_ptr: 0xd4cb,
     play_time_ptr: 0xd4c5,
+    trainer_id_ptr: 0xd47b,
 };
 
 pub struct Gen2Reader {
@@ -91,5 +93,9 @@ impl Gen2Reader {
 
     pub fn dst(&self) -> bool {
         (gb_mem::read_u8(self.addrs.dst_ptr) & 0x80) != 0
+    }
+
+    pub fn trainer_id(&self) -> u16 {
+        gb_mem::read_u16(self.addrs.trainer_id_ptr)
     }
 }

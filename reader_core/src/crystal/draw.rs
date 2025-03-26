@@ -35,6 +35,8 @@ pub fn draw_rng(reader: &Gen2Reader) {
     pnp::println!("DIV {:04X}", measured_div());
     pnp::println!("State {:04X}", reader.rng_state());
     pnp::println!("Advances {}", rng_advance());
+    pnp::println!("");
+    pnp::println!("TID {}", reader.trainer_id());
 }
 
 pub fn draw_pkx(pkx: &Pk2) {

@@ -11,13 +11,11 @@ impl Gen6Rng {
     pub fn update(&mut self, reader: &Gen6Reader) {
         let init_seed = reader.initial_seed();
         let mt_state = reader.mt_state();
+        let tinymt_seed = reader.tinymt_seed();
         let tinymt_state = reader.tinymt_state();
 
-        let reseeded = self.mt.reinit_if_needed(init_seed);
-        if reseeded {
-            self.tinymt.reinit(tinymt_state);
-            self.tinymt.set_current_state(tinymt_state);
-        }
+        self.mt.reinit_if_needed(init_seed);
+        self.tinymt.reinit_if_needed(tinymt_seed);
 
         self.mt.update_advances(mt_state);
         self.tinymt.update_advances(tinymt_state);

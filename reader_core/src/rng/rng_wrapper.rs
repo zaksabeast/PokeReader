@@ -55,6 +55,10 @@ impl<T: rng::Rng + Copy> RngWrapper<T> {
             }
         }
     }
+
+    pub fn rng(&self) -> &T {
+        &self.rng
+    }
 }
 
 #[cfg(test)]

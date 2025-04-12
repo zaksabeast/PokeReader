@@ -13,10 +13,23 @@ pub use crate::draw::{draw_header, draw_pkx};
 pub fn draw_tinymt(reader: &Gen6Reader, rng: &Gen6Rng) {
     let tinymt = rng.tinymt();
     let tinymt_state = tinymt.current_state();
+    let tinymt_init_state = tinymt.rng().initial_state();
     let tinymt_seed = reader.tinymt_seed();
 
-    pnp::println!("TinyMT seed: {:08X}", tinymt_seed);
+    pnp::println!("Tiny u32 seed: {:08X}", tinymt_seed);
     pnp::println!("Advances: {}", tinymt.advances());
+    pnp::println!("");
+    pnp::println!("TinyMT seed:");
+    pnp::println!(
+        "[3]{:08X} [2]{:08X}",
+        tinymt_init_state[3],
+        tinymt_init_state[2]
+    );
+    pnp::println!(
+        "[1]{:08X} [0]{:08X}",
+        tinymt_init_state[1],
+        tinymt_init_state[0]
+    );
     pnp::println!("TinyMT state:");
     pnp::println!("[3]{:08X} [2]{:08X}", tinymt_state[3], tinymt_state[2]);
     pnp::println!("[1]{:08X} [0]{:08X}", tinymt_state[1], tinymt_state[0]);

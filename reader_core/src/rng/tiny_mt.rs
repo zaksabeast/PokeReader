@@ -2,6 +2,7 @@ use crate::rng::Rng;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
 pub struct TinyMT {
+    initial_state: [u32; 4],
     state: [u32; 4],
 }
 
@@ -15,7 +16,10 @@ impl TinyMT {
                 .wrapping_add(i as u32);
         }
 
-        let mut rng = Self { state };
+        let mut rng = Self {
+            state,
+            initial_state: state,
+        };
 
         for _ in 0..8 {
             rng.next_state();
@@ -39,6 +43,10 @@ impl TinyMT {
 
     fn get_state(&self) -> [u32; 4] {
         self.state
+    }
+
+    pub fn initial_state(&self) -> &[u32; 4] {
+        &self.initial_state
     }
 }
 

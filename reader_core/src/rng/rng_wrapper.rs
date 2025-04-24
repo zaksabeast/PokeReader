@@ -99,7 +99,7 @@ mod test {
 
     #[test]
     fn should_track_tinymt_advances() {
-        let seed = [0x97ae4a88, 0xb2109ba7, 0x42da3974, 0x2f868185];
+        let seed = 0xaabbccdd;
         let mut rng = TinyMT::new(seed);
 
         for _ in 0..15 {
@@ -107,7 +107,7 @@ mod test {
         }
         assert_eq!(
             rng.current_state(),
-            [0x9a964db3, 0x59be7544, 0xc1661d33, 0x9496f640]
+            [0x39d40c61, 0x1d3be6ca, 0xb3bed380, 0x8ac476ea]
         );
 
         let mut wrapper = RngWrapper::<TinyMT>::default();

@@ -25,7 +25,10 @@ impl TinyMT {
             rng.next_state();
         }
 
-        rng
+        Self {
+            state: rng.state,
+            initial_state: rng.state,
+        }
     }
 
     fn next_state(&mut self) {
@@ -73,8 +76,18 @@ mod test {
     use super::*;
 
     #[test]
+    fn correct_initial_state() {
+        let rng = TinyMT::new(0xbdc99990);
+        assert_eq!(
+            rng.initial_state,
+            [0xe7542d98, 0x35b66076, 0xdfb98edf, 0x11a77654]
+        );
+    }
+
+    #[test]
     fn should_generate_random_values() {
-        let mut rng = TinyMT::new([0x11112222, 0x33334444, 0x55556666, 0x77778888]);
+        let mut rng = TinyMT::new(0);
+        rng.state = [0x11112222, 0x33334444, 0x55556666, 0x77778888];
         for _ in 0..156 {
             rng.next_state();
         }
@@ -87,7 +100,8 @@ mod test {
 
     #[test]
     fn should_not_fail_from_state_overflow() {
-        let mut rng = TinyMT::new([0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff]);
+        let mut rng = TinyMT::new(0);
+        rng.state = [0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff];
         assert_eq!(
             Rng::next_state(&mut rng),
             [0xffffffff, 0x708fee11, 0x7c78fb1e, 0x00000001]

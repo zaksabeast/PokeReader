@@ -89,17 +89,26 @@ impl Gen7Reader {
         }
     }
 
-    pub fn tid(&self) -> u32 {
+    pub fn g7tid(&self) -> u32 {
         let sidtid = pnp::read::<u32>(self.addrs.id);
 
         sidtid % 1000000
     }
 
-    pub fn tsv(&self) -> u16 {
-        let tid = pnp::read::<u16>(self.addrs.id);
-        let sid = pnp::read::<u16>(self.addrs.id + 2);
+    fn tid(&self) -> u16 {
+        pnp::read::<u16>(self.addrs.id)
+    }
 
-        (tid ^ sid) >> 4
+    fn sid(&self) -> u16 {
+        pnp::read::<u16>(self.addrs.id + 2)
+    }
+
+    pub fn tsv(&self) -> u16 {
+        (self.tid() ^ self.sid()) >> 4
+    }
+
+    pub fn trv(&self) -> u16 {
+        (self.tid() ^ self.sid()) & 0xf
     }
 
     pub fn init_seed(&self) -> u32 {

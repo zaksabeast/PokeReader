@@ -126,6 +126,10 @@ impl Gen6Reader {
         (self.tid() ^ self.sid()) >> 4
     }
 
+    pub fn trv(&self) -> u16 {
+        (self.tid() ^ self.sid()) & 0xf
+    }
+
     pub fn daycare1(&self) -> Daycare {
         Daycare {
             egg_seed: [

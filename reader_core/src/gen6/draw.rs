@@ -48,7 +48,7 @@ pub fn draw_rng(reader: &Gen6Reader, rng: &Gen6Rng) {
     draw_tinymt(reader, rng);
     pnp::println!("");
     pnp::println!("Save var: {:08X}", reader.seed_save_variable());
-    pnp::println!("TSV: {}", reader.tsv());
+    pnp::println!("TSV: {}, TRV: {:X}", reader.tsv(), reader.trv());
 }
 
 pub fn draw_daycare(daycare: &Daycare) {

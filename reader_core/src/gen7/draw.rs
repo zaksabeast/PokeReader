@@ -15,8 +15,8 @@ pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt>) {
     pnp::println!("State[0]: {:08X}", (sfmt_state >> 32) as u32);
     pnp::println!("Advances: {}", rng.advances());
     pnp::println!("");
-    pnp::println!("Gen7TID: {}", reader.tid());
-    pnp::println!("TSV: {}", reader.tsv());
+    pnp::println!("Gen7TID: {}", reader.g7tid());
+    pnp::println!("TSV: {}, TRV: {:X}", reader.tsv(), reader.trv());
     pnp::println!("");
     pnp::println!("NPC count: {}", reader.npc_count());
 }

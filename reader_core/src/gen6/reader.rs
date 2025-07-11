@@ -190,8 +190,9 @@ impl Gen6Reader {
         self.read_pk6(offset)
     }
 
-    pub fn wild_pkm(&self) -> Pk6 {
-        self.read_pk6(self.addrs.wild)
+    pub fn wild_pkm(&self, slot: u32) -> Pk6 {
+        let offset = (slot * 484) + self.addrs.wild;
+        self.read_pk6(offset)
     }
 
     fn egg_parent(&self, is_present: u32, pkm: u32) -> Option<Pk6> {

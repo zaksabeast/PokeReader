@@ -44,6 +44,7 @@ struct PersistedState {
     view: XyView,
     main_menu: Menu<6, XyView>,
     party_menu: SubMenu<1, 6>,
+    wild_menu: SubMenu<1, 5>,
 }
 
 unsafe fn get_state() -> &'static mut PersistedState {
@@ -52,6 +53,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
         show_view: ShowView::default(),
         view: XyView::MainMenu,
         party_menu: SubMenu::default(),
+        wild_menu: SubMenu::default(),
         main_menu: Menu::new([
             MenuOption::new(XyView::Rng),
             MenuOption::new(XyView::Daycare),
@@ -86,7 +88,10 @@ pub fn run_xy_frame() {
     match state.view {
         XyView::Rng => draw_rng(&reader, &state.rng),
         XyView::Daycare => draw_daycare(&reader.daycare1()),
-        XyView::Wild => draw_pkx(&reader.wild_pkm()),
+        XyView::Wild => {
+            let slot = state.wild_menu.update_and_draw(is_locked);
+            draw_pkx(&reader.wild_pkm((slot - 1) as u32));
+        }
         XyView::Radar => draw_radar(&reader, &state.rng),
         XyView::Party => {
             let slot = state.party_menu.update_and_draw(is_locked);

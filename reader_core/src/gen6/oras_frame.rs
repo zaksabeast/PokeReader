@@ -51,6 +51,7 @@ struct PersistedState {
     view: OrasView,
     main_menu: Menu<8, OrasView>,
     party_menu: SubMenu<1, 6>,
+    wild_menu: SubMenu<1, 5>,
 }
 
 unsafe fn get_state() -> &'static mut PersistedState {
@@ -59,6 +60,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
         show_view: ShowView::default(),
         view: OrasView::MainMenu,
         party_menu: SubMenu::default(),
+        wild_menu: SubMenu::default(),
         main_menu: Menu::new([
             MenuOption::new(OrasView::Rng),
             MenuOption::new(OrasView::Daycare1),
@@ -96,7 +98,10 @@ pub fn run_oras_frame() {
         OrasView::Rng => draw_rng(&reader, &state.rng),
         OrasView::Daycare1 => draw_daycare(&reader.daycare1()),
         OrasView::Daycare2 => draw_daycare(&reader.daycare2()),
-        OrasView::Wild => draw_pkx(&reader.wild_pkm()),
+        OrasView::Wild => {
+            let slot = state.wild_menu.update_and_draw(is_locked);
+            draw_pkx(&reader.wild_pkm((slot - 1) as u32));
+        }
         OrasView::DexNav => draw_dex_nav(&reader, &state.rng),
         OrasView::Party => {
             let slot = state.party_menu.update_and_draw(is_locked);

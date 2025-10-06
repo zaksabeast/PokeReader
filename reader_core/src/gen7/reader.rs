@@ -170,8 +170,9 @@ impl Gen7Reader {
         self.egg_parent(self.addrs.is_parent2_occupied, self.addrs.parent2)
     }
 
-    pub fn wild_pkm(&self) -> Pk7 {
-        self.read_pk7(self.addrs.wild)
+    pub fn wild_pkm(&self, slot: u32) -> Pk7 {
+        let offset = (slot * 484) + self.addrs.wild;
+        self.read_pk7(offset)
     }
 
     pub fn box_pkm(&self) -> Pk7 {

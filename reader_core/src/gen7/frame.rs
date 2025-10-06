@@ -47,6 +47,7 @@ struct PersistedState {
     show_view: ShowView,
     view: Gen7View,
     main_menu: Menu<8, Gen7View>,
+	wild_menu: SubMenu<1, 6>,
     party_menu: SubMenu<1, 6>,
     pelago_menu: SubMenu<1, 3>,
 }
@@ -58,6 +59,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
         view: Gen7View::MainMenu,
         party_menu: SubMenu::default(),
         pelago_menu: SubMenu::default(),
+		wild_menu: SubMenu::default(),
         main_menu: Menu::new([
             MenuOption::new(Gen7View::Rng),
             MenuOption::new(Gen7View::Daycare),
@@ -96,7 +98,10 @@ fn run_frame(reader: Gen7Reader) {
     match state.view {
         Gen7View::Rng => draw_rng(&reader, &state.sfmt),
         Gen7View::Daycare => draw_daycare(&reader),
-        Gen7View::WildPokemon => draw_pkx(&reader.wild_pkm()),
+        Gen7View::WildPokemon => {
+            let slot = state.wild_menu.update_and_draw(is_locked);
+            draw_pkx(&reader.wild_pkm((slot - 1) as u32));
+        }
         Gen7View::Sos => draw_sos(&reader),
         Gen7View::Box => draw_pkx(&reader.box_pkm()),
         Gen7View::Citra => draw_citra_info(&reader),

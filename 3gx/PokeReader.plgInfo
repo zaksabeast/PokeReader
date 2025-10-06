@@ -2,8 +2,8 @@ Author: Zaksabeast
 
 Version: # Plugin version
     Major: 1
-    Minor: 0
-    Revision: 0
+    Minor: 7
+    Revision: 5
 
 Targets: # Low TitleId of games which are compatibles with this plugin (empty for all)
     0x00055D00

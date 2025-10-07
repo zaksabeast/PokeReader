@@ -8,6 +8,7 @@ use crate::{
     utils::{
         menu::{Menu, MenuOption, MenuOptionValue},
         sub_menu::SubMenu,
+        sub_menu_capture::SubMenuCapture,
         ShowView,
     },
 };
@@ -49,7 +50,7 @@ struct PersistedState {
     main_menu: Menu<8, Gen7View>,
     wild_menu: SubMenu<1, 4>,
     party_menu: SubMenu<1, 6>,
-    sos_menu: SubMenu<1, 4>,
+    sos_menu: SubMenuCapture<1, 4>,
     pelago_menu: SubMenu<1, 3>,
 }
 
@@ -61,7 +62,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
         party_menu: SubMenu::default(),
         pelago_menu: SubMenu::default(),
         wild_menu: SubMenu::default(),
-        sos_menu: SubMenu::default(),
+        sos_menu: SubMenuCapture::default(),
         main_menu: Menu::new([
             MenuOption::new(Gen7View::Rng),
             MenuOption::new(Gen7View::Daycare),
@@ -105,8 +106,15 @@ fn run_frame(reader: Gen7Reader) {
             draw_pkx(&reader.wild_pkm((slot - 1) as u32));
         }
         Gen7View::Sos => {
-            let caller_slot = state.sos_menu.update_headless(is_locked);
-            draw_sos(&reader, caller_slot as u32);
+            let prev_caller_slot = state.sos_menu.counter_value();
+            let prev_correction_value = state.sos_menu.captured_value();
+            let caller_slot = state.sos_menu.update_headless(
+                is_locked,
+                reader.sos_chain() as u32,
+                reader.ally_slot(prev_caller_slot as u32, prev_correction_value) as usize + 1
+                );
+            let correction_value = state.sos_menu.captured_value();
+            draw_sos(&reader, caller_slot as u32, correction_value, is_locked);
         }
         Gen7View::Box => draw_pkx(&reader.box_pkm()),
         Gen7View::Citra => draw_citra_info(&reader),

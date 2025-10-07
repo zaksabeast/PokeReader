@@ -16,6 +16,9 @@ This information can be used to RNG shiny and high IV Pokemon, similar to lua sc
 - Start + Select: Pause game and enable manual frame advancing
 - Select: Advance one frame while paused
 - Start or A: Unpause game
+- SOS Menu Commands:
+    - X + Right (D-Pad): Set SOS Caller slot to current Ally slot
+    - X + Up/Down: Manually increment/decrement Caller slot
 
 ## Installing
 

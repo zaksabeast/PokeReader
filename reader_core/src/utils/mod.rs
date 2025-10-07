@@ -8,6 +8,7 @@ mod hook_gen6_seed;
 pub mod menu;
 mod show_view;
 pub mod sub_menu;
+pub mod sub_menu_capture;
 
 pub use circular_counter::*;
 pub use daycare::*;

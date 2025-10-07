@@ -27,6 +27,10 @@ impl<const MIN: usize, const MAX: usize> CircularCounter<MIN, MAX> {
 
         self.value
     }
+    pub fn set(&mut self, value: usize) -> usize {
+        self.value = if value < MIN {MIN} else { if value > MAX {MAX} else {value} };
+        self.value
+    }
 }
 
 impl<const MIN: usize, const MAX: usize> Default for CircularCounter<MIN, MAX> {

@@ -34,7 +34,7 @@ pub fn draw_citra_info(reader: &Gen7Reader) {
     pnp::println!("Time offset: {}", main_rng_seed_context.time_offset_ms);
 }
 
-pub fn draw_sos(reader: &Gen7Reader, slot: u32) {
+pub fn draw_sos(reader: &Gen7Reader, slot: u32, correction: u32, is_locked: bool) {
     pnp::println!("SOS Seed: {:08X}", reader.sos_seed());
     pnp::println!("SOS Chain Length: {}", reader.sos_chain());
     if reader.orb_active() {
@@ -47,8 +47,8 @@ pub fn draw_sos(reader: &Gen7Reader, slot: u32) {
     let caller_pp = reader.get_pp(&reader.sos_caller_pkm(slot));
     pnp::println!(color= if caller_pp > 1 { WHITE } else { RED }, "Caller PP: {}", caller_pp);
     pnp::println!("");
-    pnp::println!("Ally Data (Slot {}):", reader.ally_slot(slot) + 1);
-    draw_pkx_brief(&reader.sos_ally_pkm(slot));
+    pnp::println!("Ally Data (Slot {}):", reader.ally_slot(slot, correction) + 1);
+    draw_pkx_brief(&reader.sos_ally_pkm(slot, correction));
 }
 
 pub fn draw_daycare(reader: &Gen7Reader) {
@@ -59,7 +59,7 @@ pub fn draw_daycare(reader: &Gen7Reader) {
     let has_shiny_charm = reader.has_shiny_charm();
     let is_masuda_method = is_daycare_masuda_method(&parent1, &parent2);
 
-    pnp::println!("Egg Ready: {}", is_egg_ready);
+    pnp::println!(color= if is_egg_ready {GREEN} else {WHITE}, "Egg Ready: {}", is_egg_ready);
     pnp::println!("{}", format_egg_parent(1, &parent1));
     pnp::println!("{}", format_egg_parent(2, &parent2));
     pnp::println!("");
@@ -68,6 +68,6 @@ pub fn draw_daycare(reader: &Gen7Reader) {
     pnp::println!("Egg[1]: {:08X}", egg_seed[1]);
     pnp::println!("Egg[0]: {:08X}", egg_seed[0]);
     pnp::println!("");
-    pnp::println!("Shiny Charm: {}", has_shiny_charm);
-    pnp::println!("Masuda Method: {}", is_masuda_method);
+    pnp::println!(color= if has_shiny_charm {GREEN} else {WHITE}, "Shiny Charm: {}", has_shiny_charm);
+    pnp::println!(color= if is_masuda_method {GREEN} else {WHITE}, "Masuda Method: {}", is_masuda_method);
 }

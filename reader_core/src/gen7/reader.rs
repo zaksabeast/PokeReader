@@ -155,8 +155,10 @@ impl Gen7Reader {
     pub fn orb_active(&self) -> bool {
         ((pnp::read::<u8>(self.addrs.orb_active) & 0x1) > 0) as bool
     }
-    pub fn ally_slot(&self, caller_slot: u32) -> u32 {
-        ((caller_slot - 1) + (self.sos_chain() as u32 % 3)) % 4
+    pub fn ally_slot(&self, caller_slot: u32, correction: u32) -> u32 {
+        if self.sos_chain() == 0 { 0 } else {
+            ((caller_slot - 1) + ((self.sos_chain() as i32 - (correction as i32 + 1)) % 3) as u32 + 1) % 4
+        }
     }
 
     fn read_pk7(&self, offset: u32) -> Pk7 {
@@ -204,8 +206,8 @@ impl Gen7Reader {
     pub fn sos_caller_pkm(&self, caller_slot: u32) -> Pk7 {
         self.read_pk7(((caller_slot - 1) * 484) + self.addrs.sos)
     }
-    pub fn sos_ally_pkm(&self, caller_slot: u32) -> Pk7 {
-        self.read_pk7((self.ally_slot(caller_slot) * 484) + self.addrs.sos)
+    pub fn sos_ally_pkm(&self, caller_slot: u32, correction: u32) -> Pk7 {
+        self.read_pk7((self.ally_slot(caller_slot, correction) * 484) + self.addrs.sos)
     }
     pub fn get_pp(&self, pkm: &Pk7) -> u32 {
         pkm.move1_pp() as u32 + pkm.move2_pp() as u32 + pkm.move3_pp() as u32 + pkm.move4_pp() as u32

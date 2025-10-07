@@ -43,6 +43,7 @@ pub fn draw_sos(reader: &Gen7Reader, slot: u32) {
         pnp::println!(color = RED, "Orb Not Active");
 
     }
+    pnp::println!("Caller Slot: {}", slot);
     let caller_pp = reader.get_pp(&reader.sos_caller_pkm(slot));
     if caller_pp > 1 {
         pnp::println!(color= WHITE, "Caller PP: {}", caller_pp);

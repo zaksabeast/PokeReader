@@ -1,7 +1,7 @@
 use super::{game_lib, hook};
 use crate::pnp;
 use core::num::{NonZeroU32, NonZeroU8};
-use pkm_rs::{Pk7, PokeCrypto};
+use pkm_rs::{Pk7, PokeCrypto, Pkx};
 
 struct Gen7Addresses {
     initial_seed: u32,
@@ -10,7 +10,11 @@ struct Gen7Addresses {
     party: u32,
     wild: u32,
     sos: u32,
+    sos_index: u32,
+    orb_active: u32,
     sos_chain_length: u32,
+    ally_id: u32,
+    prev_call_succeed: u32,
     pelago: u32,
     egg_ready: u32,
     egg: u32,
@@ -32,7 +36,11 @@ const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     party: 0x34195e10,
     wild: 0x3002f7b8,
     sos: 0x3002f7b8,
+    sos_index: 0x30039614,
+    orb_active: 0x3003961c,
     sos_chain_length: 0x3003960d,
+    ally_id: 0x3003961e,
+    prev_call_succeed: 0x3003961f,
     pelago: 0x331110ca,
     egg_ready: 0x3313edd8,
     egg: 0x3313eddc,
@@ -54,7 +62,11 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     party: 0x33f7fa44,
     wild: 0x3002f9a0,
     sos: 0x3002f9a0,
+    sos_index: 0x300397F0,
+    orb_active: 0x300397f8,
     sos_chain_length: 0x300397f9,
+    ally_id: 0x300397fA,
+    prev_call_succeed: 0x300397fb,
     pelago: 0x3304d16a,
     egg_ready: 0x3307b1e8,
     egg: 0x3307b1ec,
@@ -140,6 +152,12 @@ impl Gen7Reader {
     pub fn sos_chain(&self) -> u8 {
         pnp::read(self.addrs.sos_chain_length)
     }
+    pub fn orb_active(&self) -> bool {
+        ((pnp::read::<u8>(self.addrs.orb_active) & 0x1) > 0) as bool
+    }
+    pub fn ally_slot(&self, caller_slot: u32) -> u32 {
+        (caller_slot + (self.sos_chain() as u32 % 3)) % 4
+    }
 
     fn read_pk7(&self, offset: u32) -> Pk7 {
         let bytes = pnp::read_array::<{ Pk7::STORED_SIZE }>(offset);
@@ -183,8 +201,14 @@ impl Gen7Reader {
         self.read_pk7((slot * 236) + self.addrs.pelago)
     }
 
-    pub fn sos_pkm(&self) -> Pk7 {
-        self.read_pk7(self.addrs.sos)
+    pub fn sos_caller_pkm(&self, caller_slot: u32) -> Pk7 {
+        self.read_pk7(((caller_slot - 1) * 484) + self.addrs.sos)
+    }
+    pub fn sos_ally_pkm(&self, caller_slot: u32) -> Pk7 {
+        self.read_pk7((self.ally_slot(caller_slot) * 484) + self.addrs.sos)
+    }
+    pub fn get_pp(&self, pkx: &impl Pkx) -> u32 {
+        pkx.move1_pp() as u32 + pkx.move2_pp() as u32 + pkx.move3_pp() as u32 + pkx.move4_pp() as u32
     }
 
     pub fn is_egg_ready(&self) -> bool {

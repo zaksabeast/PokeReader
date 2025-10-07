@@ -101,6 +101,34 @@ macro_rules! print_stat {
     };
 }
 
+pub fn draw_pkx_brief(pkx: &impl Pkx) {
+    let species = pkx.species_t().to_string();
+    let ability = pkx.ability_t().to_string();
+
+    let shiny_type = match pkx.shiny_type() {
+        Some(Shiny::Star) => "Star",
+        Some(Shiny::Square) => "Square",
+        None => "Not Shiny",
+    };
+    let shiny_color = get_shiny_color(pkx.is_shiny());
+    let iv_hp = pkx.iv_hp();
+    let iv_atk = pkx.iv_atk();
+    let iv_def = pkx.iv_def();
+    let iv_spa = pkx.iv_spa();
+    let iv_spd = pkx.iv_spd();
+    let iv_spe = pkx.iv_spe();
+
+    let nature = pkx.nature_t();
+
+    pnp::println!("{} {}", nature, species);
+    pnp::println!("Ability: ({}) {}", pkx.ability_number_t(), ability);
+    pnp::println!("PID: {:08X}", pkx.pid());
+    pnp::println!(color = shiny_color, "PSV: {:04}, {}", pkx.psv(), shiny_type);
+    pnp::println!("");
+    pnp::println!("HPower: {}", pkx.hidden_power_t());
+    pnp::println!("{} {} {} {} {} {}", iv_hp, iv_atk, iv_def, iv_spa, iv_spd, iv_spe);
+}
+
 pub fn draw_pkx(pkx: &impl Pkx) {
     let species = pkx.species_t().to_string();
     let ability = pkx.ability_t().to_string();
@@ -132,9 +160,9 @@ pub fn draw_pkx(pkx: &impl Pkx) {
     pnp::println!("Ability: ({}) {}", pkx.ability_number_t(), ability);
     pnp::println!("PID: {:08X}", pkx.pid());
     pnp::println!(color = shiny_color, "PSV: {:04}, {}", pkx.psv(), shiny_type);
-    pnp::println!("Friendship: {}", pkx.ht_friendship());
     pnp::println!("");
     pnp::println!("HPower: {}", pkx.hidden_power_t());
+    pnp::println!("PP Remaining: {}", (pkx.move1_pp() + pkx.move2_pp() + pkx.move3_pp() + pkx.move4_pp()));
     print_stat!(iv_hp, ev_hp, Hp, &nature_stat, "HP ");
     print_stat!(iv_atk, ev_atk, Atk, &nature_stat, "Atk ");
     print_stat!(iv_def, ev_def, Def, &nature_stat, "Def ");

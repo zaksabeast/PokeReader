@@ -5,7 +5,11 @@ use crate::{
     utils::{format_egg_parent, is_daycare_masuda_method},
 };
 
-pub use crate::draw::{draw_header, draw_pkx};
+const WHITE: u32 = 0xffffff;
+const GREEN: u32 = 0x00cc00;
+const RED: u32 = 0xff0000;
+
+pub use crate::draw::{draw_header, draw_pkx, draw_pkx_brief};
 
 pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt>) {
     let sfmt_state = rng.current_state();
@@ -30,11 +34,25 @@ pub fn draw_citra_info(reader: &Gen7Reader) {
     pnp::println!("Time offset: {}", main_rng_seed_context.time_offset_ms);
 }
 
-pub fn draw_sos(reader: &Gen7Reader) {
+pub fn draw_sos(reader: &Gen7Reader, slot: u32) {
     pnp::println!("SOS Seed: {:08X}", reader.sos_seed());
+    if reader.orb_active() {
+        pnp::println!(color = GREEN, "Orb Active")
+    } else {
+        pnp::println!(color = RED, "Orb Not Active");
+
+    }
     pnp::println!("SOS Chain Length: {}", reader.sos_chain());
+    pnp::println!("Caller Slot: {}", slot);
+    let caller_pp = reader.get_pp(&reader.sos_caller_pkm(slot));
+    if caller_pp > 1 {
+        pnp::println!(color= WHITE, "Caller PP: {}", caller_pp);
+    } else {
+        pnp::println!(color=RED, "Caller PP: {} !", caller_pp);
+    }
     pnp::println!("");
-    draw_pkx(&reader.sos_pkm());
+    pnp::println!("Ally Data (Slot {}):", reader.ally_slot(slot) + 1);
+    draw_pkx_brief(&reader.sos_ally_pkm(slot));
 }
 
 pub fn draw_daycare(reader: &Gen7Reader) {

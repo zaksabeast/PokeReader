@@ -36,14 +36,13 @@ pub fn draw_citra_info(reader: &Gen7Reader) {
 
 pub fn draw_sos(reader: &Gen7Reader, slot: u32) {
     pnp::println!("SOS Seed: {:08X}", reader.sos_seed());
+    pnp::println!("SOS Chain Length: {}", reader.sos_chain());
     if reader.orb_active() {
         pnp::println!(color = GREEN, "Orb Active")
     } else {
         pnp::println!(color = RED, "Orb Not Active");
 
     }
-    pnp::println!("SOS Chain Length: {}", reader.sos_chain());
-    pnp::println!("Caller Slot: {}", slot);
     let caller_pp = reader.get_pp(&reader.sos_caller_pkm(slot));
     if caller_pp > 1 {
         pnp::println!(color= WHITE, "Caller PP: {}", caller_pp);

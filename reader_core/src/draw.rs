@@ -124,7 +124,6 @@ pub fn draw_pkx_brief(pkx: &impl Pkx) {
     pnp::println!("Ability: ({}) {}", pkx.ability_number_t(), ability);
     pnp::println!("PID: {:08X}", pkx.pid());
     pnp::println!(color = shiny_color, "PSV: {:04}, {}", pkx.psv(), shiny_type);
-    pnp::println!("");
     pnp::println!("HPower: {}", pkx.hidden_power_t());
     pnp::println!("{} {} {} {} {} {}", iv_hp, iv_atk, iv_def, iv_spa, iv_spd, iv_spe);
 }

@@ -156,7 +156,7 @@ impl Gen7Reader {
         ((pnp::read::<u8>(self.addrs.orb_active) & 0x1) > 0) as bool
     }
     pub fn ally_slot(&self, caller_slot: u32) -> u32 {
-        (caller_slot + (self.sos_chain() as u32 % 3)) % 4
+        ((caller_slot - 1) + (self.sos_chain() as u32 % 3)) % 4
     }
 
     fn read_pk7(&self, offset: u32) -> Pk7 {

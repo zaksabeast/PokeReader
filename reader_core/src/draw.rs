@@ -88,6 +88,10 @@ fn nature_stat_str(nature_stat: &NatureStat, stat: Stat) -> &'static str {
     " "
 }
 
+fn get_pp(pkx: &impl Pkx) -> u32 {
+    pkx.move1_pp() as u32 + pkx.move2_pp() as u32 + pkx.move3_pp() as u32 + pkx.move4_pp() as u32
+}
+
 macro_rules! print_stat {
     ($iv:expr, $ev:expr, $stat:expr, $nature_stat:expr, $name:expr) => {
         pnp::println!(
@@ -99,6 +103,15 @@ macro_rules! print_stat {
             $ev
         );
     };
+}
+
+macro_rules! print_pp {
+    ($pp:expr) => {
+        pnp::println!(
+            color = if $pp > 1 { WHITE } else { RED },
+            "PP Remaining: {}", $pp
+            );
+    }
 }
 
 pub fn draw_pkx_brief(pkx: &impl Pkx) {
@@ -125,7 +138,7 @@ pub fn draw_pkx_brief(pkx: &impl Pkx) {
     pnp::println!("PID: {:08X}", pkx.pid());
     pnp::println!(color = shiny_color, "PSV: {:04}, {}", pkx.psv(), shiny_type);
     pnp::println!("HPower: {}", pkx.hidden_power_t());
-    pnp::println!("{} {} {} {} {} {}", iv_hp, iv_atk, iv_def, iv_spa, iv_spd, iv_spe);
+    pnp::println!("IVs: {}/{}/{}/{}/{}/{}", iv_hp, iv_atk, iv_def, iv_spa, iv_spd, iv_spe);
 }
 
 pub fn draw_pkx(pkx: &impl Pkx) {
@@ -161,7 +174,7 @@ pub fn draw_pkx(pkx: &impl Pkx) {
     pnp::println!(color = shiny_color, "PSV: {:04}, {}", pkx.psv(), shiny_type);
     pnp::println!("");
     pnp::println!("HPower: {}", pkx.hidden_power_t());
-    pnp::println!("PP Remaining: {}", (pkx.move1_pp() + pkx.move2_pp() + pkx.move3_pp() + pkx.move4_pp()));
+    print_pp!(get_pp(pkx));
     print_stat!(iv_hp, ev_hp, Hp, &nature_stat, "HP ");
     print_stat!(iv_atk, ev_atk, Atk, &nature_stat, "Atk ");
     print_stat!(iv_def, ev_def, Def, &nature_stat, "Def ");

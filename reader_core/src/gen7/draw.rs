@@ -45,11 +45,7 @@ pub fn draw_sos(reader: &Gen7Reader, slot: u32) {
     }
     pnp::println!("Caller Slot: {}", slot);
     let caller_pp = reader.get_pp(&reader.sos_caller_pkm(slot));
-    if caller_pp > 1 {
-        pnp::println!(color= WHITE, "Caller PP: {}", caller_pp);
-    } else {
-        pnp::println!(color=RED, "Caller PP: {} !", caller_pp);
-    }
+    pnp::println!(color= if caller_pp > 1 { WHITE } else { RED }, "Caller PP: {}", caller_pp);
     pnp::println!("");
     pnp::println!("Ally Data (Slot {}):", reader.ally_slot(slot) + 1);
     draw_pkx_brief(&reader.sos_ally_pkm(slot));

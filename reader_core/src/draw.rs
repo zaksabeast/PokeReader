@@ -238,15 +238,16 @@ pub fn draw_misc_help() {
     pnp::println!("Current Title:");
     print_title();
     pnp::println!("");
-    pnp::println!("PokemonRNG Discord:");
+    pnp::println!("PokemonRNG Resources:");
+    pnp::println!(color=0xd7005f, "  pokemonRNG.com");
     match loaded_title() {
         Ok(LoadedTitle::CrystalEn)
             | Ok(LoadedTitle::CrystalEs)
             | Ok(LoadedTitle::CrystalDe)
             | Ok(LoadedTitle::CrystalFr)
             | Ok(LoadedTitle::CrystalIt) =>
-            pnp::println!(color = CRYSTAL_CYAN, "discord.gg/d8JuAvg"),
-        _ => pnp::println!(color = MUTED_CYAN, "discord.gg/d8JuAvg"),
+            pnp::println!(color = CRYSTAL_CYAN, "  discord.gg/d8JuAvg"),
+        _ => pnp::println!(color = MUTED_CYAN, "  discord.gg/d8JuAvg"),
     }
 }
 

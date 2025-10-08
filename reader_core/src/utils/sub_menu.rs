@@ -30,8 +30,4 @@ impl<const MIN: usize, const MAX: usize> SubMenu<MIN, MAX> {
         self.draw_header();
         self.counter.value()
     }
-    pub fn update_headless(&mut self, is_locked: bool) -> usize {
-        self.update_counter(is_locked);
-        self.counter.value()
-    }
 }

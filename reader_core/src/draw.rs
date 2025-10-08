@@ -2,9 +2,9 @@ use crate::alloc::string::ToString;
 use crate::{pnp, utils::menu::MenuOptionValue};
 use pkm_rs::{Nature, Pkx, Shiny};
 
-const WHITE: u32 = 0xffffff;
-const GREEN: u32 = 0x00cc00;
-const RED: u32 = 0xff0000;
+pub const WHITE: u32 = 0xffffff;
+pub const GREEN: u32 = 0x00cc00;
+pub const RED: u32 = 0xff0000;
 
 fn get_shiny_color(is_shiny: bool) -> u32 {
     match is_shiny {
@@ -105,24 +105,28 @@ macro_rules! print_stat {
     };
 }
 
-macro_rules! print_pp {
-    ($pp:expr) => {
-        pnp::println!(
-            color = if $pp > 1 { WHITE } else { RED },
-            "PP Remaining: {}", $pp
-            );
+pub fn print_pp(pp: u32) {
+    pnp::println!(color = if pp > 1 { WHITE } else { RED },
+        "PP Remaining: {}", pp
+    );
+}
+
+pub fn shiny_type(pkx: &impl Pkx) -> &str {
+    match pkx.shiny_type() {
+        Some(Shiny::Star) => "Star",
+        Some(Shiny::Square) => "Square",
+        None => "Not Shiny",
     }
 }
+
+
+
 
 pub fn draw_pkx_brief(pkx: &impl Pkx) {
     let species = pkx.species_t().to_string();
     let ability = pkx.ability_t().to_string();
 
-    let shiny_type = match pkx.shiny_type() {
-        Some(Shiny::Star) => "Star",
-        Some(Shiny::Square) => "Square",
-        None => "Not Shiny",
-    };
+    let shiny_type = shiny_type(pkx);
     let shiny_color = get_shiny_color(pkx.is_shiny());
     let iv_hp = pkx.iv_hp();
     let iv_atk = pkx.iv_atk();
@@ -145,11 +149,7 @@ pub fn draw_pkx(pkx: &impl Pkx) {
     let species = pkx.species_t().to_string();
     let ability = pkx.ability_t().to_string();
 
-    let shiny_type = match pkx.shiny_type() {
-        Some(Shiny::Star) => "Star",
-        Some(Shiny::Square) => "Square",
-        None => "Not Shiny",
-    };
+    let shiny_type = shiny_type(pkx);
     let shiny_color = get_shiny_color(pkx.is_shiny());
     let iv_hp = pkx.iv_hp();
     let iv_atk = pkx.iv_atk();
@@ -172,9 +172,10 @@ pub fn draw_pkx(pkx: &impl Pkx) {
     pnp::println!("Ability: ({}) {}", pkx.ability_number_t(), ability);
     pnp::println!("PID: {:08X}", pkx.pid());
     pnp::println!(color = shiny_color, "PSV: {:04}, {}", pkx.psv(), shiny_type);
+    pnp::println!("Friendship: {}", pkx.ht_friendship());
     pnp::println!("");
     pnp::println!("HPower: {}", pkx.hidden_power_t());
-    print_pp!(get_pp(pkx));
+    print_pp(get_pp(pkx));
     print_stat!(iv_hp, ev_hp, Hp, &nature_stat, "HP ");
     print_stat!(iv_atk, ev_atk, Atk, &nature_stat, "Atk ");
     print_stat!(iv_def, ev_def, Def, &nature_stat, "Def ");

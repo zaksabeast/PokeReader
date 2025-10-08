@@ -114,7 +114,7 @@ fn run_frame(reader: Gen7Reader) {
                 reader.ally_slot(prev_caller_slot as u32, prev_correction_value) as usize + 1
                 );
             let correction_value = state.sos_menu.captured_value();
-            draw_sos(&reader, caller_slot as u32, correction_value, is_locked);
+            draw_sos(&reader, caller_slot as u32, correction_value);
         }
         Gen7View::Box => draw_pkx(&reader.box_pkm()),
         Gen7View::Citra => draw_citra_info(&reader),

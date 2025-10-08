@@ -5,11 +5,7 @@ use crate::{
     utils::{format_egg_parent, is_daycare_masuda_method},
 };
 
-const WHITE: u32 = 0xffffff;
-const GREEN: u32 = 0x00cc00;
-const RED: u32 = 0xff0000;
-
-pub use crate::draw::{draw_header, draw_pkx, draw_pkx_brief};
+pub use crate::draw::{draw_header, draw_pkx, draw_pkx_brief, GREEN,RED,WHITE};
 
 pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt>) {
     let sfmt_state = rng.current_state();
@@ -34,7 +30,7 @@ pub fn draw_citra_info(reader: &Gen7Reader) {
     pnp::println!("Time offset: {}", main_rng_seed_context.time_offset_ms);
 }
 
-pub fn draw_sos(reader: &Gen7Reader, slot: u32, correction: u32, is_locked: bool) {
+pub fn draw_sos(reader: &Gen7Reader, slot: u32, correction: u32) {
     pnp::println!("SOS Seed: {:08X}", reader.sos_seed());
     pnp::println!("SOS Chain Length: {}", reader.sos_chain());
     if reader.orb_active() {

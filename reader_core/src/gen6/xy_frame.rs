@@ -8,6 +8,7 @@ use crate::{
     utils::{
         menu::{Menu, MenuOption, MenuOptionValue},
         sub_menu::SubMenu,
+        help_menu::HelpMenu,
         ShowView,
     },
 };
@@ -22,6 +23,7 @@ enum XyView {
     Radar,
     Party,
     SeedRng,
+    HelpMenu
 }
 
 impl MenuOptionValue for XyView {
@@ -34,6 +36,7 @@ impl MenuOptionValue for XyView {
             Self::Radar => "Radar",
             Self::Party => "Party",
             Self::SeedRng => "Seed RNG",
+            Self::HelpMenu => "Help"
         }
     }
 }
@@ -42,9 +45,10 @@ struct PersistedState {
     rng: Gen6Rng,
     show_view: ShowView,
     view: XyView,
-    main_menu: Menu<6, XyView>,
+    main_menu: Menu<7, XyView>,
     party_menu: SubMenu<1, 6>,
     wild_menu: SubMenu<1, 5>,
+    help_menu: HelpMenu
 }
 
 unsafe fn get_state() -> &'static mut PersistedState {
@@ -54,6 +58,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
         view: XyView::MainMenu,
         party_menu: SubMenu::default(),
         wild_menu: SubMenu::default(),
+        help_menu: HelpMenu::default(),
         main_menu: Menu::new([
             MenuOption::new(XyView::Rng),
             MenuOption::new(XyView::Daycare),
@@ -61,6 +66,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
             MenuOption::new(XyView::Radar),
             MenuOption::new(XyView::Party),
             MenuOption::new(XyView::SeedRng),
+            MenuOption::new(XyView::HelpMenu)
         ]),
     });
     Lazy::force_mut(&mut STATE)
@@ -90,14 +96,15 @@ pub fn run_xy_frame() {
         XyView::Daycare => draw_daycare(&reader.daycare1()),
         XyView::Wild => {
             let slot = state.wild_menu.update_and_draw(is_locked);
-            draw_pkx(&reader.wild_pkm((slot - 1) as u32));
+            draw_pkx(&reader.wild_pkm((slot - 1) as u32), true);
         }
         XyView::Radar => draw_radar(&reader, &state.rng),
         XyView::Party => {
             let slot = state.party_menu.update_and_draw(is_locked);
-            draw_pkx(&reader.party_pkm((slot - 1) as u32));
+            draw_pkx(&reader.party_pkm((slot - 1) as u32), false);
         }
         XyView::SeedRng => draw_seed_rng(&reader, &state.rng),
+        XyView::HelpMenu => state.help_menu.update_and_draw(is_locked),
         XyView::MainMenu => {
             state.main_menu.update_view();
             state.main_menu.draw();

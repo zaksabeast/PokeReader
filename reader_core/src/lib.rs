@@ -17,7 +17,11 @@ mod title;
 mod transporter;
 mod utils;
 
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+pub const GIT_HASH: &str = env!("GIT_HASH");
+
 use title::{loaded_title, LoadedTitle, TitleError};
+
 
 #[cfg(target_os = "horizon")]
 #[panic_handler]

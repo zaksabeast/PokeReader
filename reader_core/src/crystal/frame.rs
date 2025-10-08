@@ -8,6 +8,7 @@ use crate::{
     utils::{
         menu::{Menu, MenuOption, MenuOptionValue},
         sub_menu::SubMenu,
+        help_menu::HelpMenu,
         ShowView,
     },
 };
@@ -20,6 +21,7 @@ enum CrystalView {
     Party,
     Wild,
     NonCfw,
+    HelpMenu
 }
 
 impl MenuOptionValue for CrystalView {
@@ -30,6 +32,7 @@ impl MenuOptionValue for CrystalView {
             Self::Party => "Party",
             Self::Wild => "Wild",
             Self::NonCfw => "Non-CFW",
+            Self::HelpMenu => "Help"
         }
     }
 }
@@ -38,8 +41,9 @@ struct PersistedState {
     frame: usize,
     show_view: ShowView,
     view: CrystalView,
-    main_menu: Menu<4, CrystalView>,
+    main_menu: Menu<5, CrystalView>,
     party_menu: SubMenu<1, 6>,
+    help_menu: HelpMenu
 }
 
 unsafe fn get_state() -> &'static mut PersistedState {
@@ -48,11 +52,13 @@ unsafe fn get_state() -> &'static mut PersistedState {
         show_view: ShowView::default(),
         view: CrystalView::MainMenu,
         party_menu: SubMenu::default(),
+        help_menu: HelpMenu::default(),
         main_menu: Menu::new([
             MenuOption::new(CrystalView::Rng),
             MenuOption::new(CrystalView::Party),
             MenuOption::new(CrystalView::Wild),
             MenuOption::new(CrystalView::NonCfw),
+            MenuOption::new(CrystalView::HelpMenu)
         ]),
     });
     Lazy::force_mut(&mut STATE)
@@ -91,6 +97,7 @@ pub fn run_frame() {
             draw_pkx(&reader.party((slot - 1) as u8));
         }
         CrystalView::NonCfw => draw_non_cfw(&reader, state.frame),
+        CrystalView::HelpMenu => state.help_menu.update_and_draw(is_locked),
         CrystalView::MainMenu => {
             state.main_menu.update_view();
             state.main_menu.draw();

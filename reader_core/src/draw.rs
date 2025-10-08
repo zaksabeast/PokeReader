@@ -1,10 +1,13 @@
 use crate::alloc::string::ToString;
 use crate::{pnp, utils::menu::MenuOptionValue};
 use pkm_rs::{Nature, Pkx, Shiny};
+use crate::{VERSION, GIT_HASH};
+use super::title::{loaded_title, LoadedTitle};
 
 pub const WHITE: u32 = 0xffffff;
 pub const GREEN: u32 = 0x00cc00;
 pub const RED: u32 = 0xff0000;
+pub const MUTED_CYAN: u32 = 0x00cccc;
 
 fn get_shiny_color(is_shiny: bool) -> u32 {
     match is_shiny {
@@ -111,7 +114,31 @@ pub fn print_pp(pp: u32) {
     );
 }
 
-pub fn shiny_type(pkx: &impl Pkx) -> &str {
+pub fn print_title() {
+    match loaded_title() {
+        Ok(title) => {
+            match title {
+                LoadedTitle::S => { pnp::println!(color = 0xd75f00, "Pokemon Sun")},
+                LoadedTitle::M => { pnp::println!(color = 0xaf5fff, "Pokemon Moon")},
+                LoadedTitle::Us => { pnp::println!(color = 0xff5f1f, "Pokemon Ultra Sun")},
+                LoadedTitle::Um => { pnp::println!(color = 0xaf00ff,"Pokemon Ultra Moon")},
+                LoadedTitle::X => { pnp::println!(color = 0x00ffff, "Pokemon X")},
+                LoadedTitle::Y => { pnp::println!(color = 0xd7005f, "Pokemon Y")},
+                LoadedTitle::Or => { pnp::println!(color = 0xFF4433,"Pokemon Omega Ruby")},
+                LoadedTitle::As => { pnp::println!(color = 0x0000ff, "Pokemon Alpha Sapphire")},
+                LoadedTitle::Transporter => { pnp::println!(color = 0xd7ff00, "Pokemon Transporter")},
+                LoadedTitle::CrystalEn
+                    | LoadedTitle::CrystalDe
+                    | LoadedTitle::CrystalFr
+                    | LoadedTitle::CrystalEs
+                    | LoadedTitle::CrystalIt => { pnp::println!(color= 0xaf00d7, "Pokemon Crystal")},
+            }
+        },
+        Err(_error) => { pnp::println!(color = RED, "???") }
+    }
+}
+
+pub fn shiny_type(pkx: &impl Pkx) -> &'static str {
     match pkx.shiny_type() {
         Some(Shiny::Star) => "Star",
         Some(Shiny::Square) => "Square",
@@ -145,7 +172,7 @@ pub fn draw_pkx_brief(pkx: &impl Pkx) {
     pnp::println!("IVs: {}/{}/{}/{}/{}/{}", iv_hp, iv_atk, iv_def, iv_spa, iv_spd, iv_spe);
 }
 
-pub fn draw_pkx(pkx: &impl Pkx) {
+pub fn draw_pkx(pkx: &impl Pkx, wild: bool) {
     let species = pkx.species_t().to_string();
     let ability = pkx.ability_t().to_string();
 
@@ -172,16 +199,50 @@ pub fn draw_pkx(pkx: &impl Pkx) {
     pnp::println!("Ability: ({}) {}", pkx.ability_number_t(), ability);
     pnp::println!("PID: {:08X}", pkx.pid());
     pnp::println!(color = shiny_color, "PSV: {:04}, {}", pkx.psv(), shiny_type);
-    pnp::println!("Friendship: {}", pkx.ht_friendship());
+    if !wild { // Friendship will always be zero for wild pokemon and does not fit
+        pnp::println!("Friendship: {}", pkx.ht_friendship());
+    }
     pnp::println!("");
     pnp::println!("HPower: {}", pkx.hidden_power_t());
-    print_pp(get_pp(pkx));
+    if wild { // PP does not matter for Party/Box view as you can just summary
+        print_pp(get_pp(pkx));
+    }
     print_stat!(iv_hp, ev_hp, Hp, &nature_stat, "HP ");
     print_stat!(iv_atk, ev_atk, Atk, &nature_stat, "Atk ");
     print_stat!(iv_def, ev_def, Def, &nature_stat, "Def ");
     print_stat!(iv_spa, ev_spa, SpA, &nature_stat, "SpA ");
     print_stat!(iv_spd, ev_spd, SpD, &nature_stat, "SpD ");
     print_stat!(iv_spe, ev_spe, Spe, &nature_stat, "Spe ");
+}
+
+pub fn draw_controls_help() {
+    pnp::println!("[Start] + [Select]:");
+    pnp::println!(" - Pause Game");
+    pnp::println!("");
+    pnp::println!("[Start]/[A]:");
+    pnp::println!(" - Unpause Game");
+    pnp::println!("");
+    pnp::println!("[Select]:");
+    pnp::println!(" - Frame Advance");
+}
+
+pub fn draw_specific_help(draw_func: fn() -> ()) {
+    draw_func();
+}
+
+pub fn draw_misc_help() {
+    pnp::println!("PokeReader");
+    draw_version();
+    pnp::println!("");
+    pnp::println!("Current Title:");
+    print_title();
+    pnp::println!("");
+    pnp::println!("PokemonRNG Discord:");
+    pnp::println!(color=MUTED_CYAN, "discord.gg/d8JuAvg");
+}
+
+pub fn draw_version() {
+    pnp::println!("Ver {} {}", VERSION, GIT_HASH);
 }
 
 pub fn draw_header<T: MenuOptionValue + Eq>(main_menu: T, current_view: T, is_locked: bool) {

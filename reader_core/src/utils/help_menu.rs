@@ -18,7 +18,7 @@ pub struct HelpMenu {
 impl Default for HelpMenu {
     fn default() -> Self {
         HelpMenu {
-            specific_help: || { pnp::println!("No Game-Specific controls.") },
+            specific_help: || { pnp::println!("No Game-Specific info.") },
             sub_menu: SubMenu::default()
         }
     }

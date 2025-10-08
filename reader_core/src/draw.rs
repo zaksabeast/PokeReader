@@ -3,6 +3,7 @@ use crate::{pnp, utils::menu::MenuOptionValue};
 use pkm_rs::{Nature, Pkx, Shiny};
 use crate::{VERSION, GIT_HASH};
 use super::title::{loaded_title, LoadedTitle};
+use crate::crystal::CRYSTAL_CYAN;
 
 pub const WHITE: u32 = 0xffffff;
 pub const GREEN: u32 = 0x00cc00;
@@ -238,7 +239,15 @@ pub fn draw_misc_help() {
     print_title();
     pnp::println!("");
     pnp::println!("PokemonRNG Discord:");
-    pnp::println!(color=MUTED_CYAN, "discord.gg/d8JuAvg");
+    match loaded_title() {
+        Ok(LoadedTitle::CrystalEn)
+            | Ok(LoadedTitle::CrystalEs)
+            | Ok(LoadedTitle::CrystalDe)
+            | Ok(LoadedTitle::CrystalFr)
+            | Ok(LoadedTitle::CrystalIt) =>
+            pnp::println!(color = CRYSTAL_CYAN, "discord.gg/d8JuAvg"),
+        _ => pnp::println!(color = MUTED_CYAN, "discord.gg/d8JuAvg"),
+    }
 }
 
 pub fn draw_version() {

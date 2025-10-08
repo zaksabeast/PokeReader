@@ -7,6 +7,7 @@ use crate::pnp::{self, Button};
 const WHITE: u32 = 0xffffff;
 const GREEN: u32 = 0x003c00;
 const RED: u32 = 0x1f0000;
+pub const CRYSTAL_CYAN: u32 = 0x003c3c;
 
 fn get_iv_color(iv: u8) -> u32 {
     match iv {

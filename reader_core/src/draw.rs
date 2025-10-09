@@ -153,9 +153,6 @@ pub fn shiny_type(pkx: &impl Pkx) -> &'static str {
     }
 }
 
-
-
-
 pub fn draw_pkx_brief(pkx: &impl Pkx) {
     let species = pkx.species_t().to_string();
     let ability = pkx.ability_t().to_string();

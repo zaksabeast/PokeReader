@@ -5,7 +5,7 @@ use crate::{
     utils::{format_egg_parent, is_daycare_masuda_method},
 };
 
-pub use crate::draw::{draw_header, draw_pkx, draw_pkx_brief, GREEN,RED,WHITE};
+pub use crate::draw::{draw_header, draw_pkx, draw_pkx_brief, print_pp, get_pp, PkxType, GREEN, RED, WHITE};
 
 pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt>) {
     let sfmt_state = rng.current_state();
@@ -40,8 +40,7 @@ pub fn draw_sos(reader: &Gen7Reader, slot: u32, correction: u32) {
 
     }
     pnp::println!("Caller Slot: {}", slot);
-    let caller_pp = reader.get_pp(&reader.sos_caller_pkm(slot));
-    pnp::println!(color= if caller_pp > 1 { WHITE } else { RED }, "Caller PP: {}", caller_pp);
+    print_pp(get_pp(&reader.sos_caller_pkm(slot)));
     pnp::println!("");
     pnp::println!("Ally Data (Slot {}):", reader.ally_slot(slot, correction) + 1);
     draw_pkx_brief(&reader.sos_ally_pkm(slot, correction));

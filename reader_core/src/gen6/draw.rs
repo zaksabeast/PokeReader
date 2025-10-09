@@ -8,7 +8,7 @@ use crate::{
     utils::{format_egg_parent, is_daycare_masuda_method},
 };
 
-pub use crate::draw::{draw_header, draw_pkx};
+pub use crate::draw::{draw_header, draw_pkx, PkxType};
 
 pub fn draw_tinymt(reader: &Gen6Reader, rng: &Gen6Rng) {
     let tinymt = rng.tinymt();

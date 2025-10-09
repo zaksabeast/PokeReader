@@ -1,5 +1,5 @@
 use super::{
-    draw::{draw_citra_info, draw_daycare, draw_header, draw_pkx, draw_rng, draw_sos},
+    draw::{draw_citra_info, draw_daycare, draw_header, draw_pkx, draw_rng, draw_sos, PkxType},
     reader::Gen7Reader,
 };
 use crate::{
@@ -122,7 +122,7 @@ fn run_frame(reader: Gen7Reader) {
         Gen7View::Daycare => draw_daycare(&reader),
         Gen7View::WildPokemon => {
             let slot = state.wild_menu.update_and_draw(is_locked);
-            draw_pkx(&reader.wild_pkm((slot - 1) as u32), true);
+            draw_pkx(&reader.wild_pkm((slot - 1) as u32), PkxType::Wild);
         }
         Gen7View::Sos => {
             let prev_caller_slot = state.sos_menu.counter_value();
@@ -135,15 +135,15 @@ fn run_frame(reader: Gen7Reader) {
             let correction_value = state.sos_menu.captured_value();
             draw_sos(&reader, caller_slot as u32, correction_value);
         }
-        Gen7View::Box => draw_pkx(&reader.box_pkm(), false),
+        Gen7View::Box => draw_pkx(&reader.box_pkm(), PkxType::Tame),
         Gen7View::Citra => draw_citra_info(&reader),
         Gen7View::Party => {
             let slot = state.party_menu.update_and_draw(is_locked);
-            draw_pkx(&reader.party_pkm((slot - 1) as u32), false);
+            draw_pkx(&reader.party_pkm((slot - 1) as u32), PkxType::Tame);
         }
         Gen7View::Pelago => {
             let slot = state.pelago_menu.update_and_draw(is_locked);
-            draw_pkx(&reader.pelago_pkm((slot - 1) as u32), true)
+            draw_pkx(&reader.pelago_pkm((slot - 1) as u32), PkxType::Wild)
         }
         Gen7View::HelpMenu => state.help_menu.update_and_draw(is_locked),
         Gen7View::MainMenu => {

@@ -1,5 +1,5 @@
 use super::{
-    draw::{draw_daycare, draw_header, draw_pkx, draw_radar, draw_rng, draw_seed_rng},
+    draw::{draw_daycare, draw_header, draw_pkx, draw_radar, draw_rng, draw_seed_rng, PkxType},
     reader::Gen6Reader,
     rng::Gen6Rng,
 };
@@ -96,12 +96,12 @@ pub fn run_xy_frame() {
         XyView::Daycare => draw_daycare(&reader.daycare1()),
         XyView::Wild => {
             let slot = state.wild_menu.update_and_draw(is_locked);
-            draw_pkx(&reader.wild_pkm((slot - 1) as u32), true);
+            draw_pkx(&reader.wild_pkm((slot - 1) as u32), PkxType::Wild);
         }
         XyView::Radar => draw_radar(&reader, &state.rng),
         XyView::Party => {
             let slot = state.party_menu.update_and_draw(is_locked);
-            draw_pkx(&reader.party_pkm((slot - 1) as u32), false);
+            draw_pkx(&reader.party_pkm((slot - 1) as u32), PkxType::Tame);
         }
         XyView::SeedRng => draw_seed_rng(&reader, &state.rng),
         XyView::HelpMenu => state.help_menu.update_and_draw(is_locked),

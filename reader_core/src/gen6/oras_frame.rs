@@ -1,7 +1,7 @@
 use super::{
     draw::{
         draw_daycare, draw_dex_nav, draw_header, draw_mirage_spot, draw_pkx, draw_rng,
-        draw_seed_rng,
+        draw_seed_rng, PkxType
     },
     reader::Gen6Reader,
     rng::Gen6Rng,
@@ -106,12 +106,12 @@ pub fn run_oras_frame() {
         OrasView::Daycare2 => draw_daycare(&reader.daycare2()),
         OrasView::Wild => {
             let slot = state.wild_menu.update_and_draw(is_locked);
-            draw_pkx(&reader.wild_pkm((slot - 1) as u32), true);
+            draw_pkx(&reader.wild_pkm((slot - 1) as u32), PkxType::Wild);
         }
         OrasView::DexNav => draw_dex_nav(&reader, &state.rng),
         OrasView::Party => {
             let slot = state.party_menu.update_and_draw(is_locked);
-            draw_pkx(&reader.party_pkm((slot - 1) as u32), false);
+            draw_pkx(&reader.party_pkm((slot - 1) as u32), PkxType::Tame);
         }
         OrasView::SeedRng => draw_seed_rng(&reader, &state.rng),
         OrasView::MirageSpot => draw_mirage_spot(&reader),

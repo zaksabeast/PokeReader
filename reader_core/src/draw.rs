@@ -36,6 +36,12 @@ enum Stat {
 }
 use Stat::*;
 
+#[derive(PartialEq, Eq)]
+pub enum PkxType {
+    Wild,
+    Tame
+}
+
 struct NatureStat {
     increase: Stat,
     decrease: Stat,
@@ -92,7 +98,7 @@ fn nature_stat_str(nature_stat: &NatureStat, stat: Stat) -> &'static str {
     " "
 }
 
-fn get_pp(pkx: &impl Pkx) -> u32 {
+pub fn get_pp(pkx: &impl Pkx) -> u32 {
     pkx.move1_pp() as u32 + pkx.move2_pp() as u32 + pkx.move3_pp() as u32 + pkx.move4_pp() as u32
 }
 
@@ -119,20 +125,20 @@ pub fn print_title() {
     match loaded_title() {
         Ok(title) => {
             match title {
-                LoadedTitle::S => { pnp::println!(color = 0xd75f00, "Pokemon Sun")},
-                LoadedTitle::M => { pnp::println!(color = 0xaf5fff, "Pokemon Moon")},
-                LoadedTitle::Us => { pnp::println!(color = 0xff5f1f, "Pokemon Ultra Sun")},
-                LoadedTitle::Um => { pnp::println!(color = 0xaf00ff,"Pokemon Ultra Moon")},
-                LoadedTitle::X => { pnp::println!(color = 0x00ffff, "Pokemon X")},
-                LoadedTitle::Y => { pnp::println!(color = 0xd7005f, "Pokemon Y")},
-                LoadedTitle::Or => { pnp::println!(color = 0xFF4433,"Pokemon Omega Ruby")},
-                LoadedTitle::As => { pnp::println!(color = 0x0000ff, "Pokemon Alpha Sapphire")},
-                LoadedTitle::Transporter => { pnp::println!(color = 0xd7ff00, "Pokemon Transporter")},
+                LoadedTitle::S => { pnp::println!(color = 0xd75f00, " Pokemon Sun")},
+                LoadedTitle::M => { pnp::println!(color = 0xaf5fff, " Pokemon Moon")},
+                LoadedTitle::Us => { pnp::println!(color = 0xff5f1f, " Pokemon Ultra Sun")},
+                LoadedTitle::Um => { pnp::println!(color = 0xaf00ff," Pokemon Ultra Moon")},
+                LoadedTitle::X => { pnp::println!(color = 0x00ffff, " Pokemon X")},
+                LoadedTitle::Y => { pnp::println!(color = 0xd7005f, " Pokemon Y")},
+                LoadedTitle::Or => { pnp::println!(color = 0xFF4433," Pokemon Omega Ruby")},
+                LoadedTitle::As => { pnp::println!(color = 0x0000ff, " Pokemon Alpha Sapphire")},
+                LoadedTitle::Transporter => { pnp::println!(color = 0xd7ff00, " Pokemon Transporter")},
                 LoadedTitle::CrystalEn
                     | LoadedTitle::CrystalDe
                     | LoadedTitle::CrystalFr
                     | LoadedTitle::CrystalEs
-                    | LoadedTitle::CrystalIt => { pnp::println!(color= 0xaf00d7, "Pokemon Crystal")},
+                    | LoadedTitle::CrystalIt => { pnp::println!(color= 0xaf00d7, " Pokemon Crystal")},
             }
         },
         Err(_error) => { pnp::println!(color = RED, "???") }
@@ -173,7 +179,7 @@ pub fn draw_pkx_brief(pkx: &impl Pkx) {
     pnp::println!("IVs: {}/{}/{}/{}/{}/{}", iv_hp, iv_atk, iv_def, iv_spa, iv_spd, iv_spe);
 }
 
-pub fn draw_pkx(pkx: &impl Pkx, wild: bool) {
+pub fn draw_pkx(pkx: &impl Pkx, pkx_type: PkxType) {
     let species = pkx.species_t().to_string();
     let ability = pkx.ability_t().to_string();
 
@@ -200,12 +206,12 @@ pub fn draw_pkx(pkx: &impl Pkx, wild: bool) {
     pnp::println!("Ability: ({}) {}", pkx.ability_number_t(), ability);
     pnp::println!("PID: {:08X}", pkx.pid());
     pnp::println!(color = shiny_color, "PSV: {:04}, {}", pkx.psv(), shiny_type);
-    if !wild { // Friendship will always be zero for wild pokemon and does not fit
-        pnp::println!("Friendship: {}", pkx.ht_friendship());
+    if pkx_type == PkxType::Tame { // Friendship will always be zero for wild pokemon and does not fit
+        pnp::println!("Friendship: {}", pkx.current_friendship());
     }
     pnp::println!("");
     pnp::println!("HPower: {}", pkx.hidden_power_t());
-    if wild { // PP does not matter for Party/Box view as you can just summary
+    if pkx_type == PkxType::Wild { // PP does not matter for Party/Box view as you can just summary
         print_pp(get_pp(pkx));
     }
     print_stat!(iv_hp, ev_hp, Hp, &nature_stat, "HP ");
@@ -239,20 +245,20 @@ pub fn draw_misc_help() {
     print_title();
     pnp::println!("");
     pnp::println!("PokemonRNG Resources:");
-    pnp::println!(color=0xd7005f, "  pokemonRNG.com");
+    pnp::println!(color=MUTED_CYAN, " PokemonRNG.com");
     match loaded_title() {
         Ok(LoadedTitle::CrystalEn)
             | Ok(LoadedTitle::CrystalEs)
             | Ok(LoadedTitle::CrystalDe)
             | Ok(LoadedTitle::CrystalFr)
             | Ok(LoadedTitle::CrystalIt) =>
-            pnp::println!(color = CRYSTAL_CYAN, "  discord.gg/d8JuAvg"),
-        _ => pnp::println!(color = MUTED_CYAN, "  discord.gg/d8JuAvg"),
+            pnp::println!(color = CRYSTAL_CYAN, " discord.gg/d8JuAvg"),
+        _ => pnp::println!(color = MUTED_CYAN, " discord.gg/d8JuAvg"),
     }
 }
 
 pub fn draw_version() {
-    pnp::println!("Ver {} {}", VERSION, GIT_HASH);
+    pnp::println!(" Ver {} {}", VERSION, GIT_HASH);
 }
 
 pub fn draw_header<T: MenuOptionValue + Eq>(main_menu: T, current_view: T, is_locked: bool) {

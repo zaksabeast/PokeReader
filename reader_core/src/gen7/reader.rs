@@ -1,7 +1,7 @@
 use super::{game_lib, hook};
 use crate::pnp;
 use core::num::{NonZeroU32, NonZeroU8};
-use pkm_rs::{Pk7, Pkx, PokeCrypto};
+use pkm_rs::{Pk7, PokeCrypto};
 
 struct Gen7Addresses {
     initial_seed: u32,
@@ -208,9 +208,6 @@ impl Gen7Reader {
     }
     pub fn sos_ally_pkm(&self, caller_slot: u32, correction: u32) -> Pk7 {
         self.read_pk7((self.ally_slot(caller_slot, correction) * 484) + self.addrs.sos)
-    }
-    pub fn get_pp(&self, pkm: &Pk7) -> u32 {
-        pkm.move1_pp() as u32 + pkm.move2_pp() as u32 + pkm.move3_pp() as u32 + pkm.move4_pp() as u32
     }
 
     pub fn is_egg_ready(&self) -> bool {

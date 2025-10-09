@@ -1,5 +1,5 @@
 use super::{
-    draw::{draw_header, draw_pkx, draw_rng},
+    draw::{draw_header, draw_pkx, draw_rng, PkxType},
     reader::TransporterReader,
     rng::TransporterRng,
 };
@@ -83,7 +83,7 @@ pub fn run_frame() {
         TransporterView::Rng => draw_rng(&state.rng),
         TransporterView::Pokemon => {
             let slot = state.pokemon_menu.update_and_draw(is_locked);
-            draw_pkx(&reader.transported_pkm((slot - 1) as u32), false);
+            draw_pkx(&reader.transported_pkm((slot - 1) as u32), PkxType::Tame);
         }
         TransporterView::HelpMenu => state.help_menu.update_and_draw(is_locked),
         TransporterView::MainMenu => {

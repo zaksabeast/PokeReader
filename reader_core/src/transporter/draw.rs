@@ -1,5 +1,5 @@
 use super::rng::TransporterRng;
-pub use crate::draw::{draw_header, draw_pkx};
+pub use crate::draw::{draw_header, draw_pkx, PkxType};
 use crate::pnp;
 
 pub fn draw_rng(rng: &TransporterRng) {

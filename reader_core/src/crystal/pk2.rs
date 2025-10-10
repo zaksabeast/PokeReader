@@ -253,12 +253,14 @@ const SPECIES_LOOKUP: [&str; 252] = [
     "Celebi",
 ];
 
+#[rustfmt::skip]
 const NATURE_LOOKUP: [&str; 25] = [
     "Hardy", "Lonely", "Brave", "Adamant", "Naughty", "Bold", "Docile", "Relaxed", "Impish", "Lax",
     "Timid", "Hasty", "Serious", "Jolly", "Naive", "Modest", "Mild", "Quiet", "Bashful", "Rash",
     "Calm", "Gentle", "Sassy", "Careful", "Quirky",
 ];
 
+#[rustfmt::skip]
 const HIDDEN_POWER_LOOKUP: [&str; 16] = [
     "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water",
     "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark",

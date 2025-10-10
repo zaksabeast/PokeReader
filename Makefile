@@ -21,6 +21,9 @@ clean:
 	make clean -C 3gx
 	rm -rf out
 
+format:
+	cargo +nightly fmt --all --manifest-path reader_core/Cargo.toml
+
 lint:
 	cargo +nightly-2024-03-21 clippy --release -Z build-std=core,alloc --target armv6k-nintendo-3ds --manifest-path reader_core/Cargo.toml
 

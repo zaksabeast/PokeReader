@@ -8,11 +8,7 @@ fn get_tree_state() -> &'static str {
         .unwrap()
         .stdout
         .is_empty();
-    if is_clean {
-        ""
-    } else {
-        "dirty-"
-    }
+    if is_clean { "" } else { "dirty-" }
 }
 
 fn get_hash() -> String {
@@ -30,9 +26,5 @@ fn get_hash() -> String {
 }
 
 fn main() {
-    println!(
-        "cargo:rustc-env=GIT_HASH={}{}",
-        get_tree_state(),
-        get_hash()
-    );
+    println!("cargo:rustc-env=GIT_HASH={}{}", get_tree_state(), get_hash());
 }

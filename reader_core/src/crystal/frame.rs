@@ -6,10 +6,10 @@ use super::{
 use crate::{
     pnp,
     utils::{
+        ShowView,
         help_menu::HelpMenu,
         menu::{Menu, MenuOption, MenuOptionValue},
         sub_menu::SubMenu,
-        ShowView,
     },
 };
 use once_cell::unsync::Lazy;

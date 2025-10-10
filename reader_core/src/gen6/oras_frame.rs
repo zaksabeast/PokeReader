@@ -1,7 +1,6 @@
 use super::{
     draw::{
-        draw_daycare, draw_dex_nav, draw_header, draw_mirage_spot, draw_pkx, draw_rng,
-        draw_seed_rng, PkxType,
+        PkxType, draw_daycare, draw_dex_nav, draw_header, draw_mirage_spot, draw_pkx, draw_rng, draw_seed_rng,
     },
     reader::Gen6Reader,
     rng::Gen6Rng,
@@ -9,10 +8,10 @@ use super::{
 use crate::{
     pnp,
     utils::{
+        ShowView,
         help_menu::HelpMenu,
         menu::{Menu, MenuOption, MenuOptionValue},
         sub_menu::SubMenu,
-        ShowView,
     },
 };
 use once_cell::unsync::Lazy;

@@ -1,4 +1,4 @@
-use crate::title::{loaded_title, LoadedTitle};
+use crate::title::{LoadedTitle, loaded_title};
 use crate::utils::game_fn;
 
 game_fn!(xy_get_seed_hash() -> u64 = 0x10cad8);

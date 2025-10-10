@@ -47,11 +47,7 @@ impl<const MAX: usize, Value: MenuOptionValue> Menu<MAX, Value> {
     }
 
     fn cursor_str(&self, index: usize) -> &str {
-        if self.counter.value() == index {
-            ">"
-        } else {
-            " "
-        }
+        if self.counter.value() == index { ">" } else { " " }
     }
 
     pub fn draw(&self) {

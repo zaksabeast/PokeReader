@@ -255,15 +255,51 @@ const SPECIES_LOOKUP: [&str; 252] = [
 
 #[rustfmt::skip]
 const NATURE_LOOKUP: [&str; 25] = [
-    "Hardy", "Lonely", "Brave", "Adamant", "Naughty", "Bold", "Docile", "Relaxed", "Impish", "Lax",
-    "Timid", "Hasty", "Serious", "Jolly", "Naive", "Modest", "Mild", "Quiet", "Bashful", "Rash",
-    "Calm", "Gentle", "Sassy", "Careful", "Quirky",
+    "Hardy",
+    "Lonely",
+    "Brave",
+    "Adamant",
+    "Naughty",
+    "Bold",
+    "Docile",
+    "Relaxed",
+    "Impish",
+    "Lax",
+    "Timid",
+    "Hasty",
+    "Serious",
+    "Jolly",
+    "Naive",
+    "Modest",
+    "Mild",
+    "Quiet",
+    "Bashful",
+    "Rash",
+    "Calm",
+    "Gentle",
+    "Sassy",
+    "Careful",
+    "Quirky",
 ];
 
 #[rustfmt::skip]
 const HIDDEN_POWER_LOOKUP: [&str; 16] = [
-    "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water",
-    "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark",
+    "Fighting",
+    "Flying",
+    "Poison",
+    "Ground",
+    "Rock",
+    "Bug",
+    "Ghost",
+    "Steel",
+    "Fire",
+    "Water",
+    "Grass",
+    "Electric",
+    "Psychic",
+    "Ice",
+    "Dragon",
+    "Dark",
 ];
 
 pub struct Pk2 {
@@ -301,9 +337,7 @@ impl Pk2 {
         Pk2 {
             spec_index,
             species: SPECIES_LOOKUP.get(spec_index as usize).unwrap_or(&"None"),
-            nature: NATURE_LOOKUP
-                .get(experience as usize % 25)
-                .unwrap_or(&"Unknown"),
+            nature: NATURE_LOOKUP.get(experience as usize % 25).unwrap_or(&"Unknown"),
             experience,
             atk,
             def,
@@ -315,9 +349,7 @@ impl Pk2 {
                 .get(((atk & 3) << 2 | def & 3) as usize)
                 .unwrap_or(&"Unknown"),
             hidden_power_base: 31
-                + (5 * ((atk >> 3) << 3 | (def >> 3) << 2 | (spe >> 3) << 1 | (spc >> 3))
-                    + (spc & 3))
-                    / 2,
+                + (5 * ((atk >> 3) << 3 | (def >> 3) << 2 | (spe >> 3) << 1 | (spc >> 3)) + (spc & 3)) / 2,
         }
     }
 }

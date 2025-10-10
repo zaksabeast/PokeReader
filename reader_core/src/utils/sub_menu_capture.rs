@@ -25,12 +25,7 @@ impl<const MIN: usize, const MAX: usize> SubMenuCapture<MIN, MAX> {
         }
     }
 
-    pub fn update_headless(
-        &mut self,
-        is_locked: bool,
-        capture_value: u32,
-        set_value: usize,
-    ) -> usize {
+    pub fn update_headless(&mut self, is_locked: bool, capture_value: u32, set_value: usize) -> usize {
         self.update_counter(is_locked, capture_value, set_value);
         self.counter.value()
     }
@@ -40,6 +35,6 @@ impl<const MIN: usize, const MAX: usize> SubMenuCapture<MIN, MAX> {
     }
 
     pub fn counter_value(&self) -> usize {
-        return self.counter.value();
+        self.counter.value()
     }
 }

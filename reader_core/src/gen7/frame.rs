@@ -1,16 +1,16 @@
 use super::{
-    draw::{draw_citra_info, draw_daycare, draw_header, draw_pkx, draw_rng, draw_sos, PkxType},
+    draw::{PkxType, draw_citra_info, draw_daycare, draw_header, draw_pkx, draw_rng, draw_sos},
     reader::Gen7Reader,
 };
 use crate::{
     pnp,
     rng::{RngWrapper, Sfmt},
     utils::{
+        ShowView,
         help_menu::HelpMenu,
         menu::{Menu, MenuOption, MenuOptionValue},
         sub_menu::SubMenu,
         sub_menu_capture::SubMenuCapture,
-        ShowView,
     },
 };
 use once_cell::unsync::Lazy;

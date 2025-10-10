@@ -1,5 +1,5 @@
 use super::reader::Gen6Reader;
-use crate::rng::{RngWrapper, TinyMT, MT};
+use crate::rng::{MT, RngWrapper, TinyMT};
 
 #[derive(Default)]
 pub struct Gen6Rng {

@@ -103,9 +103,7 @@ pub struct Gen6Reader {
 
 impl Gen6Reader {
     pub fn xy() -> Self {
-        Self {
-            addrs: &XY_ADDRESSES,
-        }
+        Self { addrs: &XY_ADDRESSES }
     }
 
     pub fn oras() -> Self {

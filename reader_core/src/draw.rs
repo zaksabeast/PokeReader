@@ -1,8 +1,8 @@
-use super::title::{loaded_title, LoadedTitle};
+use super::title::{LoadedTitle, loaded_title};
 use crate::alloc::string::ToString;
 use crate::crystal::CRYSTAL_CYAN;
-use crate::{pnp, utils::menu::MenuOptionValue};
 use crate::{GIT_HASH, VERSION};
+use crate::{pnp, utils::menu::MenuOptionValue};
 use pkm_rs::{Nature, Pkx, Shiny};
 
 pub const WHITE: u32 = 0xffffff;
@@ -116,43 +116,21 @@ macro_rules! print_stat {
 }
 
 pub fn print_pp(pp: u32) {
-    pnp::println!(
-        color = if pp > 1 { WHITE } else { RED },
-        "PP Remaining: {}",
-        pp
-    );
+    pnp::println!(color = if pp > 1 { WHITE } else { RED }, "PP Remaining: {}", pp);
 }
 
 pub fn print_title() {
     match loaded_title() {
         Ok(title) => match title {
-            LoadedTitle::S => {
-                pnp::println!(color = 0xd75f00, " Pokemon Sun")
-            }
-            LoadedTitle::M => {
-                pnp::println!(color = 0xaf5fff, " Pokemon Moon")
-            }
-            LoadedTitle::Us => {
-                pnp::println!(color = 0xff5f1f, " Pokemon Ultra Sun")
-            }
-            LoadedTitle::Um => {
-                pnp::println!(color = 0xaf00ff, " Pokemon Ultra Moon")
-            }
-            LoadedTitle::X => {
-                pnp::println!(color = 0x00ffff, " Pokemon X")
-            }
-            LoadedTitle::Y => {
-                pnp::println!(color = 0xd7005f, " Pokemon Y")
-            }
-            LoadedTitle::Or => {
-                pnp::println!(color = 0xFF4433, " Pokemon Omega Ruby")
-            }
-            LoadedTitle::As => {
-                pnp::println!(color = 0x0000ff, " Pokemon Alpha Sapphire")
-            }
-            LoadedTitle::Transporter => {
-                pnp::println!(color = 0xd7ff00, " Pokemon Transporter")
-            }
+            LoadedTitle::S => pnp::println!(color = 0xd75f00, " Pokemon Sun"),
+            LoadedTitle::M => pnp::println!(color = 0xaf5fff, " Pokemon Moon"),
+            LoadedTitle::Us => pnp::println!(color = 0xff5f1f, " Pokemon Ultra Sun"),
+            LoadedTitle::Um => pnp::println!(color = 0xaf00ff, " Pokemon Ultra Moon"),
+            LoadedTitle::X => pnp::println!(color = 0x00ffff, " Pokemon X"),
+            LoadedTitle::Y => pnp::println!(color = 0xd7005f, " Pokemon Y"),
+            LoadedTitle::Or => pnp::println!(color = 0xFF4433, " Pokemon Omega Ruby"),
+            LoadedTitle::As => pnp::println!(color = 0x0000ff, " Pokemon Alpha Sapphire"),
+            LoadedTitle::Transporter => pnp::println!(color = 0xd7ff00, " Pokemon Transporter"),
             LoadedTitle::CrystalEn
             | LoadedTitle::CrystalDe
             | LoadedTitle::CrystalFr

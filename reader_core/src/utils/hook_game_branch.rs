@@ -20,8 +20,7 @@ fn replace_arm_branch(
         };
     }
 
-    let new_offset =
-        (((new_jump_address as i32 - instruction_address as i32 - 8) >> 2) & 0x00FFFFFF) as u32;
+    let new_offset = (((new_jump_address as i32 - instruction_address as i32 - 8) >> 2) & 0x00FFFFFF) as u32;
     let new_branch_instruction = (branch_instruction & 0xFF000000) | new_offset;
 
     ReplacedBranch {

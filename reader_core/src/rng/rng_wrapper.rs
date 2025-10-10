@@ -64,7 +64,7 @@ impl<T: rng::Rng + Copy> RngWrapper<T> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::rng::{Rng, Sfmt, TinyMT, MT};
+    use crate::rng::{MT, Rng, Sfmt, TinyMT};
 
     #[test]
     fn should_track_sfmt_advances() {

@@ -1,15 +1,15 @@
 use super::{
-    draw::{draw_header, draw_pkx, draw_rng, PkxType},
+    draw::{PkxType, draw_header, draw_pkx, draw_rng},
     reader::TransporterReader,
     rng::TransporterRng,
 };
 use crate::{
     pnp,
     utils::{
+        ShowView,
         help_menu::HelpMenu,
         menu::{Menu, MenuOption, MenuOptionValue},
         sub_menu::SubMenu,
-        ShowView,
     },
 };
 use once_cell::unsync::Lazy;
@@ -74,9 +74,7 @@ pub fn run_frame() {
     }
 
     let is_locked = state.main_menu.update_lock();
-    state.view = state
-        .main_menu
-        .next_view(TransporterView::MainMenu, state.view);
+    state.view = state.main_menu.next_view(TransporterView::MainMenu, state.view);
     draw_header(TransporterView::MainMenu, state.view, is_locked);
 
     match state.view {

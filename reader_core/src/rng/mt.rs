@@ -26,9 +26,7 @@ impl MT {
 
         let mut seed = seed;
         for i in 1..624 {
-            seed = (seed ^ (seed >> 30))
-                .wrapping_mul(0x6c078965)
-                .wrapping_add(i);
+            seed = (seed ^ (seed >> 30)).wrapping_mul(0x6c078965).wrapping_add(i);
             self.mt[i as usize] = seed;
         }
     }

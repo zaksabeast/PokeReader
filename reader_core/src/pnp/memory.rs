@@ -1,6 +1,6 @@
 use super::bindings;
 use alloc::{vec, vec::Vec};
-use binrw::{io::Cursor, BinRead, BinWrite, BinWriterExt};
+use binrw::{BinRead, BinWrite, BinWriterExt, io::Cursor};
 use core::mem;
 
 pub fn pa_from_va_ptr(ptr: u32) -> u32 {

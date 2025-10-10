@@ -1,15 +1,15 @@
 use super::{
-    draw::{draw_daycare, draw_header, draw_pkx, draw_radar, draw_rng, draw_seed_rng, PkxType},
+    draw::{PkxType, draw_daycare, draw_header, draw_pkx, draw_radar, draw_rng, draw_seed_rng},
     reader::Gen6Reader,
     rng::Gen6Rng,
 };
 use crate::{
     pnp,
     utils::{
+        ShowView,
         help_menu::HelpMenu,
         menu::{Menu, MenuOption, MenuOptionValue},
         sub_menu::SubMenu,
-        ShowView,
     },
 };
 use once_cell::unsync::Lazy;

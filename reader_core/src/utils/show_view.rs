@@ -1,4 +1,4 @@
-use crate::pnp::{is_just_pressed, Button};
+use crate::pnp::{Button, is_just_pressed};
 
 // This is abstracted away for consistency.
 // Some logic needs to run per frame, regardless of a screen showing.

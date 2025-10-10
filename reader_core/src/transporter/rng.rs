@@ -1,5 +1,5 @@
 use super::reader::TransporterReader;
-use crate::rng::{RngWrapper, MT};
+use crate::rng::{MT, RngWrapper};
 
 #[derive(Default)]
 pub struct TransporterRng {

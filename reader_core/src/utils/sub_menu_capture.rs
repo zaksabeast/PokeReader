@@ -8,14 +8,6 @@ pub struct SubMenuCapture<const MIN: usize, const MAX: usize> {
 }
 
 impl<const MIN: usize, const MAX: usize> SubMenuCapture<MIN, MAX> {
-    /* Unused
-    fn draw_header(&self) {
-        pnp::println!("Slot {}", self.counter.value());
-        pnp::println!("[v] Next | Prev [^]");
-        pnp::println!("");
-    }
-    */
-
     fn update_counter(&mut self, is_locked: bool, capture_value: u32, set_value: usize) {
         if is_locked {
             return;
@@ -33,18 +25,6 @@ impl<const MIN: usize, const MAX: usize> SubMenuCapture<MIN, MAX> {
         }
     }
 
-    /* Unused
-    pub fn update_and_draw(
-        &mut self,
-        is_locked: bool,
-        capture_value: u32,
-        set_value: usize,
-    ) -> usize {
-        self.update_counter(is_locked, capture_value, set_value);
-        self.draw_header();
-        self.counter.value()
-    }
-    */
     pub fn update_headless(
         &mut self,
         is_locked: bool,
@@ -58,6 +38,7 @@ impl<const MIN: usize, const MAX: usize> SubMenuCapture<MIN, MAX> {
     pub fn captured_value(&mut self) -> u32 {
         self.value
     }
+
     pub fn counter_value(&self) -> usize {
         return self.counter.value();
     }

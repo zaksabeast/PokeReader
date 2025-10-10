@@ -1,7 +1,6 @@
 #![no_std]
 #![allow(static_mut_refs)]
 #![feature(naked_functions)]
-#![rustfmt::skip::macros(println)]
 
 extern crate alloc;
 

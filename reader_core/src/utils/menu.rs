@@ -1,5 +1,4 @@
-use crate::{pnp, pnp::Button, utils::CircularCounter, draw::draw_version};
-
+use crate::{draw::draw_version, pnp, pnp::Button, utils::CircularCounter};
 
 pub trait MenuOptionValue: Copy {
     fn get_label(option: Self) -> &'static str;

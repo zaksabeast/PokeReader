@@ -6,9 +6,9 @@ use crate::{
     pnp,
     rng::{RngWrapper, Sfmt},
     utils::{
+        help_menu::HelpMenu,
         menu::{Menu, MenuOption, MenuOptionValue},
         sub_menu::SubMenu,
-        help_menu::HelpMenu,
         sub_menu_capture::SubMenuCapture,
         ShowView,
     },
@@ -130,8 +130,8 @@ fn run_frame(reader: Gen7Reader) {
             let caller_slot = state.sos_menu.update_headless(
                 is_locked,
                 reader.sos_chain() as u32,
-                reader.ally_slot(prev_caller_slot as u32, prev_correction_value) as usize + 1
-                );
+                reader.ally_slot(prev_caller_slot as u32, prev_correction_value) as usize + 1,
+            );
             let correction_value = state.sos_menu.captured_value();
             draw_sos(&reader, caller_slot as u32, correction_value);
         }

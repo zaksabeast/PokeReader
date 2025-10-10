@@ -10,11 +10,13 @@ struct Gen7Addresses {
     party: u32,
     wild: u32,
     sos: u32,
-    sos_index: u32,
     orb_active: u32,
     sos_chain_length: u32,
-    ally_id: u32,
-    prev_call_succeed: u32,
+    // To be used in the future vvv
+    _sos_index: u32,
+    _ally_id: u32,
+    _prev_call_succeed: u32,
+    //
     pelago: u32,
     egg_ready: u32,
     egg: u32,
@@ -36,11 +38,11 @@ const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     party: 0x34195e10,
     wild: 0x3002f7b8,
     sos: 0x3002f7b8,
-    sos_index: 0x30039614,
+    _sos_index: 0x30039614,
     orb_active: 0x3003961c,
     sos_chain_length: 0x3003960d,
-    ally_id: 0x3003961e,
-    prev_call_succeed: 0x3003961f,
+    _ally_id: 0x3003961e,
+    _prev_call_succeed: 0x3003961f,
     pelago: 0x331110ca,
     egg_ready: 0x3313edd8,
     egg: 0x3313eddc,
@@ -62,11 +64,11 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     party: 0x33f7fa44,
     wild: 0x3002f9a0,
     sos: 0x3002f9a0,
-    sos_index: 0x300397F0,
+    _sos_index: 0x300397F0,
     orb_active: 0x300397f8,
     sos_chain_length: 0x300397f9,
-    ally_id: 0x300397fA,
-    prev_call_succeed: 0x300397fb,
+    _ally_id: 0x300397fA,
+    _prev_call_succeed: 0x300397fb,
     pelago: 0x3304d16a,
     egg_ready: 0x3307b1e8,
     egg: 0x3307b1ec,
@@ -156,8 +158,13 @@ impl Gen7Reader {
         ((pnp::read::<u8>(self.addrs.orb_active) & 0x1) > 0) as bool
     }
     pub fn ally_slot(&self, caller_slot: u32, correction: u32) -> u32 {
-        if self.sos_chain() == 0 { 0 } else {
-            ((caller_slot - 1) + ((self.sos_chain() as i32 - (correction as i32 + 1)) % 3) as u32 + 1) % 4
+        if self.sos_chain() == 0 {
+            0
+        } else {
+            ((caller_slot - 1)
+                + ((self.sos_chain() as i32 - (correction as i32 + 1)) % 3) as u32
+                + 1)
+                % 4
         }
     }
 

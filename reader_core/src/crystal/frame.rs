@@ -6,9 +6,9 @@ use super::{
 use crate::{
     pnp,
     utils::{
+        help_menu::HelpMenu,
         menu::{Menu, MenuOption, MenuOptionValue},
         sub_menu::SubMenu,
-        help_menu::HelpMenu,
         ShowView,
     },
 };
@@ -21,7 +21,7 @@ enum CrystalView {
     Party,
     Wild,
     NonCfw,
-    HelpMenu
+    HelpMenu,
 }
 
 impl MenuOptionValue for CrystalView {
@@ -32,7 +32,7 @@ impl MenuOptionValue for CrystalView {
             Self::Party => "Party",
             Self::Wild => "Wild",
             Self::NonCfw => "Non-CFW",
-            Self::HelpMenu => "Help"
+            Self::HelpMenu => "Help",
         }
     }
 }
@@ -43,7 +43,7 @@ struct PersistedState {
     view: CrystalView,
     main_menu: Menu<5, CrystalView>,
     party_menu: SubMenu<1, 6>,
-    help_menu: HelpMenu
+    help_menu: HelpMenu,
 }
 
 unsafe fn get_state() -> &'static mut PersistedState {
@@ -58,7 +58,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
             MenuOption::new(CrystalView::Party),
             MenuOption::new(CrystalView::Wild),
             MenuOption::new(CrystalView::NonCfw),
-            MenuOption::new(CrystalView::HelpMenu)
+            MenuOption::new(CrystalView::HelpMenu),
         ]),
     });
     Lazy::force_mut(&mut STATE)

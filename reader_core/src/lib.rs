@@ -22,7 +22,6 @@ pub const GIT_HASH: &str = env!("GIT_HASH");
 
 use title::{loaded_title, LoadedTitle, TitleError};
 
-
 #[cfg(target_os = "horizon")]
 #[panic_handler]
 fn my_panic(info: &core::panic::PanicInfo) -> ! {

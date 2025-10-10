@@ -6,9 +6,9 @@ use super::{
 use crate::{
     pnp,
     utils::{
+        help_menu::HelpMenu,
         menu::{Menu, MenuOption, MenuOptionValue},
         sub_menu::SubMenu,
-        help_menu::HelpMenu,
         ShowView,
     },
 };
@@ -23,7 +23,7 @@ enum XyView {
     Radar,
     Party,
     SeedRng,
-    HelpMenu
+    HelpMenu,
 }
 
 impl MenuOptionValue for XyView {
@@ -36,7 +36,7 @@ impl MenuOptionValue for XyView {
             Self::Radar => "Radar",
             Self::Party => "Party",
             Self::SeedRng => "Seed RNG",
-            Self::HelpMenu => "Help"
+            Self::HelpMenu => "Help",
         }
     }
 }
@@ -48,7 +48,7 @@ struct PersistedState {
     main_menu: Menu<7, XyView>,
     party_menu: SubMenu<1, 6>,
     wild_menu: SubMenu<1, 5>,
-    help_menu: HelpMenu
+    help_menu: HelpMenu,
 }
 
 unsafe fn get_state() -> &'static mut PersistedState {
@@ -66,7 +66,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
             MenuOption::new(XyView::Radar),
             MenuOption::new(XyView::Party),
             MenuOption::new(XyView::SeedRng),
-            MenuOption::new(XyView::HelpMenu)
+            MenuOption::new(XyView::HelpMenu),
         ]),
     });
     Lazy::force_mut(&mut STATE)

@@ -1,7 +1,7 @@
 use super::{
     draw::{
         draw_daycare, draw_dex_nav, draw_header, draw_mirage_spot, draw_pkx, draw_rng,
-        draw_seed_rng, PkxType
+        draw_seed_rng, PkxType,
     },
     reader::Gen6Reader,
     rng::Gen6Rng,
@@ -9,9 +9,9 @@ use super::{
 use crate::{
     pnp,
     utils::{
+        help_menu::HelpMenu,
         menu::{Menu, MenuOption, MenuOptionValue},
         sub_menu::SubMenu,
-        help_menu::HelpMenu,
         ShowView,
     },
 };
@@ -28,7 +28,7 @@ enum OrasView {
     Party,
     MirageSpot,
     SeedRng,
-    HelpMenu
+    HelpMenu,
 }
 
 impl MenuOptionValue for OrasView {
@@ -43,7 +43,7 @@ impl MenuOptionValue for OrasView {
             Self::Party => "Party",
             Self::MirageSpot => "Mirage Spot",
             Self::SeedRng => "Seed RNG",
-            Self::HelpMenu => "Help"
+            Self::HelpMenu => "Help",
         }
     }
 }
@@ -55,7 +55,7 @@ struct PersistedState {
     main_menu: Menu<9, OrasView>,
     party_menu: SubMenu<1, 6>,
     wild_menu: SubMenu<1, 5>,
-    help_menu: HelpMenu
+    help_menu: HelpMenu,
 }
 
 unsafe fn get_state() -> &'static mut PersistedState {
@@ -75,7 +75,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
             MenuOption::new(OrasView::Party),
             MenuOption::new(OrasView::MirageSpot),
             MenuOption::new(OrasView::SeedRng),
-            MenuOption::new(OrasView::HelpMenu)
+            MenuOption::new(OrasView::HelpMenu),
         ]),
     });
     Lazy::force_mut(&mut STATE)

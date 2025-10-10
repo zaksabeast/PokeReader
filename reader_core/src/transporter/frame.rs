@@ -6,9 +6,9 @@ use super::{
 use crate::{
     pnp,
     utils::{
+        help_menu::HelpMenu,
         menu::{Menu, MenuOption, MenuOptionValue},
         sub_menu::SubMenu,
-        help_menu::HelpMenu,
         ShowView,
     },
 };
@@ -19,7 +19,7 @@ enum TransporterView {
     MainMenu,
     Pokemon,
     Rng,
-    HelpMenu
+    HelpMenu,
 }
 
 impl MenuOptionValue for TransporterView {
@@ -52,7 +52,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
         main_menu: Menu::new([
             MenuOption::new(TransporterView::Rng),
             MenuOption::new(TransporterView::Pokemon),
-            MenuOption::new(TransporterView::HelpMenu)
+            MenuOption::new(TransporterView::HelpMenu),
         ]),
     });
     Lazy::force_mut(&mut STATE)

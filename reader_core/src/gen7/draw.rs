@@ -5,7 +5,9 @@ use crate::{
     utils::{format_egg_parent, is_daycare_masuda_method},
 };
 
-pub use crate::draw::{draw_header, draw_pkx, draw_pkx_brief, print_pp, get_pp, PkxType, GREEN, RED, WHITE};
+pub use crate::draw::{
+    draw_header, draw_pkx, draw_pkx_brief, get_pp, print_pp, PkxType, GREEN, RED, WHITE,
+};
 
 pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt>) {
     let sfmt_state = rng.current_state();
@@ -37,12 +39,14 @@ pub fn draw_sos(reader: &Gen7Reader, slot: u32, correction: u32) {
         pnp::println!(color = GREEN, "Orb Active")
     } else {
         pnp::println!(color = RED, "Orb Not Active");
-
     }
     pnp::println!("Caller Slot: {}", slot);
     print_pp(get_pp(&reader.sos_caller_pkm(slot)));
     pnp::println!("");
-    pnp::println!("Ally Data (Slot {}):", reader.ally_slot(slot, correction) + 1);
+    pnp::println!(
+        "Ally Data (Slot {}):",
+        reader.ally_slot(slot, correction) + 1
+    );
     draw_pkx_brief(&reader.sos_ally_pkm(slot, correction));
 }
 
@@ -54,7 +58,11 @@ pub fn draw_daycare(reader: &Gen7Reader) {
     let has_shiny_charm = reader.has_shiny_charm();
     let is_masuda_method = is_daycare_masuda_method(&parent1, &parent2);
 
-    pnp::println!(color= if is_egg_ready {GREEN} else {WHITE}, "Egg Ready: {}", is_egg_ready);
+    pnp::println!(
+        color = if is_egg_ready { GREEN } else { WHITE },
+        "Egg Ready: {}",
+        is_egg_ready
+    );
     pnp::println!("{}", format_egg_parent(1, &parent1));
     pnp::println!("{}", format_egg_parent(2, &parent2));
     pnp::println!("");
@@ -63,6 +71,14 @@ pub fn draw_daycare(reader: &Gen7Reader) {
     pnp::println!("Egg[1]: {:08X}", egg_seed[1]);
     pnp::println!("Egg[0]: {:08X}", egg_seed[0]);
     pnp::println!("");
-    pnp::println!(color= if has_shiny_charm {GREEN} else {WHITE}, "Shiny Charm: {}", has_shiny_charm);
-    pnp::println!(color= if is_masuda_method {GREEN} else {WHITE}, "Masuda Method: {}", is_masuda_method);
+    pnp::println!(
+        color = if has_shiny_charm { GREEN } else { WHITE },
+        "Shiny Charm: {}",
+        has_shiny_charm
+    );
+    pnp::println!(
+        color = if is_masuda_method { GREEN } else { WHITE },
+        "Masuda Method: {}",
+        is_masuda_method
+    );
 }

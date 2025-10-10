@@ -1,4 +1,4 @@
-use super::reader::Gen7Reader;
+use super::{lookup_call_rate, reader::Gen7Reader};
 use crate::{
     pnp,
     rng::{RngWrapper, Sfmt},
@@ -32,13 +32,24 @@ pub fn draw_citra_info(reader: &Gen7Reader) {
 
 pub fn draw_sos(reader: &Gen7Reader, slot: u32, correction: u32) {
     pnp::println!("SOS Seed: {:08X}", reader.sos_seed());
+
+    let sos_index = reader.sos_index();
+    pnp::println!("SOS Index: {}", sos_index);
     pnp::println!("SOS Chain Length: {}", reader.sos_chain());
     if reader.orb_active() {
         pnp::println!(color = GREEN, "Orb Active")
     } else {
         pnp::println!(color = RED, "Orb Not Active");
     }
+    pnp::println!("");
     pnp::println!("Caller Slot: {}", slot);
+    let species = &reader.sos_caller_pkm(slot);
+    let call_rate = lookup_call_rate(species, reader.is_usum());
+    pnp::println!(
+        color = if call_rate == 0 { RED } else { WHITE },
+        "Call Rate: {}",
+        call_rate
+    );
     print_pp(get_pp(&reader.sos_caller_pkm(slot)));
     pnp::println!("");
     pnp::println!("Ally Data (Slot {}):", reader.ally_slot(slot, correction) + 1);

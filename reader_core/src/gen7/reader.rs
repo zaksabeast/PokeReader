@@ -3,19 +3,21 @@ use crate::pnp;
 use core::num::{NonZeroU8, NonZeroU32};
 use pkm_rs::{Pk7, PokeCrypto};
 
-struct Gen7Addresses {
+pub struct Gen7Addresses {
     initial_seed: u32,
     sfmt_state_index: u32,
     sfmt_state: u32,
+    _sos_base_addr: u32,
+    _sos_sfmt_state: u32,
     party: u32,
     wild: u32,
     sos: u32,
-    orb_active: u32,
+    sos_index: u32,
     sos_chain_length: u32,
-    // To be used in the future vvv
-    _sos_index: u32,
-    _ally_id: u32,
     _prev_call_succeed: u32,
+    orb_active: u32,
+    // To be used in the future vvv
+    _ally_id: u32,
     //
     pelago: u32,
     egg_ready: u32,
@@ -35,14 +37,16 @@ const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     initial_seed: 0x325a3878,
     sfmt_state_index: 0x33196548,
     sfmt_state: 0x33195b88,
+    _sos_base_addr: 0x30038C44,
+    _sos_sfmt_state: 0x30038C54,
     party: 0x34195e10,
     wild: 0x3002f7b8,
     sos: 0x3002f7b8,
-    _sos_index: 0x30039614,
-    orb_active: 0x3003961c,
+    sos_index: 0x30039614,
     sos_chain_length: 0x3003960d,
-    _ally_id: 0x3003961e,
     _prev_call_succeed: 0x3003961f,
+    orb_active: 0x3003961c,
+    _ally_id: 0x3003961e,
     pelago: 0x331110ca,
     egg_ready: 0x3313edd8,
     egg: 0x3313eddc,
@@ -61,14 +65,16 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     initial_seed: 0x32663bf0,
     sfmt_state_index: 0x330d3f98,
     sfmt_state: 0x330d35d8,
+    _sos_base_addr: 0x30038E20,
+    _sos_sfmt_state: 0x30038E30,
     party: 0x33f7fa44,
     wild: 0x3002f9a0,
     sos: 0x3002f9a0,
-    _sos_index: 0x300397F0,
-    orb_active: 0x300397f8,
+    sos_index: 0x300397F0,
     sos_chain_length: 0x300397f9,
-    _ally_id: 0x300397fA,
     _prev_call_succeed: 0x300397fb,
+    orb_active: 0x300397f8,
+    _ally_id: 0x300397fA,
     pelago: 0x3304d16a,
     egg_ready: 0x3307b1e8,
     egg: 0x3307b1ec,
@@ -101,6 +107,10 @@ impl Gen7Reader {
             is_usum: true,
             addrs: &USUM_ADDRESSES,
         }
+    }
+
+    pub fn is_usum(&self) -> bool {
+        self.is_usum
     }
 
     pub fn g7tid(&self) -> u32 {
@@ -151,11 +161,29 @@ impl Gen7Reader {
         hook::sos_seed()
     }
 
+    pub fn sos_index(&self) -> u16 {
+        let index = pnp::read(self.addrs.sos_index);
+        if index != 624 { index } else { 0 }
+    }
+
+    // Unused (not displayed) for now but proven to work
+    pub fn _sos_state(&self) -> u32 {
+        pnp::read(self.addrs._sos_sfmt_state + (self.sos_index() as u32 * 4))
+    }
+
+    /* Note: Not very useful...
+     * Value does not update until after last
+     * input, which makes it rather misleading. */
+    pub fn _sos_prevcall(&self) -> bool {
+        pnp::read_bool(self.addrs._prev_call_succeed)
+    }
+
     pub fn sos_chain(&self) -> u8 {
         pnp::read(self.addrs.sos_chain_length)
     }
+
     pub fn orb_active(&self) -> bool {
-        ((pnp::read::<u8>(self.addrs.orb_active) & 0x1) > 0) as bool
+        pnp::read_bool(self.addrs.orb_active)
     }
     pub fn ally_slot(&self, caller_slot: u32, correction: u32) -> u32 {
         if self.sos_chain() == 0 {
@@ -176,7 +204,7 @@ impl Gen7Reader {
     }
 
     fn egg_parent(&self, is_present: u32, pkm: u32) -> Option<Pk7> {
-        let is_parent_present = pnp::read::<u8>(is_present) != 0;
+        let is_parent_present = pnp::read_bool(is_present);
 
         if !is_parent_present {
             return None;
@@ -215,7 +243,7 @@ impl Gen7Reader {
     }
 
     pub fn is_egg_ready(&self) -> bool {
-        pnp::read::<u8>(self.addrs.egg_ready) != 0
+        pnp::read_bool(self.addrs.egg_ready)
     }
 
     fn has_item(&self, offset: u32, item_id: u32, count: u32) -> bool {

@@ -48,6 +48,7 @@ impl MenuOptionValue for Gen7View {
 
 struct PersistedState {
     sfmt: RngWrapper<Sfmt64>,
+    sos_sfmt: RngWrapper<Sfmt32>,
     show_view: ShowView,
     view: Gen7View,
     main_menu: Menu<9, Gen7View>,
@@ -61,6 +62,7 @@ struct PersistedState {
 unsafe fn get_state() -> &'static mut PersistedState {
     static mut STATE: Lazy<PersistedState> = Lazy::new(|| PersistedState {
         sfmt: RngWrapper::default(),
+        sos_sfmt: RngWrapper::default(),
         show_view: ShowView::default(),
         view: Gen7View::MainMenu,
         party_menu: SubMenu::default(),
@@ -102,12 +104,17 @@ fn run_frame(reader: Gen7Reader) {
     let init_seed: u32 = reader.init_seed();
     let sfmt_state: u64 = reader.sfmt_state();
 
+    let sos_seed: u32 = reader.sos_seed();
+    let sos_state: u32 = reader.sos_state();
+
     // This is safe as long as this is guaranteed to run single threaded.
     // A lock hinders performance too much on a 3ds.
     let state = unsafe { get_state() };
 
     state.sfmt.reinit_if_needed(init_seed);
     state.sfmt.update_advances(sfmt_state);
+    state.sos_sfmt.reinit_if_needed(sos_seed);
+    state.sos_sfmt.update_advances(sos_state);
 
     if !state.show_view.check() {
         return;
@@ -133,7 +140,7 @@ fn run_frame(reader: Gen7Reader) {
                 reader.ally_slot(prev_caller_slot as u32, prev_correction_value) as usize + 1,
             );
             let correction_value = state.sos_menu.captured_value();
-            draw_sos(&reader, caller_slot as u32, correction_value);
+            draw_sos(&reader, &state.sos_sfmt, caller_slot as u32, correction_value);
         }
         Gen7View::Box => draw_pkx(&reader.box_pkm(), PkxType::Tame),
         Gen7View::Citra => draw_citra_info(&reader),

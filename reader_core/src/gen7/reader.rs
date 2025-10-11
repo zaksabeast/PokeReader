@@ -3,12 +3,12 @@ use crate::pnp;
 use core::num::{NonZeroU8, NonZeroU32};
 use pkm_rs::{Pk7, PokeCrypto};
 
-pub struct Gen7Addresses {
+struct Gen7Addresses {
     initial_seed: u32,
     sfmt_state_index: u32,
     sfmt_state: u32,
     _sos_base_addr: u32,
-    _sos_sfmt_state: u32,
+    sos_sfmt_state: u32,
     party: u32,
     wild: u32,
     sos: u32,
@@ -38,7 +38,7 @@ const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     sfmt_state_index: 0x33196548,
     sfmt_state: 0x33195b88,
     _sos_base_addr: 0x30038C44,
-    _sos_sfmt_state: 0x30038C54,
+    sos_sfmt_state: 0x30038C54,
     party: 0x34195e10,
     wild: 0x3002f7b8,
     sos: 0x3002f7b8,
@@ -66,7 +66,7 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     sfmt_state_index: 0x330d3f98,
     sfmt_state: 0x330d35d8,
     _sos_base_addr: 0x30038E20,
-    _sos_sfmt_state: 0x30038E30,
+    sos_sfmt_state: 0x30038E30,
     party: 0x33f7fa44,
     wild: 0x3002f9a0,
     sos: 0x3002f9a0,
@@ -140,12 +140,12 @@ impl Gen7Reader {
     }
 
     fn sfmt_state_index(&self) -> u32 {
-        pnp::read(self.addrs.sfmt_state_index)
+        let index = pnp::read(self.addrs.sfmt_state_index);
+        if index != 624 { index } else { 0 }
     }
 
     pub fn sfmt_state(&self) -> u64 {
-        let index = self.sfmt_state_index();
-        pnp::read(self.addrs.sfmt_state + if index != 624 { index * 4 } else { 0 })
+        pnp::read(self.addrs.sfmt_state + self.sfmt_state_index() * 4)
     }
 
     pub fn egg_seed(&self) -> [u32; 4] {
@@ -166,9 +166,8 @@ impl Gen7Reader {
         if index != 624 { index } else { 0 }
     }
 
-    // Unused (not displayed) for now but proven to work
-    pub fn _sos_state(&self) -> u32 {
-        pnp::read(self.addrs._sos_sfmt_state + (self.sos_index() as u32 * 4))
+    pub fn sos_state(&self) -> u32 {
+        pnp::read(self.addrs.sos_sfmt_state + (self.sos_index() as u32 * 4))
     }
 
     /* Note: Not very useful...

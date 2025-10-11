@@ -30,11 +30,12 @@ pub fn draw_citra_info(reader: &Gen7Reader) {
     pnp::println!("Time offset: {}", main_rng_seed_context.time_offset_ms);
 }
 
-pub fn draw_sos(reader: &Gen7Reader, slot: u32, correction: u32) {
-    pnp::println!("SOS Seed: {:08X}", reader.sos_seed());
+pub fn draw_sos(reader: &Gen7Reader, rng: &RngWrapper<Sfmt32>, slot: u32, correction: u32) {
+    pnp::println!("SOS Seed: {:08X}", rng.init_seed());
 
     let sos_index = reader.sos_index();
     pnp::println!("SOS Index: {}", sos_index);
+    pnp::println!("SOS Index: {}", rng.advances());
     pnp::println!("SOS Chain Length: {}", reader.sos_chain());
     if reader.orb_active() {
         pnp::println!(color = GREEN, "Orb Active")

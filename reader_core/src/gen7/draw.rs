@@ -1,13 +1,13 @@
 use super::{lookup_call_rate, reader::Gen7Reader};
 use crate::{
     pnp,
-    rng::{RngWrapper, Sfmt},
+    rng::{RngWrapper, Sfmt32, Sfmt64},
     utils::{format_egg_parent, is_daycare_masuda_method},
 };
 
 pub use crate::draw::{GREEN, PkxType, RED, WHITE, draw_header, draw_pkx, draw_pkx_brief, get_pp, print_pp};
 
-pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt>) {
+pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt64>) {
     let sfmt_state = rng.current_state();
 
     pnp::println!("Seed:     {:08X}", rng.init_seed());

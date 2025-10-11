@@ -4,7 +4,7 @@ use super::{
 };
 use crate::{
     pnp,
-    rng::{RngWrapper, Sfmt},
+    rng::{RngWrapper, Sfmt32, Sfmt64},
     utils::{
         ShowView,
         help_menu::HelpMenu,
@@ -47,7 +47,7 @@ impl MenuOptionValue for Gen7View {
 }
 
 struct PersistedState {
-    sfmt: RngWrapper<Sfmt>,
+    sfmt: RngWrapper<Sfmt64>,
     show_view: ShowView,
     view: Gen7View,
     main_menu: Menu<9, Gen7View>,

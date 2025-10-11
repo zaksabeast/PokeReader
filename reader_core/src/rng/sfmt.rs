@@ -1,12 +1,12 @@
 use crate::rng::Rng;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct Sfmt {
+pub struct Sfmt32 {
     index: usize,
     sfmt: [u32; 624],
 }
 
-impl Sfmt {
+impl Sfmt32 {
     pub fn new(seed: u32) -> Self {
         let mut rng = Self {
             sfmt: [0; 624],
@@ -36,20 +36,22 @@ impl Sfmt {
         self.sfmt[0] ^= !inner & 1;
     }
 
-    fn get_current_state(&self) -> u64 {
+    fn get_current_state(&self) -> u32 {
         let index = if self.index != 624 { self.index } else { 0 };
-        let low = self.sfmt[index] as u64;
-        let high = self.sfmt[index + 1] as u64;
-
-        low | (high << 32)
+        self.sfmt[index]
     }
 
-    pub fn next(&mut self) -> u64 {
+    fn get_next_state(&self) -> u32 {
+        let index = if self.index != 624 { self.index } else { 0 };
+        self.sfmt[index + 1]
+    }
+
+    pub fn next(&mut self) -> u32 {
         if self.index == 624 {
             self.shuffle();
         }
 
-        self.index += 2;
+        self.index += 1;
 
         self.get_current_state()
     }
@@ -95,7 +97,7 @@ impl Sfmt {
     }
 }
 
-impl Default for Sfmt {
+impl Default for Sfmt32 {
     fn default() -> Self {
         Self {
             index: 0,
@@ -104,12 +106,63 @@ impl Default for Sfmt {
     }
 }
 
-impl Rng for Sfmt {
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Sfmt64 {
+    sfmt: Sfmt32,
+}
+
+impl Sfmt64 {
+    pub fn new(seed: u32) -> Self {
+        Self {
+            sfmt: Sfmt32::new(seed),
+        }
+    }
+
+    fn get_current_state(&self) -> u64 {
+        let lo = self.sfmt.get_current_state() as u64;
+        let hi = self.sfmt.get_next_state() as u64;
+        lo | (hi << 32)
+    }
+
+    pub fn next(&mut self) -> u64 {
+        self.sfmt.next();
+        let lo = self.sfmt.next() as u64;
+        let hi = self.sfmt.get_next_state() as u64;
+        lo | (hi << 32)
+    }
+}
+
+impl Default for Sfmt64 {
+    fn default() -> Self {
+        Self {
+            sfmt: Sfmt32::default(),
+        }
+    }
+}
+
+impl Rng for Sfmt32 {
+    type Seed = u32;
+    type CurrentState = u32;
+
+    fn new(seed: Self::Seed) -> Self {
+        Sfmt32::new(seed)
+    }
+
+    fn next_state(&mut self) -> Self::CurrentState {
+        self.next()
+    }
+
+    fn current_state(&mut self) -> Self::CurrentState {
+        self.get_current_state()
+    }
+}
+
+impl Rng for Sfmt64 {
     type Seed = u32;
     type CurrentState = u64;
 
     fn new(seed: Self::Seed) -> Self {
-        Sfmt::new(seed)
+        Sfmt64::new(seed)
     }
 
     fn next_state(&mut self) -> Self::CurrentState {

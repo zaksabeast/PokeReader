@@ -181,20 +181,11 @@ impl Gen7Reader {
     pub fn sos_chain(&self) -> u8 {
         pnp::read(self.addrs.sos_chain_length)
     }
-    pub fn orb_active(&self) -> bool {
-        ((pnp::read::<u8>(self.addrs.orb_active) & 0x1) > 0) as bool
-    }
-    pub fn ally_slot(&self, caller_slot: u32, correction: u32) -> u32 {
-        if self.sos_chain() == 0 {
-            0
-        } else {
-            ((caller_slot - 1) + ((self.sos_chain() as i32 - (correction as i32 + 1)) % 3) as u32 + 1) % 4
-        }
-    }
 
     pub fn orb_active(&self) -> bool {
         pnp::read_bool(self.addrs.orb_active)
     }
+
     pub fn ally_slot(&self, caller_slot: u32, correction: u32) -> u32 {
         if self.sos_chain() == 0 {
             0

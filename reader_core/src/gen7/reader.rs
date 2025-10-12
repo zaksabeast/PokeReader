@@ -1,6 +1,6 @@
 use super::{game_lib, hook};
 use crate::pnp;
-use core::num::{NonZeroU8, NonZeroU32};
+use core::num::{NonZeroU32, NonZeroU8};
 use pkm_rs::{Pk7, PokeCrypto};
 
 struct Gen7Addresses {
@@ -9,9 +9,9 @@ struct Gen7Addresses {
     sfmt_state: u32,
     party: u32,
     wild: u32,
-    sos: u32,
     orb_active: u32,
     sos_chain_length: u32,
+    sos_battle_table: Option<u32>,
     // To be used in the future vvv
     _sos_index: u32,
     _ally_id: u32,
@@ -37,7 +37,7 @@ const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     sfmt_state: 0x33195b88,
     party: 0x34195e10,
     wild: 0x3002f7b8,
-    sos: 0x3002f7b8,
+    sos_battle_table: None,
     _sos_index: 0x30039614,
     orb_active: 0x3003961c,
     sos_chain_length: 0x3003960d,
@@ -63,7 +63,7 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     sfmt_state: 0x330d35d8,
     party: 0x33f7fa44,
     wild: 0x3002f9a0,
-    sos: 0x3002f9a0,
+    sos_battle_table: Some(0x30000420),
     _sos_index: 0x300397F0,
     orb_active: 0x300397f8,
     sos_chain_length: 0x300397f9,
@@ -154,15 +154,21 @@ impl Gen7Reader {
     pub fn sos_chain(&self) -> u8 {
         pnp::read(self.addrs.sos_chain_length)
     }
+
     pub fn orb_active(&self) -> bool {
         ((pnp::read::<u8>(self.addrs.orb_active) & 0x1) > 0) as bool
     }
-    pub fn ally_slot(&self, caller_slot: u32, correction: u32) -> u32 {
-        if self.sos_chain() == 0 {
-            0
-        } else {
-            ((caller_slot - 1) + ((self.sos_chain() as i32 - (correction as i32 + 1)) % 3) as u32 + 1) % 4
-        }
+
+    pub fn sos_mon(&self, slot: u32) -> Option<Pk7> {
+        let table_offset = match slot {
+            0x0 => 0x4, // Left
+            0x1 => 0x0, // Right
+            _ => return None,
+        };
+        let battle_table = self.addrs.sos_battle_table?;
+        let pkx_container_ptr = pnp::read::<u32>(battle_table + table_offset);
+        let pkx_container = pnp::read::<u32>(pkx_container_ptr);
+        Some(self.read_pk7(pkx_container + 0x40))
     }
 
     fn read_pk7(&self, offset: u32) -> Pk7 {
@@ -205,13 +211,6 @@ impl Gen7Reader {
 
     pub fn pelago_pkm(&self, slot: u32) -> Pk7 {
         self.read_pk7((slot * 236) + self.addrs.pelago)
-    }
-
-    pub fn sos_caller_pkm(&self, caller_slot: u32) -> Pk7 {
-        self.read_pk7(((caller_slot - 1) * 484) + self.addrs.sos)
-    }
-    pub fn sos_ally_pkm(&self, caller_slot: u32, correction: u32) -> Pk7 {
-        self.read_pk7((self.ally_slot(caller_slot, correction) * 484) + self.addrs.sos)
     }
 
     pub fn is_egg_ready(&self) -> bool {

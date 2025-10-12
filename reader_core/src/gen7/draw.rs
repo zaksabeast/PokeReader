@@ -5,7 +5,7 @@ use crate::{
     utils::{format_egg_parent, is_daycare_masuda_method},
 };
 
-pub use crate::draw::{GREEN, PkxType, RED, WHITE, draw_header, draw_pkx, draw_pkx_brief, get_pp, print_pp};
+pub use crate::draw::{draw_header, draw_pkx, draw_pkx_brief, get_pp, print_pp, PkxType, GREEN, RED, WHITE};
 
 pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt>) {
     let sfmt_state = rng.current_state();
@@ -30,7 +30,7 @@ pub fn draw_citra_info(reader: &Gen7Reader) {
     pnp::println!("Time offset: {}", main_rng_seed_context.time_offset_ms);
 }
 
-pub fn draw_sos(reader: &Gen7Reader, slot: u32, correction: u32) {
+pub fn draw_sos(reader: &Gen7Reader, slot: u32) {
     pnp::println!("SOS Seed: {:08X}", reader.sos_seed());
     pnp::println!("SOS Chain Length: {}", reader.sos_chain());
     if reader.orb_active() {
@@ -38,11 +38,13 @@ pub fn draw_sos(reader: &Gen7Reader, slot: u32, correction: u32) {
     } else {
         pnp::println!(color = RED, "Orb Not Active");
     }
-    pnp::println!("Caller Slot: {}", slot);
-    print_pp(get_pp(&reader.sos_caller_pkm(slot)));
-    pnp::println!("");
-    pnp::println!("Ally Data (Slot {}):", reader.ally_slot(slot, correction) + 1);
-    draw_pkx_brief(&reader.sos_ally_pkm(slot, correction));
+    match reader.sos_mon(slot) {
+        Some(pkx) => {
+            draw_pkx_brief(&pkx);
+            print_pp(get_pp(&pkx));
+        }
+        None => pnp::println!(color = RED, "Invalid slot"),
+    }
 }
 
 pub fn draw_daycare(reader: &Gen7Reader) {

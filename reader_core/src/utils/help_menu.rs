@@ -40,13 +40,6 @@ fn print_view(help_view: &HelpView) {
 }
 
 impl HelpMenu {
-    pub fn new(specific_help: fn() -> ()) -> Self {
-        Self {
-            specific_help: specific_help,
-            sub_menu: SubMenu::default(),
-        }
-    }
-
     pub fn update_and_draw(&mut self, is_locked: bool) {
         let help_view = view(self.sub_menu.update_headless(is_locked));
         print_view(&help_view);

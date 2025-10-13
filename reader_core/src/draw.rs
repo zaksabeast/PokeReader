@@ -170,7 +170,10 @@ pub fn shiny_type(pkx: &impl Pkx) -> &'static str {
     }
 }
 
-pub fn draw_pkx_brief(pkx: &impl Pkx) {
+pub fn draw_pkx_brief(pkx: &impl Pkx) -> bool {
+    if !pkx.is_valid() {
+        return draw_invalid_pkx();
+    }
     let species = pkx.species_t().to_string();
     let ability = pkx.ability_t().to_string();
 
@@ -199,9 +202,14 @@ pub fn draw_pkx_brief(pkx: &impl Pkx) {
         iv_spd,
         iv_spe
     );
+
+    return false;
 }
 
-pub fn draw_pkx(pkx: &impl Pkx, pkx_type: PkxType) {
+pub fn draw_pkx(pkx: &impl Pkx, pkx_type: PkxType) -> bool {
+    if !pkx.is_valid() {
+        return draw_invalid_pkx();
+    }
     let species = pkx.species_t().to_string();
     let ability = pkx.ability_t().to_string();
 
@@ -244,6 +252,13 @@ pub fn draw_pkx(pkx: &impl Pkx, pkx_type: PkxType) {
     print_stat!(iv_spa, ev_spa, SpA, &nature_stat, "SpA ");
     print_stat!(iv_spd, ev_spd, SpD, &nature_stat, "SpD ");
     print_stat!(iv_spe, ev_spe, Spe, &nature_stat, "Spe ");
+
+    return false;
+}
+
+pub fn draw_invalid_pkx() -> bool {
+    pnp::println!("No Data.");
+    return true;
 }
 
 pub fn draw_controls_help() {

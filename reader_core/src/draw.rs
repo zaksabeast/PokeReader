@@ -174,7 +174,6 @@ pub fn draw_pkx_brief(pkx: &impl Pkx) -> bool {
     if !pkx.is_valid() {
         return draw_invalid_pkx();
     }
-    let species = pkx.species_t().to_string();
     let ability = pkx.ability_t().to_string();
 
     let shiny_type = shiny_type(pkx);
@@ -188,11 +187,10 @@ pub fn draw_pkx_brief(pkx: &impl Pkx) -> bool {
 
     let nature = pkx.nature_t();
 
-    pnp::println!("{} {}", nature, species);
     pnp::println!("Ability: ({}) {}", pkx.ability_number_t(), ability);
     pnp::println!("PID: {:08X}", pkx.pid());
     pnp::println!(color = shiny_color, "PSV: {:04}, {}", pkx.psv(), shiny_type);
-    pnp::println!("HPower: {}", pkx.hidden_power_t());
+    pnp::println!("Nature: {}", nature);
     pnp::println!(
         "IVs: {}/{}/{}/{}/{}/{}",
         iv_hp,

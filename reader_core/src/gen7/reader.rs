@@ -3,6 +3,13 @@ use crate::pnp;
 use core::num::{NonZeroU8, NonZeroU32};
 use pkm_rs::{Pk7, PokeCrypto};
 
+pub const SM_SOS_BASE_ADDR: u32 = 0x30038c34;
+pub const USUM_SOS_BASE_ADDR: u32 = 0x30038e20;
+pub const SM_SOS_SFMT_ADDR: u32 = SM_SOS_BASE_ADDR + 0x10;
+pub const USUM_SOS_SFMT_ADDR: u32 = USUM_SOS_BASE_ADDR + 0x10;
+pub const PKM_CONT_SIZE: u32 = 0x330;
+pub const PK7_DATA_SIZE: u32 = 0x1E4;
+
 struct Gen7Addresses {
     initial_seed: u32,
     sfmt_state_index: u32,
@@ -12,13 +19,13 @@ struct Gen7Addresses {
     party: u32,
     wild: u32,
     sos_index: u32,
-    sos_chain_length: u32,
+    sos_chain_len: u32,
     sos_battle_table: u32,
     pkm_container_base: u32,
-    _prev_call_succeed: u32,
+    _sos_call_succeed: u32,
     orb_active: u32,
     // To be used in the future vvv
-    _ally_id: u32,
+    _sos_ally_id: u32,
     //
     pelago: u32,
     egg_ready: u32,
@@ -32,24 +39,23 @@ struct Gen7Addresses {
     box_cursor: u32,
     npc_list: u32,
     npc_head_blinking_offset: u32,
-    pk7_data_size: u32,
 }
 
-pub const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
+const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     initial_seed: 0x325a3878,
     sfmt_state_index: 0x33196548,
     sfmt_state: 0x33195b88,
-    _sos_base_addr: 0x30038C44,
-    sos_sfmt_state: 0x30038C54,
+    _sos_base_addr: 0x30038C34,
+    sos_sfmt_state: SM_SOS_SFMT_ADDR,
     sos_battle_table: 0x30000420,
     pkm_container_base: 0x30004DA8,
     party: 0x34195e10,
     wild: 0x3002f7b8,
-    sos_index: 0x30039614,
-    sos_chain_length: 0x3003960d,
-    _prev_call_succeed: 0x3003961f,
-    orb_active: 0x3003961c,
-    _ally_id: 0x3003961e,
+    sos_index: SM_SOS_BASE_ADDR + 0x9d0,
+    orb_active: SM_SOS_BASE_ADDR + 0x9d8,
+    sos_chain_len: SM_SOS_BASE_ADDR + 0x9d9,
+    _sos_ally_id: SM_SOS_BASE_ADDR + 0x9da,
+    _sos_call_succeed: SM_SOS_BASE_ADDR + 0x9db,
     pelago: 0x331110ca,
     egg_ready: 0x3313edd8,
     egg: 0x3313eddc,
@@ -62,24 +68,23 @@ pub const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     box_cursor: 0x30000298,
     npc_list: 0x341977c4,
     npc_head_blinking_offset: 0x2f4,
-    pk7_data_size: 0x330,
 };
 
-pub const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
+const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     initial_seed: 0x32663bf0,
     sfmt_state_index: 0x330d3f98,
     sfmt_state: 0x330d35d8,
     _sos_base_addr: 0x30038E20,
-    sos_sfmt_state: 0x30038E30,
+    sos_sfmt_state: USUM_SOS_SFMT_ADDR,
     sos_battle_table: 0x30000420,
     pkm_container_base: 0x30004DA8,
     party: 0x33f7fa44,
     wild: 0x3002f9a0,
-    sos_index: 0x300397F0,
-    sos_chain_length: 0x300397f9,
-    _prev_call_succeed: 0x300397fb,
-    orb_active: 0x300397f8,
-    _ally_id: 0x300397fA,
+    sos_index: USUM_SOS_BASE_ADDR + 0x9d0,
+    orb_active: USUM_SOS_BASE_ADDR + 0x9d8,
+    sos_chain_len: USUM_SOS_BASE_ADDR + 0x9d9,
+    _sos_ally_id: USUM_SOS_BASE_ADDR + 0x9da,
+    _sos_call_succeed: USUM_SOS_BASE_ADDR + 0x9db,
     pelago: 0x3304d16a,
     egg_ready: 0x3307b1e8,
     egg: 0x3307b1ec,
@@ -92,7 +97,6 @@ pub const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     box_cursor: 0x30000298,
     npc_list: 0x33f81438,
     npc_head_blinking_offset: 0x2fc,
-    pk7_data_size: 0x330,
 };
 
 pub struct Gen7Reader {
@@ -268,11 +272,11 @@ impl Gen7Reader {
      * Value does not update until after last
      * input, which makes it rather misleading. */
     pub fn _sos_prevcall(&self) -> bool {
-        pnp::read_bool(self.addrs._prev_call_succeed)
+        pnp::read_bool(self.addrs._sos_call_succeed)
     }
 
     pub fn sos_chain(&self) -> u8 {
-        pnp::read(self.addrs.sos_chain_length)
+        pnp::read(self.addrs.sos_chain_len)
     }
 
     pub fn orb_active(&self) -> bool {
@@ -285,13 +289,11 @@ impl Gen7Reader {
                 let battle_table = self.addrs.sos_battle_table + offset;
                 let pkx_container_ptr = pnp::read::<u32>(battle_table).clamp(
                     self.addrs.pkm_container_base,
-                    self.addrs.pkm_container_base + (self.addrs.pk7_data_size * 6),
+                    self.addrs.pkm_container_base + (PKM_CONT_SIZE * 6),
                 );
                 Gen7PkmSlot::new(
-                    (((pnp::read::<u32>(pkx_container_ptr) + 0x40 - self.addrs.wild)
-                        / self.addrs.pk7_data_size)
-                        + 1)
-                    .clamp(1, 6) as usize,
+                    (((pnp::read::<u32>(pkx_container_ptr) + 0x40 - self.addrs.wild) / PK7_DATA_SIZE) + 1)
+                        .clamp(1, 6) as usize,
                 )
             }
             None => Gen7PkmSlot::Invalid,

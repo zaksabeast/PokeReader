@@ -14,6 +14,7 @@ struct Gen7Addresses {
     sos_index: u32,
     sos_chain_length: u32,
     sos_battle_table: u32,
+    pkm_container_base: u32,
     _prev_call_succeed: u32,
     orb_active: u32,
     // To be used in the future vvv
@@ -31,6 +32,7 @@ struct Gen7Addresses {
     box_cursor: u32,
     npc_list: u32,
     npc_head_blinking_offset: u32,
+    pk7_data_size: u32,
 }
 
 const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
@@ -40,6 +42,7 @@ const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     _sos_base_addr: 0x30038C44,
     sos_sfmt_state: 0x30038C54,
     sos_battle_table: 0x30000420,
+    pkm_container_base: 0x30004DA8,
     party: 0x34195e10,
     wild: 0x3002f7b8,
     sos_index: 0x30039614,
@@ -59,6 +62,7 @@ const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     box_cursor: 0x30000298,
     npc_list: 0x341977c4,
     npc_head_blinking_offset: 0x2f4,
+    pk7_data_size: 0x330,
 };
 
 const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
@@ -68,6 +72,7 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     _sos_base_addr: 0x30038E20,
     sos_sfmt_state: 0x30038E30,
     sos_battle_table: 0x30000420,
+    pkm_container_base: 0x30004DA8,
     party: 0x33f7fa44,
     wild: 0x3002f9a0,
     sos_index: 0x300397F0,
@@ -87,6 +92,7 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     box_cursor: 0x30000298,
     npc_list: 0x33f81438,
     npc_head_blinking_offset: 0x2fc,
+    pk7_data_size: 0x330,
 };
 
 pub struct Gen7Reader {
@@ -141,6 +147,7 @@ pub enum Gen7PkmSlot {
     C,
     D,
     E,
+    F,
     Invalid,
 }
 
@@ -152,6 +159,7 @@ impl Gen7PkmSlot {
             3 => Gen7PkmSlot::C,
             4 => Gen7PkmSlot::D,
             5 => Gen7PkmSlot::E,
+            6 => Gen7PkmSlot::F,
             _ => Gen7PkmSlot::Invalid,
         }
     }
@@ -162,6 +170,7 @@ impl Gen7PkmSlot {
             Gen7PkmSlot::C => Some(0x3c8),
             Gen7PkmSlot::D => Some(0x5ac),
             Gen7PkmSlot::E => Some(0x790),
+            Gen7PkmSlot::F => Some(0x974),
             Gen7PkmSlot::Invalid => None,
         }
     }
@@ -172,6 +181,7 @@ impl Gen7PkmSlot {
             Gen7PkmSlot::C => "C",
             Gen7PkmSlot::D => "D",
             Gen7PkmSlot::E => "E",
+            Gen7PkmSlot::F => "F",
             Gen7PkmSlot::Invalid => "Invalid",
         }
     }
@@ -244,6 +254,7 @@ impl Gen7Reader {
         hook::sos_seed()
     }
 
+    // We still use this naive check to hint to the RNG wrapper when it can rest.
     pub fn sos_index(&self) -> u16 {
         let index = pnp::read(self.addrs.sos_index);
         if index != 624 { index } else { 0 }
@@ -272,11 +283,15 @@ impl Gen7Reader {
         match side.offset() {
             Some(offset) => {
                 let battle_table = self.addrs.sos_battle_table + offset;
-                let pkx_container_ptr =
-                    pnp::read::<u32>(battle_table).clamp(0x30004DA8, 0x30004DA8 + (0x330 * 6));
+                let pkx_container_ptr = pnp::read::<u32>(battle_table).clamp(
+                    self.addrs.pkm_container_base,
+                    self.addrs.pkm_container_base + (self.addrs.pk7_data_size * 6),
+                );
                 Gen7PkmSlot::new(
-                    (((pnp::read::<u32>(pkx_container_ptr) + 0x40 - self.addrs.wild) / 484) + 1).clamp(1, 6)
-                        as usize,
+                    (((pnp::read::<u32>(pkx_container_ptr) + 0x40 - self.addrs.wild)
+                        / self.addrs.pk7_data_size)
+                        + 1)
+                    .clamp(1, 6) as usize,
                 )
             }
             None => Gen7PkmSlot::Invalid,

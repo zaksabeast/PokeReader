@@ -1,5 +1,6 @@
 use crate::{pnp, utils};
 use chrono::NaiveDateTime;
+use super::reader::{SM_ADDRESSES, USUM_ADDRESSES};
 static mut MAIN_RNG_SEED_TICKS: u32 = 0;
 static mut MAIN_RNG_TIME_OFFSET_MS: u64 = 0;
 static mut GAME_START_DATE_TIME: NaiveDateTime = NaiveDateTime::MIN;
@@ -9,8 +10,14 @@ pub fn sos_seed() -> u32 {
     unsafe { SOS_SEED }
 }
 
-fn init_sfmt_hook(regs: &[u32], _stack_pointer: *mut u32) {
-    if regs[0] == 0x30038e30 {
+fn init_sm_sfmt_hook(regs: &[u32], _stack_pointer: *mut u32) {
+    if regs[0] == SM_ADDRESSES.sos_sfmt_state {
+        unsafe { SOS_SEED = regs[1] };
+    }
+}
+
+fn init_ussm_sfmt_hook(regs: &[u32], _stack_pointer: *mut u32) {
+    if regs[0] == USSM_ADDRESSES.sos_sfmt_state {
         unsafe { SOS_SEED = regs[1] };
     }
 }
@@ -62,7 +69,7 @@ pub fn init_um() {
 pub fn init_us() {
     utils::hook_game_branch! {
         game_name = us,
-        init_sfmt_hook = 0x361e60,
+        init_usum_sfmt_hook = 0x361e60,
         init_main_rng_hook = 0x3fcbbc,
     }
 }
@@ -70,7 +77,7 @@ pub fn init_us() {
 pub fn init_sm() {
     utils::hook_game_branch! {
         game_name = sm,
-        init_sfmt_hook = 0x359784,
+        init_sm_fmt_hook = 0x359784,
         init_main_rng_hook = 0x3eab60,
     }
 }

@@ -35,7 +35,7 @@ struct Gen7Addresses {
     pk7_data_size: u32,
 }
 
-const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
+pub const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     initial_seed: 0x325a3878,
     sfmt_state_index: 0x33196548,
     sfmt_state: 0x33195b88,
@@ -65,7 +65,7 @@ const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     pk7_data_size: 0x330,
 };
 
-const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
+pub const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     initial_seed: 0x32663bf0,
     sfmt_state_index: 0x330d3f98,
     sfmt_state: 0x330d35d8,

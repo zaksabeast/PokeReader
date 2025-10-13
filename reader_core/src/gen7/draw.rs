@@ -36,16 +36,21 @@ pub fn draw_citra_info(reader: &Gen7Reader) {
     pnp::println!("Time offset: {}", main_rng_seed_context.time_offset_ms);
 }
 
-pub fn draw_sos(reader: &Gen7Reader, rng: &mut RngWrapper<Sfmt32>, menu_val: usize) -> bool {
+pub fn draw_sos(
+    reader: &Gen7Reader,
+    main_rng: &mut RngWrapper<Sfmt64>,
+    sos_rng: &mut RngWrapper<Sfmt32>,
+    menu_val: usize,
+) -> bool {
     let sos_seed: u32 = reader.sos_seed();
     let sos_state: u32 = reader.sos_state();
     let sos_chain: u16 = reader.sos_chain() as u16;
     let sos_index: u16 = reader.sos_index();
 
-    rng.reinit_if_needed(sos_seed);
+    sos_rng.reinit_if_needed(sos_seed);
     if sos_seed > 0 {
         if sos_index | sos_chain > 0 {
-            rng.update_advances(sos_state);
+            sos_rng.update_advances(sos_state);
         }
     }
 
@@ -58,15 +63,17 @@ pub fn draw_sos(reader: &Gen7Reader, rng: &mut RngWrapper<Sfmt32>, menu_val: usi
         return draw_invalid_pkx();
     }
 
-    pnp::println!("SOS Seed: {:08X}", rng.init_seed());
-    pnp::println!("SOS Index: {}", rng.advances());
+    pnp::println!("SOS Seed: {:08X}", sos_rng.init_seed());
+    pnp::println!("SOS Index: {}", sos_rng.advances());
     pnp::println!("SOS Chain Length: {}", sos_chain);
 
     if reader.orb_active() {
-        pnp::println!(color = GREEN, "Orb Active")
+        pnp::println!(color = GREEN, "Orb Active");
     } else {
-        pnp::println!(color = RED, "Orb Not Active");
+        pnp::println!(color = RED, "Orb Not Active!");
     }
+
+    pnp::println!("RNG Frame: {}", main_rng.advances());
 
     pnp::println!("");
     if caller_pkm.is_valid() {

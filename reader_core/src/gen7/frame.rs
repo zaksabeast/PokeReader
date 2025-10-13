@@ -125,7 +125,7 @@ fn run_frame(reader: Gen7Reader) {
             } else {
                 state.sos_menu.update_headless(is_locked)
             };
-            if draw_sos(&reader, &mut state.sos_sfmt, caller_side) {
+            if draw_sos(&reader, &mut state.sfmt, &mut state.sos_sfmt, caller_side) {
                 state.sos_menu.reset(); // Default to right-side caller
             }
         }

@@ -43,8 +43,10 @@ pub fn draw_sos(reader: &Gen7Reader, rng: &mut RngWrapper<Sfmt32>, menu_val: usi
     let sos_index: u16 = reader.sos_index();
 
     rng.reinit_if_needed(sos_seed);
-    if sos_index | sos_chain > 0 {
-        rng.update_advances(sos_state);
+    if sos_seed > 0 {
+        if sos_index | sos_chain > 0 {
+            rng.update_advances(sos_state);
+        }
     }
 
     let caller_side = Gen7WildSide::new(menu_val);

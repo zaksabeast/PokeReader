@@ -11,9 +11,9 @@ struct Gen7Addresses {
     sos_sfmt_state: u32,
     party: u32,
     wild: u32,
-    sos: u32,
     sos_index: u32,
     sos_chain_length: u32,
+    sos_battle_table: u32,
     _prev_call_succeed: u32,
     orb_active: u32,
     // To be used in the future vvv
@@ -39,9 +39,9 @@ const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     sfmt_state: 0x33195b88,
     _sos_base_addr: 0x30038C44,
     sos_sfmt_state: 0x30038C54,
+    sos_battle_table: 0x30000420,
     party: 0x34195e10,
     wild: 0x3002f7b8,
-    sos: 0x3002f7b8,
     sos_index: 0x30039614,
     sos_chain_length: 0x3003960d,
     _prev_call_succeed: 0x3003961f,
@@ -67,9 +67,9 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     sfmt_state: 0x330d35d8,
     _sos_base_addr: 0x30038E20,
     sos_sfmt_state: 0x30038E30,
+    sos_battle_table: 0x30000420,
     party: 0x33f7fa44,
     wild: 0x3002f9a0,
-    sos: 0x3002f9a0,
     sos_index: 0x300397F0,
     sos_chain_length: 0x300397f9,
     _prev_call_succeed: 0x300397fb,
@@ -92,6 +92,89 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
 pub struct Gen7Reader {
     is_usum: bool,
     addrs: &'static Gen7Addresses,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Gen7WildSide {
+    Left,
+    Right,
+    Invalid,
+}
+
+impl Gen7WildSide {
+    pub fn new(value: usize) -> Self {
+        match value {
+            1 => Gen7WildSide::Right,
+            2 => Gen7WildSide::Left,
+            _ => Gen7WildSide::Invalid,
+        }
+    }
+    pub fn other(&self) -> Self {
+        match self {
+            Gen7WildSide::Left => Gen7WildSide::Right,
+            Gen7WildSide::Right => Gen7WildSide::Left,
+            Gen7WildSide::Invalid => Gen7WildSide::Invalid,
+        }
+    }
+
+    pub fn offset(&self) -> Option<u32> {
+        match self {
+            Gen7WildSide::Left => Some(0x4),
+            Gen7WildSide::Right => Some(0x0),
+            Gen7WildSide::Invalid => None,
+        }
+    }
+
+    pub fn label(&self) -> &'static str {
+        match self {
+            Gen7WildSide::Left => "Left",
+            Gen7WildSide::Right => "Right",
+            Gen7WildSide::Invalid => "Invalid",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Gen7PkmSlot {
+    A,
+    B,
+    C,
+    D,
+    E,
+    Invalid,
+}
+
+impl Gen7PkmSlot {
+    pub fn new(value: usize) -> Self {
+        match value {
+            1 => Gen7PkmSlot::A,
+            2 => Gen7PkmSlot::B,
+            3 => Gen7PkmSlot::C,
+            4 => Gen7PkmSlot::D,
+            5 => Gen7PkmSlot::E,
+            _ => Gen7PkmSlot::Invalid,
+        }
+    }
+    pub fn offset(&self) -> Option<u32> {
+        match self {
+            Gen7PkmSlot::A => Some(0x0),
+            Gen7PkmSlot::B => Some(0x1E4),
+            Gen7PkmSlot::C => Some(0x3c8),
+            Gen7PkmSlot::D => Some(0x5ac),
+            Gen7PkmSlot::E => Some(0x790),
+            Gen7PkmSlot::Invalid => None,
+        }
+    }
+    pub fn label(&self) -> &'static str {
+        match self {
+            Gen7PkmSlot::A => "A",
+            Gen7PkmSlot::B => "B",
+            Gen7PkmSlot::C => "C",
+            Gen7PkmSlot::D => "D",
+            Gen7PkmSlot::E => "E",
+            Gen7PkmSlot::Invalid => "Invalid",
+        }
+    }
 }
 
 impl Gen7Reader {
@@ -185,12 +268,30 @@ impl Gen7Reader {
         pnp::read_bool(self.addrs.orb_active)
     }
 
-    pub fn ally_slot(&self, caller_slot: u32, correction: u32) -> u32 {
-        if self.sos_chain() == 0 {
-            0
-        } else {
-            ((caller_slot - 1) + ((self.sos_chain() as i32 - (correction as i32 + 1)) % 3) as u32 + 1) % 4
+    pub fn wild_slot_lookup(&self, side: Gen7WildSide) -> Gen7PkmSlot {
+        match side.offset() {
+            Some(offset) => {
+                let battle_table = self.addrs.sos_battle_table + offset;
+                let pkx_container_ptr =
+                    pnp::read::<u32>(battle_table).clamp(0x30004DA8, 0x30004DA8 + (0x330 * 6));
+                Gen7PkmSlot::new(
+                    (((pnp::read::<u32>(pkx_container_ptr) + 0x40 - self.addrs.wild) / 484) + 1).clamp(1, 6)
+                        as usize,
+                )
+            }
+            None => Gen7PkmSlot::Invalid,
         }
+    }
+
+    pub fn read_wild_slot(&self, slot: Gen7PkmSlot) -> Pk7 {
+        match slot.offset() {
+            Some(offset) => self.read_pk7(self.addrs.wild + offset),
+            None => Pk7::default(),
+        }
+    }
+
+    pub fn read_wild_side(&self, side: Gen7WildSide) -> Pk7 {
+        self.read_wild_slot(self.wild_slot_lookup(side))
     }
 
     fn read_pk7(&self, offset: u32) -> Pk7 {
@@ -198,9 +299,11 @@ impl Gen7Reader {
         Pk7::new_valid(bytes)
     }
 
-    pub fn party_pkm(&self, slot: u32) -> Pk7 {
-        let offset = (slot * 484) + self.addrs.party;
-        self.read_pk7(offset)
+    pub fn party_pkm(&self, slot: Gen7PkmSlot) -> Pk7 {
+        match slot.offset() {
+            Some(offset) => self.read_pk7(self.addrs.party + offset),
+            None => Pk7::default(),
+        }
     }
 
     fn egg_parent(&self, is_present: u32, pkm: u32) -> Option<Pk7> {
@@ -222,24 +325,12 @@ impl Gen7Reader {
         self.egg_parent(self.addrs.is_parent2_occupied, self.addrs.parent2)
     }
 
-    pub fn wild_pkm(&self, slot: u32) -> Pk7 {
-        let offset = (slot * 484) + self.addrs.wild;
-        self.read_pk7(offset)
-    }
-
     pub fn box_pkm(&self) -> Pk7 {
         self.read_pk7(self.addrs.box_cursor)
     }
 
     pub fn pelago_pkm(&self, slot: u32) -> Pk7 {
         self.read_pk7((slot * 236) + self.addrs.pelago)
-    }
-
-    pub fn sos_caller_pkm(&self, caller_slot: u32) -> Pk7 {
-        self.read_pk7(((caller_slot - 1) * 484) + self.addrs.sos)
-    }
-    pub fn sos_ally_pkm(&self, caller_slot: u32, correction: u32) -> Pk7 {
-        self.read_pk7((self.ally_slot(caller_slot, correction) * 484) + self.addrs.sos)
     }
 
     pub fn is_egg_ready(&self) -> bool {

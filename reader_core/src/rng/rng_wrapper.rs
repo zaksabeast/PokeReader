@@ -37,7 +37,6 @@ impl<T: rng::Rng + Copy> RngWrapper<T> {
             self.reinit(seed);
             return true;
         }
-
         false
     }
 

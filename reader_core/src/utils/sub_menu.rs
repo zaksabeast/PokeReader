@@ -38,7 +38,7 @@ impl<const MIN: usize, const MAX: usize> SubMenu<MIN, MAX> {
     }
 
     pub fn _set(&mut self, value: usize) -> usize {
-        self.counter.set(value)
+        self.counter._set(value)
     }
 
     pub fn reset(&mut self) -> usize {

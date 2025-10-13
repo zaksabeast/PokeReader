@@ -125,7 +125,7 @@ macro_rules! print_stat {
 }
 
 pub fn print_pp(pp: u32) {
-    let color = match pp << 1 {
+    let color = match pp >> 1 {
         1 => RED,
         2 => MAGMA_RED,
         3 => ORANGE,

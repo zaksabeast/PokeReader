@@ -37,11 +37,15 @@ impl Sfmt32 {
     }
 
     fn get_current_state(&self) -> u32 {
-        let index = (self.index) % 624;
+        // sgrace: I think it's better to panic if this overflows,
+        //         As index > 624 should never naturally occur.
+        let index = if self.index == 624 { 0 } else { self.index };
         self.sfmt[index]
     }
 
     fn get_next_state(&self) -> u32 {
+        // sgrace: This one, however, can naturally overflow
+        //         in Sfmt64 at index = 0, so handle that.
         let index = (self.index + 1) % 624;
         self.sfmt[index]
     }

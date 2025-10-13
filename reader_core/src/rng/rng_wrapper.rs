@@ -63,19 +63,19 @@ impl<T: rng::Rng + Copy> RngWrapper<T> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::rng::{MT, Rng, Sfmt, TinyMT};
+    use crate::rng::{MT, Rng, Sfmt32, Sfmt64, TinyMT};
 
     #[test]
     fn should_track_sfmt_advances() {
         let seed = 0x92845c35;
-        let mut rng = Sfmt::new(seed);
+        let mut rng = Sfmt64::new(seed);
 
         for _ in 0..478 {
             rng.next_state();
         }
         assert_eq!(rng.current_state(), 0x5a1ef513d10eccfb);
 
-        let mut wrapper = RngWrapper::<Sfmt>::default();
+        let mut wrapper = RngWrapper::<Sfmt64>::default();
         wrapper.reinit(seed);
         wrapper.update_advances(rng.current_state());
         assert_eq!(wrapper.advances(), 478);

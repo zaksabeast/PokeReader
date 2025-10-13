@@ -37,13 +37,13 @@ impl Sfmt32 {
     }
 
     fn get_current_state(&self) -> u32 {
-        let index = if self.index != 624 { self.index } else { 0 };
+        let index = (self.index) % 624;
         self.sfmt[index]
     }
 
     fn get_next_state(&self) -> u32 {
-        let index = if self.index != 624 { self.index } else { 0 };
-        self.sfmt[index + 1]
+        let index = (self.index + 1) % 624;
+        self.sfmt[index]
     }
 
     pub fn next(&mut self) -> u32 {
@@ -52,7 +52,6 @@ impl Sfmt32 {
         }
 
         self.index += 1;
-
         self.get_current_state()
     }
 
@@ -180,7 +179,7 @@ mod test {
 
     #[test]
     fn test_shuffle() {
-        let mut rng = Sfmt::new(0x7725e5e1);
+        let mut rng = Sfmt64::new(0x7725e5e1);
         for _ in 0..1000 {
             rng.next();
         }
@@ -191,7 +190,7 @@ mod test {
 
     #[test]
     fn test_next_should_return_state_before_shuffle() {
-        let mut rng = Sfmt::new(0xc91cc389);
+        let mut rng = Sfmt64::new(0xc91cc389);
         for _ in 0..624 {
             rng.next();
         }

@@ -126,11 +126,11 @@ macro_rules! print_stat {
 
 pub fn print_pp(pp: u32) {
     let color = match pp >> 1 {
-        1 => RED,
-        2 => MAGMA_RED,
-        3 => ORANGE,
-        4 => ULTRA_ORANGE,
-        5 => YELLOW,
+        0 => RED,
+        1 => MAGMA_RED,
+        2 => ORANGE,
+        3 => ULTRA_ORANGE,
+        4 => YELLOW,
         _ => WHITE,
     };
     pnp::println!(color = color, "PP Remaining: {}", pp);

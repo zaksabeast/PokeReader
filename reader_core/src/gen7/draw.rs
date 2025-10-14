@@ -1,13 +1,19 @@
-use super::reader::Gen7Reader;
+use super::{
+    lookup_call_rate,
+    reader::{Gen7Reader, Gen7WildSide},
+};
 use crate::{
     pnp,
-    rng::{RngWrapper, Sfmt},
+    rng::{RngWrapper, Sfmt32, Sfmt64},
     utils::{format_egg_parent, is_daycare_masuda_method},
 };
+use pkm_rs::Pkx;
 
-pub use crate::draw::{GREEN, PkxType, RED, WHITE, draw_header, draw_pkx, draw_pkx_brief, get_pp, print_pp};
+pub use crate::draw::{
+    GREEN, PkxType, RED, WHITE, draw_header, draw_invalid_pkx, draw_pkx, draw_pkx_brief, get_pp, print_pp,
+};
 
-pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt>) {
+pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt64>) {
     let sfmt_state = rng.current_state();
 
     pnp::println!("Seed:     {:08X}", rng.init_seed());
@@ -30,19 +36,79 @@ pub fn draw_citra_info(reader: &Gen7Reader) {
     pnp::println!("Time offset: {}", main_rng_seed_context.time_offset_ms);
 }
 
-pub fn draw_sos(reader: &Gen7Reader, slot: u32, correction: u32) {
-    pnp::println!("SOS Seed: {:08X}", reader.sos_seed());
-    pnp::println!("SOS Chain Length: {}", reader.sos_chain());
-    if reader.orb_active() {
-        pnp::println!(color = GREEN, "Orb Active")
-    } else {
-        pnp::println!(color = RED, "Orb Not Active");
+pub fn draw_sos(
+    reader: &Gen7Reader,
+    main_rng: &mut RngWrapper<Sfmt64>,
+    sos_rng: &mut RngWrapper<Sfmt32>,
+    menu_val: usize,
+) -> bool {
+    let sos_seed: u32 = reader.sos_seed();
+    let sos_state: u32 = reader.sos_state();
+    let sos_chain: u16 = reader.sos_chain() as u16;
+    let sos_index: u16 = reader.sos_index();
+
+    sos_rng.reinit_if_needed(sos_seed);
+    if sos_seed > 0 {
+        if sos_index | sos_chain > 0 {
+            sos_rng.update_advances(sos_state);
+        }
     }
-    pnp::println!("Caller Slot: {}", slot);
-    print_pp(get_pp(&reader.sos_caller_pkm(slot)));
+
+    let caller_side = Gen7WildSide::new(menu_val);
+    let ally_side = caller_side.other();
+    let caller_pkm = &reader.read_wild_side(caller_side);
+    let ally_pkm = &reader.read_wild_side(ally_side);
+
+    if !caller_pkm.is_valid() {
+        return draw_invalid_pkx();
+    }
+
+    pnp::println!("SOS Seed: {:08X}", sos_rng.init_seed());
+    pnp::println!("SOS Index: {}", sos_rng.advances());
+    pnp::println!("SOS Chain Length: {}", sos_chain);
+
+    if reader.orb_active() {
+        pnp::println!(color = GREEN, "Orb Active");
+    } else {
+        pnp::println!(color = RED, "Orb Not Active!");
+    }
+
+    pnp::println!("RNG Frame: {}", main_rng.advances());
+
     pnp::println!("");
-    pnp::println!("Ally Data (Slot {}):", reader.ally_slot(slot, correction) + 1);
-    draw_pkx_brief(&reader.sos_ally_pkm(slot, correction));
+    if caller_pkm.is_valid() {
+        pnp::println!(
+            "{} {} ({}):",
+            caller_pkm.species_t(),
+            &reader.wild_slot_lookup(caller_side).label(),
+            caller_side.label()
+        );
+        let call_rate = lookup_call_rate(caller_pkm, reader.is_usum());
+        pnp::println!(
+            color = if call_rate == 0 { RED } else { WHITE },
+            "Call Rate: {}",
+            call_rate
+        );
+        print_pp(get_pp(caller_pkm));
+    } else {
+        return true;
+    }
+
+    pnp::println!("");
+    if reader.sos_chain() > 0 {
+        pnp::println!(
+            "{} {} ({}):",
+            ally_pkm.species_t(),
+            reader.wild_slot_lookup(ally_side).label(),
+            ally_side.label()
+        );
+        if ally_pkm.is_valid() {
+            draw_pkx_brief(ally_pkm);
+            return false;
+        }
+    }
+    pnp::println!("No Ally to display.");
+    return true;
 }
 
 pub fn draw_daycare(reader: &Gen7Reader) {

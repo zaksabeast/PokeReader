@@ -3,19 +3,29 @@ use crate::pnp;
 use core::num::{NonZeroU8, NonZeroU32};
 use pkm_rs::{Pk7, PokeCrypto};
 
+pub const SM_SOS_BASE_ADDR: u32 = 0x30038c34;
+pub const USUM_SOS_BASE_ADDR: u32 = 0x30038e20;
+pub const SM_SOS_SFMT_ADDR: u32 = SM_SOS_BASE_ADDR + 0x10;
+pub const USUM_SOS_SFMT_ADDR: u32 = USUM_SOS_BASE_ADDR + 0x10;
+pub const PKM_CONT_SIZE: u32 = 0x330;
+pub const PK7_DATA_SIZE: u32 = 0x1E4;
+
 struct Gen7Addresses {
     initial_seed: u32,
     sfmt_state_index: u32,
     sfmt_state: u32,
+    _sos_base_addr: u32,
+    sos_sfmt_state: u32,
     party: u32,
     wild: u32,
-    sos: u32,
+    sos_index: u32,
+    sos_chain_len: u32,
+    sos_battle_table: u32,
+    pkm_container_base: u32,
+    _sos_call_succeed: u32,
     orb_active: u32,
-    sos_chain_length: u32,
     // To be used in the future vvv
-    _sos_index: u32,
-    _ally_id: u32,
-    _prev_call_succeed: u32,
+    _sos_ally_id: u32,
     //
     pelago: u32,
     egg_ready: u32,
@@ -35,14 +45,17 @@ const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     initial_seed: 0x325a3878,
     sfmt_state_index: 0x33196548,
     sfmt_state: 0x33195b88,
+    _sos_base_addr: 0x30038C34,
+    sos_sfmt_state: SM_SOS_SFMT_ADDR,
+    sos_battle_table: 0x30000420,
+    pkm_container_base: 0x30004DA8,
     party: 0x34195e10,
     wild: 0x3002f7b8,
-    sos: 0x3002f7b8,
-    _sos_index: 0x30039614,
-    orb_active: 0x3003961c,
-    sos_chain_length: 0x3003960d,
-    _ally_id: 0x3003961e,
-    _prev_call_succeed: 0x3003961f,
+    sos_index: SM_SOS_BASE_ADDR + 0x9d0,
+    orb_active: SM_SOS_BASE_ADDR + 0x9d8,
+    sos_chain_len: SM_SOS_BASE_ADDR + 0x9d9,
+    _sos_ally_id: SM_SOS_BASE_ADDR + 0x9da,
+    _sos_call_succeed: SM_SOS_BASE_ADDR + 0x9db,
     pelago: 0x331110ca,
     egg_ready: 0x3313edd8,
     egg: 0x3313eddc,
@@ -61,14 +74,17 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     initial_seed: 0x32663bf0,
     sfmt_state_index: 0x330d3f98,
     sfmt_state: 0x330d35d8,
+    _sos_base_addr: 0x30038E20,
+    sos_sfmt_state: USUM_SOS_SFMT_ADDR,
+    sos_battle_table: 0x30000420,
+    pkm_container_base: 0x30004DA8,
     party: 0x33f7fa44,
     wild: 0x3002f9a0,
-    sos: 0x3002f9a0,
-    _sos_index: 0x300397F0,
-    orb_active: 0x300397f8,
-    sos_chain_length: 0x300397f9,
-    _ally_id: 0x300397fA,
-    _prev_call_succeed: 0x300397fb,
+    sos_index: USUM_SOS_BASE_ADDR + 0x9d0,
+    orb_active: USUM_SOS_BASE_ADDR + 0x9d8,
+    sos_chain_len: USUM_SOS_BASE_ADDR + 0x9d9,
+    _sos_ally_id: USUM_SOS_BASE_ADDR + 0x9da,
+    _sos_call_succeed: USUM_SOS_BASE_ADDR + 0x9db,
     pelago: 0x3304d16a,
     egg_ready: 0x3307b1e8,
     egg: 0x3307b1ec,
@@ -88,6 +104,93 @@ pub struct Gen7Reader {
     addrs: &'static Gen7Addresses,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Gen7WildSide {
+    Left,
+    Right,
+    Invalid,
+}
+
+impl Gen7WildSide {
+    pub fn new(value: usize) -> Self {
+        match value {
+            1 => Gen7WildSide::Right,
+            2 => Gen7WildSide::Left,
+            _ => Gen7WildSide::Invalid,
+        }
+    }
+    pub fn other(&self) -> Self {
+        match self {
+            Gen7WildSide::Left => Gen7WildSide::Right,
+            Gen7WildSide::Right => Gen7WildSide::Left,
+            Gen7WildSide::Invalid => Gen7WildSide::Invalid,
+        }
+    }
+
+    pub fn offset(&self) -> Option<u32> {
+        match self {
+            Gen7WildSide::Left => Some(0x4),
+            Gen7WildSide::Right => Some(0x0),
+            Gen7WildSide::Invalid => None,
+        }
+    }
+
+    pub fn label(&self) -> &'static str {
+        match self {
+            Gen7WildSide::Left => "Left",
+            Gen7WildSide::Right => "Right",
+            Gen7WildSide::Invalid => "Invalid",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Gen7PkmSlot {
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    Invalid,
+}
+
+impl Gen7PkmSlot {
+    pub fn new(value: usize) -> Self {
+        match value {
+            1 => Gen7PkmSlot::A,
+            2 => Gen7PkmSlot::B,
+            3 => Gen7PkmSlot::C,
+            4 => Gen7PkmSlot::D,
+            5 => Gen7PkmSlot::E,
+            6 => Gen7PkmSlot::F,
+            _ => Gen7PkmSlot::Invalid,
+        }
+    }
+    pub fn offset(&self) -> Option<u32> {
+        match self {
+            Gen7PkmSlot::A => Some(0x0),
+            Gen7PkmSlot::B => Some(0x1E4),
+            Gen7PkmSlot::C => Some(0x3c8),
+            Gen7PkmSlot::D => Some(0x5ac),
+            Gen7PkmSlot::E => Some(0x790),
+            Gen7PkmSlot::F => Some(0x974),
+            Gen7PkmSlot::Invalid => None,
+        }
+    }
+    pub fn label(&self) -> &'static str {
+        match self {
+            Gen7PkmSlot::A => "A",
+            Gen7PkmSlot::B => "B",
+            Gen7PkmSlot::C => "C",
+            Gen7PkmSlot::D => "D",
+            Gen7PkmSlot::E => "E",
+            Gen7PkmSlot::F => "F",
+            Gen7PkmSlot::Invalid => "Invalid",
+        }
+    }
+}
+
 impl Gen7Reader {
     pub fn sm() -> Self {
         Self {
@@ -101,6 +204,10 @@ impl Gen7Reader {
             is_usum: true,
             addrs: &USUM_ADDRESSES,
         }
+    }
+
+    pub fn is_usum(&self) -> bool {
+        self.is_usum
     }
 
     pub fn g7tid(&self) -> u32 {
@@ -130,12 +237,12 @@ impl Gen7Reader {
     }
 
     fn sfmt_state_index(&self) -> u32 {
-        pnp::read(self.addrs.sfmt_state_index)
+        let index = pnp::read(self.addrs.sfmt_state_index);
+        if index != 624 { index } else { 0 }
     }
 
     pub fn sfmt_state(&self) -> u64 {
-        let index = self.sfmt_state_index();
-        pnp::read(self.addrs.sfmt_state + if index != 624 { index * 4 } else { 0 })
+        pnp::read(self.addrs.sfmt_state + self.sfmt_state_index() * 4)
     }
 
     pub fn egg_seed(&self) -> [u32; 4] {
@@ -151,18 +258,57 @@ impl Gen7Reader {
         hook::sos_seed()
     }
 
+    // We still use this naive check to hint to the RNG wrapper when it can rest.
+    pub fn sos_index(&self) -> u16 {
+        let index = pnp::read(self.addrs.sos_index);
+        if index != 624 { index } else { 0 }
+    }
+
+    pub fn sos_state(&self) -> u32 {
+        pnp::read(self.addrs.sos_sfmt_state + (self.sos_index() as u32 * 4))
+    }
+
+    /* Note: Not very useful...
+     * Value does not update until after last
+     * input, which makes it rather misleading. */
+    pub fn _sos_prevcall(&self) -> bool {
+        pnp::read_bool(self.addrs._sos_call_succeed)
+    }
+
     pub fn sos_chain(&self) -> u8 {
-        pnp::read(self.addrs.sos_chain_length)
+        pnp::read(self.addrs.sos_chain_len)
     }
+
     pub fn orb_active(&self) -> bool {
-        ((pnp::read::<u8>(self.addrs.orb_active) & 0x1) > 0) as bool
+        pnp::read_bool(self.addrs.orb_active)
     }
-    pub fn ally_slot(&self, caller_slot: u32, correction: u32) -> u32 {
-        if self.sos_chain() == 0 {
-            0
-        } else {
-            ((caller_slot - 1) + ((self.sos_chain() as i32 - (correction as i32 + 1)) % 3) as u32 + 1) % 4
+
+    pub fn wild_slot_lookup(&self, side: Gen7WildSide) -> Gen7PkmSlot {
+        match side.offset() {
+            Some(offset) => {
+                let battle_table = self.addrs.sos_battle_table + offset;
+                let pkx_container_ptr = pnp::read::<u32>(battle_table).clamp(
+                    self.addrs.pkm_container_base,
+                    self.addrs.pkm_container_base + (PKM_CONT_SIZE * 6),
+                );
+                Gen7PkmSlot::new(
+                    (((pnp::read::<u32>(pkx_container_ptr) + 0x40 - self.addrs.wild) / PK7_DATA_SIZE) + 1)
+                        .clamp(1, 6) as usize,
+                )
+            }
+            None => Gen7PkmSlot::Invalid,
         }
+    }
+
+    pub fn read_wild_slot(&self, slot: Gen7PkmSlot) -> Pk7 {
+        match slot.offset() {
+            Some(offset) => self.read_pk7(self.addrs.wild + offset),
+            None => Pk7::default(),
+        }
+    }
+
+    pub fn read_wild_side(&self, side: Gen7WildSide) -> Pk7 {
+        self.read_wild_slot(self.wild_slot_lookup(side))
     }
 
     fn read_pk7(&self, offset: u32) -> Pk7 {
@@ -170,13 +316,15 @@ impl Gen7Reader {
         Pk7::new_valid(bytes)
     }
 
-    pub fn party_pkm(&self, slot: u32) -> Pk7 {
-        let offset = (slot * 484) + self.addrs.party;
-        self.read_pk7(offset)
+    pub fn party_pkm(&self, slot: Gen7PkmSlot) -> Pk7 {
+        match slot.offset() {
+            Some(offset) => self.read_pk7(self.addrs.party + offset),
+            None => Pk7::default(),
+        }
     }
 
     fn egg_parent(&self, is_present: u32, pkm: u32) -> Option<Pk7> {
-        let is_parent_present = pnp::read::<u8>(is_present) != 0;
+        let is_parent_present = pnp::read_bool(is_present);
 
         if !is_parent_present {
             return None;
@@ -194,11 +342,6 @@ impl Gen7Reader {
         self.egg_parent(self.addrs.is_parent2_occupied, self.addrs.parent2)
     }
 
-    pub fn wild_pkm(&self, slot: u32) -> Pk7 {
-        let offset = (slot * 484) + self.addrs.wild;
-        self.read_pk7(offset)
-    }
-
     pub fn box_pkm(&self) -> Pk7 {
         self.read_pk7(self.addrs.box_cursor)
     }
@@ -207,15 +350,8 @@ impl Gen7Reader {
         self.read_pk7((slot * 236) + self.addrs.pelago)
     }
 
-    pub fn sos_caller_pkm(&self, caller_slot: u32) -> Pk7 {
-        self.read_pk7(((caller_slot - 1) * 484) + self.addrs.sos)
-    }
-    pub fn sos_ally_pkm(&self, caller_slot: u32, correction: u32) -> Pk7 {
-        self.read_pk7((self.ally_slot(caller_slot, correction) * 484) + self.addrs.sos)
-    }
-
     pub fn is_egg_ready(&self) -> bool {
-        pnp::read::<u8>(self.addrs.egg_ready) != 0
+        pnp::read_bool(self.addrs.egg_ready)
     }
 
     fn has_item(&self, offset: u32, item_id: u32, count: u32) -> bool {

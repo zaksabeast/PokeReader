@@ -36,4 +36,15 @@ impl<const MIN: usize, const MAX: usize> SubMenu<MIN, MAX> {
         self.update_counter(is_locked);
         self.counter.value()
     }
+
+    pub fn _set(&mut self, value: usize) -> usize {
+        self.counter._set(value)
+    }
+
+    pub fn reset(&mut self) -> usize {
+        self.counter.reset()
+    }
+    pub fn increment(&mut self) -> usize {
+        self.counter.increment()
+    }
 }

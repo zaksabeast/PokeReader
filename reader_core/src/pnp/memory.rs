@@ -31,6 +31,10 @@ where
     T::read_le(&mut reader).unwrap_or_default()
 }
 
+pub fn read_bool(addr: u32) -> bool {
+    read::<u8>(addr) != 0
+}
+
 pub fn write_slice(addr: u32, buf: &[u8]) {
     unsafe {
         bindings::host_write_mem(addr, buf.len() as u32, buf.as_ptr() as u32);

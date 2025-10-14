@@ -6,9 +6,18 @@ use crate::{pnp, utils::menu::MenuOptionValue};
 use pkm_rs::{Nature, Pkx, Shiny};
 
 pub const WHITE: u32 = 0xffffff;
-pub const GREEN: u32 = 0x00cc00;
 pub const RED: u32 = 0xff0000;
+pub const MAGMA_RED: u32 = 0xFF4433;
+pub const ORANGE: u32 = 0xd75f00;
+pub const ULTRA_ORANGE: u32 = 0xff5f1f;
+pub const YELLOW: u32 = 0xd7ff00;
+pub const GREEN: u32 = 0x00cc00;
+pub const CYAN: u32 = 0x00ffff;
 pub const MUTED_CYAN: u32 = 0x00cccc;
+pub const BLUE: u32 = 0x0000ff;
+pub const PURPLE: u32 = 0xaf5fff;
+pub const ULTRA_PURPLE: u32 = 0xaf00ff;
+pub const HOT_PINK: u32 = 0xd7005f;
 
 fn get_shiny_color(is_shiny: bool) -> u32 {
     match is_shiny {
@@ -116,21 +125,29 @@ macro_rules! print_stat {
 }
 
 pub fn print_pp(pp: u32) {
-    pnp::println!(color = if pp > 1 { WHITE } else { RED }, "PP Remaining: {}", pp);
+    let color = match pp >> 1 {
+        0 => RED,
+        1 => MAGMA_RED,
+        2 => ORANGE,
+        3 => ULTRA_ORANGE,
+        4 => YELLOW,
+        _ => WHITE,
+    };
+    pnp::println!(color = color, "PP Remaining: {}", pp);
 }
 
 pub fn print_title() {
     match loaded_title() {
         Ok(title) => match title {
-            LoadedTitle::S => pnp::println!(color = 0xd75f00, " Pokemon Sun"),
-            LoadedTitle::M => pnp::println!(color = 0xaf5fff, " Pokemon Moon"),
-            LoadedTitle::Us => pnp::println!(color = 0xff5f1f, " Pokemon Ultra Sun"),
-            LoadedTitle::Um => pnp::println!(color = 0xaf00ff, " Pokemon Ultra Moon"),
-            LoadedTitle::X => pnp::println!(color = 0x00ffff, " Pokemon X"),
-            LoadedTitle::Y => pnp::println!(color = 0xd7005f, " Pokemon Y"),
-            LoadedTitle::Or => pnp::println!(color = 0xFF4433, " Pokemon Omega Ruby"),
-            LoadedTitle::As => pnp::println!(color = 0x0000ff, " Pokemon Alpha Sapphire"),
-            LoadedTitle::Transporter => pnp::println!(color = 0xd7ff00, " Pokemon Transporter"),
+            LoadedTitle::S => pnp::println!(color = ORANGE, " Pokemon Sun"),
+            LoadedTitle::M => pnp::println!(color = PURPLE, " Pokemon Moon"),
+            LoadedTitle::Us => pnp::println!(color = ULTRA_ORANGE, " Pokemon Ultra Sun"),
+            LoadedTitle::Um => pnp::println!(color = ULTRA_PURPLE, " Pokemon Ultra Moon"),
+            LoadedTitle::X => pnp::println!(color = CYAN, " Pokemon X"),
+            LoadedTitle::Y => pnp::println!(color = HOT_PINK, " Pokemon Y"),
+            LoadedTitle::Or => pnp::println!(color = MAGMA_RED, " Pokemon Omega Ruby"),
+            LoadedTitle::As => pnp::println!(color = BLUE, " Pokemon Alpha Sapphire"),
+            LoadedTitle::Transporter => pnp::println!(color = YELLOW, " Pokemon Transporter"),
             LoadedTitle::CrystalEn
             | LoadedTitle::CrystalDe
             | LoadedTitle::CrystalFr
@@ -153,8 +170,10 @@ pub fn shiny_type(pkx: &impl Pkx) -> &'static str {
     }
 }
 
-pub fn draw_pkx_brief(pkx: &impl Pkx) {
-    let species = pkx.species_t().to_string();
+pub fn draw_pkx_brief(pkx: &impl Pkx) -> bool {
+    if !pkx.is_valid() {
+        return draw_invalid_pkx();
+    }
     let ability = pkx.ability_t().to_string();
 
     let shiny_type = shiny_type(pkx);
@@ -168,11 +187,10 @@ pub fn draw_pkx_brief(pkx: &impl Pkx) {
 
     let nature = pkx.nature_t();
 
-    pnp::println!("{} {}", nature, species);
     pnp::println!("Ability: ({}) {}", pkx.ability_number_t(), ability);
     pnp::println!("PID: {:08X}", pkx.pid());
     pnp::println!(color = shiny_color, "PSV: {:04}, {}", pkx.psv(), shiny_type);
-    pnp::println!("HPower: {}", pkx.hidden_power_t());
+    pnp::println!("Nature: {}", nature);
     pnp::println!(
         "IVs: {}/{}/{}/{}/{}/{}",
         iv_hp,
@@ -182,9 +200,14 @@ pub fn draw_pkx_brief(pkx: &impl Pkx) {
         iv_spd,
         iv_spe
     );
+
+    return false;
 }
 
-pub fn draw_pkx(pkx: &impl Pkx, pkx_type: PkxType) {
+pub fn draw_pkx(pkx: &impl Pkx, pkx_type: PkxType) -> bool {
+    if !pkx.is_valid() {
+        return draw_invalid_pkx();
+    }
     let species = pkx.species_t().to_string();
     let ability = pkx.ability_t().to_string();
 
@@ -227,6 +250,13 @@ pub fn draw_pkx(pkx: &impl Pkx, pkx_type: PkxType) {
     print_stat!(iv_spa, ev_spa, SpA, &nature_stat, "SpA ");
     print_stat!(iv_spd, ev_spd, SpD, &nature_stat, "SpD ");
     print_stat!(iv_spe, ev_spe, Spe, &nature_stat, "Spe ");
+
+    return false;
+}
+
+pub fn draw_invalid_pkx() -> bool {
+    pnp::println!("No Data.");
+    return true;
 }
 
 pub fn draw_controls_help() {

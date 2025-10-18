@@ -1,32 +1,36 @@
 use super::{game_lib, hook};
-use crate::pnp;
+use crate::pnp::{self, CtrPtr};
 use core::num::{NonZeroU32, NonZeroU8};
 use pkm_rs::{Pk7, PokeCrypto};
+
+pub const fn ptr(offset: u32) -> CtrPtr {
+    CtrPtr::new_g7(offset)
+}
 
 struct Gen7Addresses {
     initial_seed: u32,
     sfmt_state_index: u32,
     sfmt_state: u32,
-    party: u32,
-    wild: u32,
+    party: CtrPtr,
+    wild: CtrPtr,
     orb_active: u32,
     sos_chain_length: u32,
-    sos_battle_table: Option<u32>,
+    sos_battle_table: Option<CtrPtr>,
     // To be used in the future vvv
     _sos_index: u32,
     _ally_id: u32,
     _prev_call_succeed: u32,
     //
-    pelago: u32,
+    pelago: CtrPtr,
     egg_ready: u32,
     egg: u32,
-    parent1: u32,
-    parent2: u32,
-    is_parent1_occupied: u32,
-    is_parent2_occupied: u32,
+    parent1: CtrPtr,
+    parent2: CtrPtr,
+    is_parent1_occupied: CtrPtr,
+    is_parent2_occupied: CtrPtr,
     shiny_charm: u32,
-    id: u32,
-    box_cursor: u32,
+    id: CtrPtr,
+    box_cursor: CtrPtr,
     npc_list: u32,
     npc_head_blinking_offset: u32,
 }
@@ -35,24 +39,24 @@ const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     initial_seed: 0x325a3878,
     sfmt_state_index: 0x33196548,
     sfmt_state: 0x33195b88,
-    party: 0x34195e10,
-    wild: 0x3002f7b8,
+    party: ptr(0x34195e10),
+    wild: ptr(0x3002f7b8),
     sos_battle_table: None,
     _sos_index: 0x30039614,
     orb_active: 0x3003961c,
     sos_chain_length: 0x3003960d,
     _ally_id: 0x3003961e,
     _prev_call_succeed: 0x3003961f,
-    pelago: 0x331110ca,
+    pelago: ptr(0x331110ca),
     egg_ready: 0x3313edd8,
     egg: 0x3313eddc,
-    parent1: 0x3313ec01,
-    parent2: 0x3313ecea,
-    is_parent1_occupied: 0x3313ec00,
-    is_parent2_occupied: 0x3313ece9,
+    parent1: ptr(0x3313ec01),
+    parent2: ptr(0x3313ecea),
+    is_parent1_occupied: ptr(0x3313ec00),
+    is_parent2_occupied: ptr(0x3313ece9),
     shiny_charm: 0x330d5930,
-    id: 0x330d67d0,
-    box_cursor: 0x30000298,
+    id: ptr(0x330d67d0),
+    box_cursor: ptr(0x30000298),
     npc_list: 0x341977c4,
     npc_head_blinking_offset: 0x2f4,
 };
@@ -61,24 +65,24 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     initial_seed: 0x32663bf0,
     sfmt_state_index: 0x330d3f98,
     sfmt_state: 0x330d35d8,
-    party: 0x33f7fa44,
-    wild: 0x3002f9a0,
-    sos_battle_table: Some(0x30000420),
+    party: ptr(0x33f7fa44),
+    wild: ptr(0x3002f9a0),
+    sos_battle_table: Some(ptr(0x30000420)),
     _sos_index: 0x300397F0,
     orb_active: 0x300397f8,
     sos_chain_length: 0x300397f9,
     _ally_id: 0x300397fA,
     _prev_call_succeed: 0x300397fb,
-    pelago: 0x3304d16a,
+    pelago: ptr(0x3304d16a),
     egg_ready: 0x3307b1e8,
     egg: 0x3307b1ec,
-    parent1: 0x3307b011,
-    parent2: 0x3307b0fa,
-    is_parent1_occupied: 0x3307b010,
-    is_parent2_occupied: 0x3307b0f9,
+    parent1: ptr(0x3307b011),
+    parent2: ptr(0x3307b0fa),
+    is_parent1_occupied: ptr(0x3307b010),
+    is_parent2_occupied: ptr(0x3307b0f9),
     shiny_charm: 0x33011930,
-    id: 0x33012818,
-    box_cursor: 0x30000298,
+    id: ptr(0x33012818),
+    box_cursor: ptr(0x30000298),
     npc_list: 0x33f81438,
     npc_head_blinking_offset: 0x2fc,
 };
@@ -104,17 +108,16 @@ impl Gen7Reader {
     }
 
     pub fn g7tid(&self) -> u32 {
-        let sidtid = pnp::read::<u32>(self.addrs.id);
-
+        let sidtid = self.addrs.id.read::<u32>();
         sidtid % 1000000
     }
 
     fn tid(&self) -> u16 {
-        pnp::read::<u16>(self.addrs.id)
+        (self.addrs.id).read::<u16>()
     }
 
     fn sid(&self) -> u16 {
-        pnp::read::<u16>(self.addrs.id + 2)
+        (self.addrs.id + 2).read::<u16>()
     }
 
     pub fn tsv(&self) -> u16 {
@@ -166,13 +169,12 @@ impl Gen7Reader {
             _ => return None,
         };
         let battle_table = self.addrs.sos_battle_table?;
-        let pkx_container_ptr = pnp::read::<u32>(battle_table + table_offset);
-        let pkx_container = pnp::read::<u32>(pkx_container_ptr);
+        let pkx_container = (battle_table + table_offset).next().next();
         Some(self.read_pk7(pkx_container + 0x40))
     }
 
-    fn read_pk7(&self, offset: u32) -> Pk7 {
-        let bytes = pnp::read_array::<{ Pk7::STORED_SIZE }>(offset);
+    fn read_pk7(&self, ptr: CtrPtr) -> Pk7 {
+        let bytes = ptr.read_array::<{ Pk7::STORED_SIZE }>();
         Pk7::new_valid(bytes)
     }
 
@@ -181,10 +183,9 @@ impl Gen7Reader {
         self.read_pk7(offset)
     }
 
-    fn egg_parent(&self, is_present: u32, pkm: u32) -> Option<Pk7> {
-        let is_parent_present = pnp::read::<u8>(is_present) != 0;
-
-        if !is_parent_present {
+    fn egg_parent(&self, is_present: CtrPtr, pkm: CtrPtr) -> Option<Pk7> {
+        let is_present = is_present.read::<u8>() != 0;
+        if !is_present {
             return None;
         }
 

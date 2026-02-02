@@ -31,12 +31,12 @@ void handle_freeze(bool isTopScreen)
 
         u32 just_pressed = host_just_pressed();
 
-        if (just_pressed == KEY_SELECT || just_pressed == KEY_L)
+        if (just_pressed & (KEY_SELECT | KEY_L))
         {
             break;
         }
 
-        if (just_pressed == KEY_A || just_pressed == KEY_START || just_pressed == KEY_R)
+        if (just_pressed & (KEY_A | KEY_START | KEY_R))
         {
             is_paused = false;
             break;

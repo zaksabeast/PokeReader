@@ -12,6 +12,7 @@ extern "C" {
     pub fn get_trampoline_addr() -> u32;
     pub fn get_route_hook_addr() -> u32;
     pub fn pa_from_va_ptr(ptr: u32) -> u32;
+    pub fn is_citra() -> bool;
 }
 
 #[cfg(feature = "test_stubs")]
@@ -59,5 +60,9 @@ pub mod test_stubs {
     #[no_mangle]
     pub extern "C" fn pa_from_va_ptr(ptr: u32) -> u32 {
         0
+    }
+    #[no_mangle]
+    pub extern "C" fn is_citra() -> bool {
+        false
     }
 }

@@ -5,7 +5,7 @@ use crate::{
     utils::{format_egg_parent, is_daycare_masuda_method},
 };
 
-pub use crate::draw::{GREEN, PkxType, RED, WHITE, draw_header, draw_pkx, draw_pkx_brief, get_pp, print_pp};
+pub use crate::draw::{draw_header, draw_pkx, draw_pkx_brief, get_pp, print_pp, PkxType, GREEN, RED, WHITE};
 
 pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt>) {
     let sfmt_state = rng.current_state();
@@ -28,6 +28,8 @@ pub fn draw_citra_info(reader: &Gen7Reader) {
     pnp::println!("Seed date: {}", datetime.format("%b %d %Y"));
     pnp::println!("Seed time: {}", datetime.format("%H:%M:%S"));
     pnp::println!("Time offset: {}", main_rng_seed_context.time_offset_ms);
+    pnp::println!("");
+    pnp::println!("On citra: {}", pnp::is_citra());
 }
 
 pub fn draw_sos(reader: &Gen7Reader, slot: u32, correction: u32) {

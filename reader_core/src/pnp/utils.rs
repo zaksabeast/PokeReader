@@ -8,3 +8,7 @@ pub fn title_id() -> u64 {
 pub fn update_version() -> u16 {
     unsafe { bindings::get_remaster_version() }
 }
+
+pub fn is_citra() -> bool {
+    unsafe { bindings::is_citra() }
+}

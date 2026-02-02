@@ -139,3 +139,9 @@ u32 get_route_hook_addr() {
 u32 pa_from_va_ptr(u32 addr) {
   return (u32)PA_FROM_VA_PTR(addr);
 }
+
+bool is_citra() {
+  s64 out = 0;
+  svcGetSystemInfo(&out, 0x20000, 0);
+  return out != 0;
+}

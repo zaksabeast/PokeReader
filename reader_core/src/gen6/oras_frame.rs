@@ -1,6 +1,6 @@
 use super::{
     draw::{
-        PkxType, draw_daycare, draw_dex_nav, draw_header, draw_mirage_spot, draw_pkx, draw_rng, draw_seed_rng,
+        draw_daycare, draw_dex_nav, draw_header, draw_mirage_spot, draw_pkx, draw_rng, draw_seed_rng, PkxType,
     },
     reader::Gen6Reader,
     rng::Gen6Rng,
@@ -8,10 +8,10 @@ use super::{
 use crate::{
     pnp,
     utils::{
-        ShowView,
         help_menu::HelpMenu,
-        menu::{Menu, MenuOption, MenuOptionValue},
+        menu::{Menu, MenuOption},
         sub_menu::SubMenu,
+        ShowView,
     },
 };
 use once_cell::unsync::Lazy;
@@ -30,52 +30,37 @@ enum OrasView {
     HelpMenu,
 }
 
-impl MenuOptionValue for OrasView {
-    fn get_label(view: Self) -> &'static str {
-        match view {
-            Self::MainMenu => "Main Menu",
-            Self::Rng => "RNG",
-            Self::Daycare1 => "Daycare",
-            Self::Daycare2 => "Daycare 2",
-            Self::Wild => "Wild",
-            Self::DexNav => "DexNav",
-            Self::Party => "Party",
-            Self::MirageSpot => "Mirage Spot",
-            Self::SeedRng => "Seed RNG",
-            Self::HelpMenu => "Help",
-        }
-    }
-}
-
 struct PersistedState {
     rng: Gen6Rng,
     show_view: ShowView,
     view: OrasView,
-    main_menu: Menu<9, OrasView>,
-    party_menu: SubMenu<1, 6>,
-    wild_menu: SubMenu<1, 5>,
+    main_menu: Menu<OrasView>,
+    party_menu: SubMenu,
+    wild_menu: SubMenu,
     help_menu: HelpMenu,
 }
+
+const MENU: &'static [MenuOption<OrasView>] = &[
+    MenuOption::new(OrasView::Rng, "RNG"),
+    MenuOption::new(OrasView::Daycare1, "Daycare"),
+    MenuOption::new(OrasView::Daycare2, "Daycare 2"),
+    MenuOption::new(OrasView::Wild, "Wild"),
+    MenuOption::new(OrasView::DexNav, "DexNav"),
+    MenuOption::new(OrasView::Party, "Party"),
+    MenuOption::new(OrasView::MirageSpot, "Mirage Spot"),
+    MenuOption::new(OrasView::SeedRng, "Seed RNG"),
+    MenuOption::new(OrasView::HelpMenu, "Help"),
+];
 
 unsafe fn get_state() -> &'static mut PersistedState {
     static mut STATE: Lazy<PersistedState> = Lazy::new(|| PersistedState {
         rng: Gen6Rng::default(),
         show_view: ShowView::default(),
         view: OrasView::MainMenu,
-        party_menu: SubMenu::default(),
-        wild_menu: SubMenu::default(),
+        party_menu: SubMenu::new(1, 6),
+        wild_menu: SubMenu::new(1, 5),
         help_menu: HelpMenu::default(),
-        main_menu: Menu::new([
-            MenuOption::new(OrasView::Rng),
-            MenuOption::new(OrasView::Daycare1),
-            MenuOption::new(OrasView::Daycare2),
-            MenuOption::new(OrasView::Wild),
-            MenuOption::new(OrasView::DexNav),
-            MenuOption::new(OrasView::Party),
-            MenuOption::new(OrasView::MirageSpot),
-            MenuOption::new(OrasView::SeedRng),
-            MenuOption::new(OrasView::HelpMenu),
-        ]),
+        main_menu: Menu::new(MENU),
     });
     Lazy::force_mut(&mut STATE)
 }

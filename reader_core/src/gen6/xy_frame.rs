@@ -1,15 +1,15 @@
 use super::{
-    draw::{PkxType, draw_daycare, draw_header, draw_pkx, draw_radar, draw_rng, draw_seed_rng},
+    draw::{draw_daycare, draw_header, draw_pkx, draw_radar, draw_rng, draw_seed_rng, PkxType},
     reader::Gen6Reader,
     rng::Gen6Rng,
 };
 use crate::{
     pnp,
     utils::{
-        ShowView,
         help_menu::HelpMenu,
-        menu::{Menu, MenuOption, MenuOptionValue},
+        menu::{Menu, MenuOption},
         sub_menu::SubMenu,
+        ShowView,
     },
 };
 use once_cell::unsync::Lazy;
@@ -26,48 +26,35 @@ enum XyView {
     HelpMenu,
 }
 
-impl MenuOptionValue for XyView {
-    fn get_label(view: Self) -> &'static str {
-        match view {
-            Self::MainMenu => "Main Menu",
-            Self::Rng => "RNG",
-            Self::Daycare => "Daycare",
-            Self::Wild => "Wild",
-            Self::Radar => "Radar",
-            Self::Party => "Party",
-            Self::SeedRng => "Seed RNG",
-            Self::HelpMenu => "Help",
-        }
-    }
-}
-
 struct PersistedState {
     rng: Gen6Rng,
     show_view: ShowView,
     view: XyView,
-    main_menu: Menu<7, XyView>,
-    party_menu: SubMenu<1, 6>,
-    wild_menu: SubMenu<1, 5>,
+    main_menu: Menu<XyView>,
+    party_menu: SubMenu,
+    wild_menu: SubMenu,
     help_menu: HelpMenu,
 }
+
+const MENU: &'static [MenuOption<XyView>] = &[
+    MenuOption::new(XyView::Rng, "RNG"),
+    MenuOption::new(XyView::Daycare, "Daycare"),
+    MenuOption::new(XyView::Wild, "Wild"),
+    MenuOption::new(XyView::Radar, "Radar"),
+    MenuOption::new(XyView::Party, "Party"),
+    MenuOption::new(XyView::SeedRng, "Seed RNG"),
+    MenuOption::new(XyView::HelpMenu, "Help"),
+];
 
 unsafe fn get_state() -> &'static mut PersistedState {
     static mut STATE: Lazy<PersistedState> = Lazy::new(|| PersistedState {
         rng: Gen6Rng::default(),
         show_view: ShowView::default(),
         view: XyView::MainMenu,
-        party_menu: SubMenu::default(),
-        wild_menu: SubMenu::default(),
+        party_menu: SubMenu::new(1, 6),
+        wild_menu: SubMenu::new(1, 5),
         help_menu: HelpMenu::default(),
-        main_menu: Menu::new([
-            MenuOption::new(XyView::Rng),
-            MenuOption::new(XyView::Daycare),
-            MenuOption::new(XyView::Wild),
-            MenuOption::new(XyView::Radar),
-            MenuOption::new(XyView::Party),
-            MenuOption::new(XyView::SeedRng),
-            MenuOption::new(XyView::HelpMenu),
-        ]),
+        main_menu: Menu::new(MENU),
     });
     Lazy::force_mut(&mut STATE)
 }

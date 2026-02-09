@@ -1,34 +1,27 @@
 use crate::{draw::draw_version, pnp, pnp::Button, utils::CircularCounter};
 
-pub trait MenuOptionValue: Copy {
-    fn get_label(option: Self) -> &'static str;
-}
-
-pub struct MenuOption<Value: MenuOptionValue> {
+pub struct MenuOption<Value> {
     label: &'static str,
     value: Value,
 }
 
-impl<Value: MenuOptionValue> MenuOption<Value> {
-    pub fn new(value: Value) -> Self {
-        Self {
-            value,
-            label: Value::get_label(value),
-        }
+impl<Value> MenuOption<Value> {
+    pub const fn new(value: Value, label: &'static str) -> Self {
+        Self { value, label }
     }
 }
 
-pub struct Menu<const MAX: usize, Value: MenuOptionValue> {
+pub struct Menu<Value: 'static + Copy> {
     is_locked: bool,
-    counter: CircularCounter<1, MAX>,
-    options: [MenuOption<Value>; MAX],
+    counter: CircularCounter,
+    options: &'static [MenuOption<Value>],
 }
 
-impl<const MAX: usize, Value: MenuOptionValue> Menu<MAX, Value> {
-    pub fn new(options: [MenuOption<Value>; MAX]) -> Self {
+impl<Value: Copy> Menu<Value> {
+    pub fn new(options: &'static [MenuOption<Value>]) -> Self {
         Self {
             is_locked: false,
-            counter: CircularCounter::default(),
+            counter: CircularCounter::new(1, options.len()),
             options,
         }
     }
@@ -47,7 +40,11 @@ impl<const MAX: usize, Value: MenuOptionValue> Menu<MAX, Value> {
     }
 
     fn cursor_str(&self, index: usize) -> &str {
-        if self.counter.value() == index { ">" } else { " " }
+        if self.counter.value() == index {
+            ">"
+        } else {
+            " "
+        }
     }
 
     pub fn draw(&self) {

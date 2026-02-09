@@ -6,10 +6,10 @@ use super::{
 use crate::{
     pnp,
     utils::{
-        ShowView,
         help_menu::HelpMenu,
-        menu::{Menu, MenuOption, MenuOptionValue},
+        menu::{Menu, MenuOption},
         sub_menu::SubMenu,
+        ShowView,
     },
 };
 use once_cell::unsync::Lazy;
@@ -24,42 +24,31 @@ enum CrystalView {
     HelpMenu,
 }
 
-impl MenuOptionValue for CrystalView {
-    fn get_label(view: Self) -> &'static str {
-        match view {
-            Self::MainMenu => "Main Menu",
-            Self::Rng => "RNG",
-            Self::Party => "Party",
-            Self::Wild => "Wild",
-            Self::NonCfw => "Non-CFW",
-            Self::HelpMenu => "Help",
-        }
-    }
-}
-
 struct PersistedState {
     frame: usize,
     show_view: ShowView,
     view: CrystalView,
-    main_menu: Menu<5, CrystalView>,
-    party_menu: SubMenu<1, 6>,
+    main_menu: Menu<CrystalView>,
+    party_menu: SubMenu,
     help_menu: HelpMenu,
 }
+
+const MENU: &'static [MenuOption<CrystalView>] = &[
+    MenuOption::new(CrystalView::Rng, "RNG"),
+    MenuOption::new(CrystalView::Party, "Party"),
+    MenuOption::new(CrystalView::Wild, "Wild"),
+    MenuOption::new(CrystalView::NonCfw, "Non-CFW"),
+    MenuOption::new(CrystalView::HelpMenu, "Help"),
+];
 
 unsafe fn get_state() -> &'static mut PersistedState {
     static mut STATE: Lazy<PersistedState> = Lazy::new(|| PersistedState {
         frame: 0,
         show_view: ShowView::default(),
         view: CrystalView::MainMenu,
-        party_menu: SubMenu::default(),
+        party_menu: SubMenu::new(1, 6),
         help_menu: HelpMenu::default(),
-        main_menu: Menu::new([
-            MenuOption::new(CrystalView::Rng),
-            MenuOption::new(CrystalView::Party),
-            MenuOption::new(CrystalView::Wild),
-            MenuOption::new(CrystalView::NonCfw),
-            MenuOption::new(CrystalView::HelpMenu),
-        ]),
+        main_menu: Menu::new(MENU),
     });
     Lazy::force_mut(&mut STATE)
 }

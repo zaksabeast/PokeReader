@@ -61,7 +61,7 @@ const DAYS: [&'static str; 7] = [
     "Saturday",
 ];
 
-pub fn draw_non_cfw(reader: &Gen2Reader, frame: usize) {
+pub fn draw_research(reader: &Gen2Reader, frame: usize) {
     let day = DAYS.get(reader.time_day() as usize).unwrap_or(&"Invalid");
 
     draw_rng(reader);

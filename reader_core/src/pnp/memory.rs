@@ -1,10 +1,14 @@
 use super::bindings;
 use alloc::{vec, vec::Vec};
-use binrw::{BinRead, BinWrite, BinWriterExt, io::Cursor};
+use binrw::{io::Cursor, BinRead, BinWrite, BinWriterExt};
 use core::mem;
 
 pub fn pa_from_va_ptr(ptr: u32) -> u32 {
     unsafe { bindings::pa_from_va_ptr(ptr) }
+}
+
+pub fn is_memory_mapped(addr: u32) -> bool {
+    unsafe { bindings::is_memory_mapped(addr) }
 }
 
 pub fn read_array<const SIZE: usize>(addr: u32) -> [u8; SIZE] {

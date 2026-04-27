@@ -22,3 +22,4 @@ void set_route_hook_addr(u32 route_hook);
 u32 get_route_hook_addr();
 u32 pa_from_va_ptr(u32 addr);
 bool is_citra();
+bool is_memory_mapped(u32 addr);

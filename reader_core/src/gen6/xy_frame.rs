@@ -34,6 +34,7 @@ struct PersistedState {
     party_menu: SubMenu,
     wild_menu: SubMenu,
     help_menu: HelpMenu,
+    memory_ready: bool,
 }
 
 const MENU: &'static [MenuOption<XyView>] = &[
@@ -55,6 +56,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
         wild_menu: SubMenu::new(1, 5),
         help_menu: HelpMenu::default(),
         main_menu: Menu::new(MENU),
+        memory_ready: false,
     });
     Lazy::force_mut(&mut STATE)
 }
@@ -67,6 +69,14 @@ pub fn run_xy_frame() {
     // This is safe as long as this is guaranteed to run single threaded.
     // A lock hinders performance too much on a 3ds.
     let state = unsafe { get_state() };
+
+    // Check if memory is mapped before attempting to read
+    if !state.memory_ready {
+        if !reader.is_memory_ready() {
+            return;
+        }
+        state.memory_ready = true;
+    }
 
     state.rng.update(&reader);
 

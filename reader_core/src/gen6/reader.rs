@@ -112,6 +112,10 @@ impl Gen6Reader {
         }
     }
 
+    pub fn is_memory_ready(&self) -> bool {
+        pnp::is_memory_mapped(self.addrs.initial_seed)
+    }
+
     pub fn tid(&self) -> u16 {
         pnp::read::<u16>(self.addrs.tidsid)
     }

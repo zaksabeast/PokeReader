@@ -20,6 +20,7 @@ enum CrystalView {
     Rng,
     Party,
     Wild,
+    Egg,
     Research,
     HelpMenu,
 }
@@ -37,6 +38,7 @@ const MENU: &'static [MenuOption<CrystalView>] = &[
     MenuOption::new(CrystalView::Rng, "RNG"),
     MenuOption::new(CrystalView::Party, "Party"),
     MenuOption::new(CrystalView::Wild, "Wild"),
+    MenuOption::new(CrystalView::Egg, "Egg"),
     MenuOption::new(CrystalView::Research, "Research"),
     MenuOption::new(CrystalView::HelpMenu, "Help"),
 ];
@@ -85,6 +87,7 @@ pub fn run_frame() {
             let slot = state.party_menu.update_and_draw(is_locked);
             draw_pkx(&reader.party((slot - 1) as u8));
         }
+        CrystalView::Egg => draw_pkx(&reader.egg()),
         CrystalView::Research => draw_research(&reader, state.frame),
         CrystalView::HelpMenu => state.help_menu.update_and_draw(is_locked),
         CrystalView::MainMenu => {

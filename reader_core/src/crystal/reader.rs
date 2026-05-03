@@ -59,6 +59,13 @@ impl Gen2Reader {
         Pk2::new(spec_index, atkdef, spespc, 0)
     }
 
+    pub fn egg(&self) -> Pk2 {
+        let spec_index = gb_mem::read_u8(0xDF7B);
+        let atkdef = gb_mem::read_u8(0xDF90);
+        let spespc = gb_mem::read_u8(0xDF91);
+        Pk2::new(spec_index, atkdef, spespc, 0)
+    }
+
     pub fn rng_state(&self) -> u16 {
         gb_mem::read_u16(self.addrs.gb_rng_ptr)
     }

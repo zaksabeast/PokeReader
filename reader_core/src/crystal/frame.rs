@@ -34,7 +34,7 @@ struct PersistedState {
     help_menu: HelpMenu,
 }
 
-const MENU: &'static [MenuOption<CrystalView>] = &[
+const MENU: &[MenuOption<CrystalView>] = &[
     MenuOption::new(CrystalView::Rng, "RNG"),
     MenuOption::new(CrystalView::Party, "Party"),
     MenuOption::new(CrystalView::Wild, "Wild"),

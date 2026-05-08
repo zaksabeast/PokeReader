@@ -51,7 +51,7 @@ pub fn draw_pkx(pkx: &Pk2) {
     pnp::println!(color = get_iv_color(pkx.spe), "Spe DV: {}", pkx.spe);
 }
 
-const DAYS: [&'static str; 7] = [
+const DAYS: [&str; 7] = [
     "Sunday",
     "Monday",
     "Tuesday",

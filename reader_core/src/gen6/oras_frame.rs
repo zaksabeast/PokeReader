@@ -41,7 +41,7 @@ struct PersistedState {
     memory_ready: bool,
 }
 
-const MENU: &'static [MenuOption<OrasView>] = &[
+const MENU: &[MenuOption<OrasView>] = &[
     MenuOption::new(OrasView::Rng, "RNG"),
     MenuOption::new(OrasView::Daycare1, "Daycare"),
     MenuOption::new(OrasView::Daycare2, "Daycare 2"),

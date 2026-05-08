@@ -2,6 +2,7 @@
 macro_rules! game_fn {
   ($fn_name:ident($($param_name:ident: $param_type:ty),*) -> $return_type:ty = $address:expr) => {
       #[cfg(not(target_os = "horizon"))]
+      #[allow(unused_variables)]
       pub fn $fn_name($($param_name: $param_type),*) -> $return_type {
           Default::default()
       }

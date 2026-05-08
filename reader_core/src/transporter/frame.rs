@@ -31,7 +31,7 @@ struct PersistedState {
     pokemon_menu: SubMenu,
 }
 
-const MENU: &'static [MenuOption<TransporterView>] = &[
+const MENU: &[MenuOption<TransporterView>] = &[
     MenuOption::new(TransporterView::Rng, "RNG"),
     MenuOption::new(TransporterView::Pokemon, "Pokemon"),
     MenuOption::new(TransporterView::HelpMenu, "Help"),

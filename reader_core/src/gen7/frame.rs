@@ -56,7 +56,7 @@ struct PersistedState {
     pelago_menu: SubMenu,
 }
 
-const MENU: &'static [MenuOption<Gen7View>] = &[
+const MENU: &[MenuOption<Gen7View>] = &[
     MenuOption::new(Gen7View::Rng, "RNG"),
     MenuOption::new(Gen7View::Daycare, "Daycare"),
     MenuOption::new(Gen7View::WildPokemon, "Wild"),

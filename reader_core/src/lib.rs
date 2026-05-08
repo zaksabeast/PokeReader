@@ -65,9 +65,8 @@ fn initialize_loaded_title(title: LoadedTitle) {
 #[cfg(target_os = "horizon")]
 #[no_mangle]
 pub extern "C" fn initialize() {
-    match loaded_title() {
-        Ok(title) => initialize_loaded_title(title),
-        Err(_) => {}
+    if let Ok(title) = loaded_title() {
+        initialize_loaded_title(title);
     }
 }
 

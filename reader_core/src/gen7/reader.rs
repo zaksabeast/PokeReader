@@ -15,8 +15,9 @@ struct Gen7Addresses {
     sos: u32,
     orb_active: u32,
     sos_chain_length: u32,
+    sos_index: u32,
+    sos_sfmt_state: u32,
     // To be used in the future vvv
-    _sos_index: u32,
     _ally_id: u32,
     _prev_call_succeed: u32,
     //
@@ -41,7 +42,8 @@ const SM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     party: 0x34195e10,
     wild: 0x3002f7b8,
     sos: 0x3002f7b8,
-    _sos_index: 0x30039604,
+    sos_index: 0x30039604,
+    sos_sfmt_state: SM_SOS_SFMT_ADDR,
     orb_active: 0x3003960c,
     sos_chain_length: 0x3003960d,
     _ally_id: 0x3003960e,
@@ -67,7 +69,8 @@ const USUM_ADDRESSES: Gen7Addresses = Gen7Addresses {
     party: 0x33f7fa44,
     wild: 0x3002f9a0,
     sos: 0x3002f9a0,
-    _sos_index: 0x300397f0,
+    sos_index: 0x300397f0,
+    sos_sfmt_state: USUM_SOS_SFMT_ADDR,
     orb_active: 0x300397f8,
     sos_chain_length: 0x300397f9,
     _ally_id: 0x300397fa,
@@ -148,6 +151,19 @@ impl Gen7Reader {
             pnp::read(self.addrs.egg + 0x8),
             pnp::read(self.addrs.egg + 0xc),
         ]
+    }
+
+    fn sos_index(&self) -> u32 {
+        let index: u32 = pnp::read(self.addrs.sos_index);
+        match index {
+            0..=623 => index,
+            _ => 0,
+        }
+    }
+
+    pub fn sos_state(&self) -> u32 {
+        let index = self.sos_index();
+        pnp::read(self.addrs.sos_sfmt_state + if index != 624 { index * 4 } else { 0 })
     }
 
     pub fn sos_seed(&self) -> u32 {

@@ -1,12 +1,12 @@
 use crate::rng::Rng;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct Sfmt {
+pub struct Sfmt32 {
     index: usize,
     sfmt: [u32; 624],
 }
 
-impl Sfmt {
+impl Sfmt32 {
     pub fn new(seed: u32) -> Self {
         let mut rng = Self {
             sfmt: [0; 624],
@@ -36,21 +36,17 @@ impl Sfmt {
         self.sfmt[0] ^= !inner & 1;
     }
 
-    fn get_current_state(&self) -> u64 {
+    fn get_current_state(&self) -> u32 {
         let index = if self.index != 624 { self.index } else { 0 };
-        let low = self.sfmt[index] as u64;
-        let high = self.sfmt[index + 1] as u64;
-
-        low | (high << 32)
+        self.sfmt[index]
     }
 
-    pub fn next(&mut self) -> u64 {
+    pub fn next(&mut self) -> u32 {
         if self.index == 624 {
             self.shuffle();
         }
 
-        self.index += 2;
-
+        self.index += 1;
         self.get_current_state()
     }
 
@@ -95,7 +91,7 @@ impl Sfmt {
     }
 }
 
-impl Default for Sfmt {
+impl Default for Sfmt32 {
     fn default() -> Self {
         Self {
             index: 0,
@@ -104,12 +100,12 @@ impl Default for Sfmt {
     }
 }
 
-impl Rng for Sfmt {
+impl Rng for Sfmt32 {
     type Seed = u32;
-    type CurrentState = u64;
+    type CurrentState = u32;
 
     fn new(seed: Self::Seed) -> Self {
-        Sfmt::new(seed)
+        Sfmt32::new(seed)
     }
 
     fn next_state(&mut self) -> Self::CurrentState {
@@ -121,29 +117,93 @@ impl Rng for Sfmt {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub struct Sfmt64 {
+    inner: Sfmt32,
+}
+
+impl Rng for Sfmt64 {
+    type Seed = u32;
+    type CurrentState = u64;
+
+    fn new(seed: Self::Seed) -> Self {
+        Self {
+            inner: Sfmt32::new(seed),
+        }
+    }
+
+    fn current_state(&mut self) -> Self::CurrentState {
+        let inner_index = self.inner.index;
+        let index = if inner_index != 624 { inner_index } else { 0 };
+        let low = self.inner.sfmt[index] as u64;
+        let high = self.inner.sfmt[index + 1] as u64;
+
+        low | (high << 32)
+    }
+
+    fn next_state(&mut self) -> Self::CurrentState {
+        if self.inner.index == 624 {
+            self.inner.shuffle();
+        }
+
+        self.inner.index += 2;
+        self.current_state()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
 
-    #[test]
-    fn test_shuffle() {
-        let mut rng = Sfmt::new(0x7725e5e1);
-        for _ in 0..1000 {
-            rng.next();
+    mod sfmt32 {
+        use super::*;
+
+        #[test]
+        fn test_shuffle() {
+            let mut rng = Sfmt32::new(0x7725e5e1);
+            for _ in 0..1000 {
+                rng.next_state();
+            }
+
+            let result = rng.next_state();
+            assert_eq!(result, 0xa871c1b1);
         }
 
-        let result = rng.next();
-        assert_eq!(result, 0xf37f2d8313a9eeac);
+        #[test]
+        fn test_next_should_return_state_before_shuffle() {
+            let mut rng = Sfmt32::new(0xc91cc389);
+            for _ in 0..624 {
+                rng.next_state();
+            }
+
+            let result = rng.next_state();
+            assert_eq!(result, 0xb5618d99);
+        }
     }
 
-    #[test]
-    fn test_next_should_return_state_before_shuffle() {
-        let mut rng = Sfmt::new(0xc91cc389);
-        for _ in 0..624 {
-            rng.next();
+    mod sfmt64 {
+        use super::*;
+
+        #[test]
+        fn test_shuffle() {
+            let mut rng = Sfmt64::new(0x7725e5e1);
+            for _ in 0..1000 {
+                rng.next_state();
+            }
+
+            let result = rng.next_state();
+            assert_eq!(result, 0xf37f2d8313a9eeac);
         }
 
-        let result = rng.next();
-        assert_eq!(result, 0xf05d06ac9b22b08f);
+        #[test]
+        fn test_next_should_return_state_before_shuffle() {
+            let mut rng = Sfmt64::new(0xc91cc389);
+            for _ in 0..624 {
+                rng.next_state();
+            }
+
+            let result = rng.next_state();
+            assert_eq!(result, 0xf05d06ac9b22b08f);
+        }
     }
 }

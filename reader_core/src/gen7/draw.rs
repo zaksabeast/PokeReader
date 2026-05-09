@@ -1,13 +1,13 @@
 use super::reader::Gen7Reader;
 use crate::{
     pnp,
-    rng::{RngWrapper, Sfmt},
+    rng::{RngWrapper, Sfmt32, Sfmt64},
     utils::{format_egg_parent, is_daycare_masuda_method},
 };
 
 pub use crate::draw::{draw_header, draw_pkx, draw_pkx_brief, get_pp, print_pp, PkxType, GREEN, RED, WHITE};
 
-pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt>) {
+pub fn draw_rng(reader: &Gen7Reader, rng: &RngWrapper<Sfmt64>) {
     let sfmt_state = rng.current_state();
 
     pnp::println!("Seed:     {:08X}", rng.init_seed());
@@ -32,9 +32,19 @@ pub fn draw_citra_info(reader: &Gen7Reader) {
     pnp::println!("On citra: {}", pnp::is_citra());
 }
 
-pub fn draw_sos(reader: &Gen7Reader, slot: u32, correction: u32) {
-    pnp::println!("SOS Seed: {:08X}", reader.sos_seed());
-    pnp::println!("SOS Chain Length: {}", reader.sos_chain());
+pub fn draw_sos(reader: &Gen7Reader, sos_rng: &mut RngWrapper<Sfmt32>, slot: u32, correction: u32) {
+    let sos_seed = reader.sos_seed();
+    let sos_state = reader.sos_state();
+    let sos_chain_length = reader.sos_chain();
+
+    sos_rng.reinit_if_needed(sos_seed);
+    sos_rng.update_advances(sos_state);
+
+    pnp::println!("SOS Seed: {:08X}", sos_rng.init_seed());
+    pnp::println!("SOS Chain Length: {}", sos_chain_length);
+    pnp::println!("SOS State: {:08X}", sos_state);
+    pnp::println!("SOS Index: {}", sos_rng.advances());
+    pnp::println!("");
     if reader.orb_active() {
         pnp::println!(color = GREEN, "Orb Active")
     } else {

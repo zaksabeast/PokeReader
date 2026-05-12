@@ -46,7 +46,7 @@ fn my_panic(info: &core::panic::PanicInfo) -> ! {
     loop {}
 }
 
-fn initialize_loaded_title(title: LoadedTitle) {
+fn initialize_loaded_title(title: &LoadedTitle) {
     match title {
         LoadedTitle::S | LoadedTitle::M => gen7::init_sm(),
         LoadedTitle::Us => gen7::init_us(),
@@ -70,7 +70,7 @@ pub extern "C" fn initialize() {
     }
 }
 
-fn run_loaded_title_frame(title: LoadedTitle) {
+fn run_loaded_title_frame(title: &LoadedTitle) {
     match title {
         LoadedTitle::S | LoadedTitle::M => gen7::run_sm_frame(),
         LoadedTitle::Us | LoadedTitle::Um => gen7::run_usum_frame(),
@@ -91,6 +91,7 @@ pub extern "C" fn run_frame() {
         Ok(title) => run_loaded_title_frame(title),
         Err(TitleError::InvalidUpdate {
             remaster_version,
+            debug_info,
             is_citra,
         }) => {
             pnp::println!("Unsupported game update!");
@@ -107,6 +108,10 @@ pub extern "C" fn run_frame() {
                 }
             );
             pnp::println!("Update ver {}", remaster_version);
+            pnp::println!("Debug: {}", debug_info.as_deref().unwrap_or_default());
+            pnp::println!("");
+            pnp::println!("PokeReader version:");
+            pnp::println!("{} {}", VERSION, GIT_HASH);
         }
         Err(TitleError::InvalidTitle) => {}
     }

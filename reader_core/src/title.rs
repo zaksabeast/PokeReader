@@ -64,7 +64,7 @@ fn get_citra_title_version(title: LoadedTitle) -> UpdateInfo {
     match title {
         LoadedTitle::S => check_citra_title_version(0x3d3a90, b"8QjtffIMWFhiFpTz", 2),
         LoadedTitle::M => check_citra_title_version(0x3d3a90, b"7mXz0DXR4b4CdD8r", 2),
-        LoadedTitle::Us => check_citra_title_version(0x3e5888, b"fnCAH3KrGIl9dgSd", 2),
+        LoadedTitle::Us => check_citra_title_version(0x3e5884, b"fnCAH3KrGIl9dgSd", 2),
         LoadedTitle::Um => check_citra_title_version(0x3e5888, b"b3Gq6LF6EqE1bvKy", 2),
         LoadedTitle::Or => check_citra_title_version(0x1086bc, b"cRFY0WFHNjPh44If", 7),
         LoadedTitle::As => check_citra_title_version(0x1086bc, b"guBwm9TlQvYvncKn", 7),

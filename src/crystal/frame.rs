@@ -4,7 +4,7 @@ use super::{
     reader::Gen2Reader,
 };
 use crate::{
-    pnp,
+    ctr,
     utils::{
         ShowView,
         help_menu::HelpMenu,
@@ -56,7 +56,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
 }
 
 pub fn run_frame() {
-    pnp::set_print_max_len(22);
+    ctr::set_print_max_len(22);
 
     let reader = Gen2Reader::crystal();
 

@@ -1,5 +1,5 @@
 use super::title::{LoadedTitle, TitleError, loaded_title};
-use crate::{GIT_HASH, VERSION, crystal, gen6, gen7, pnp, transporter};
+use crate::{GIT_HASH, VERSION, crystal, ctr, gen6, gen7, transporter};
 
 fn run_loaded_title_frame(title: &LoadedTitle) {
     match title {
@@ -24,30 +24,30 @@ pub fn run_frame() {
             debug_info,
             is_citra,
         }) => {
-            pnp::println!("Unsupported game update!");
-            pnp::println!("");
-            pnp::println!("Please update your game");
-            pnp::println!("for PokeReader to run");
-            pnp::println!("");
-            pnp::println!("Detected info:");
-            pnp::println!(
+            ctr::println!("Unsupported game update!");
+            ctr::println!("");
+            ctr::println!("Please update your game");
+            ctr::println!("for PokeReader to run");
+            ctr::println!("");
+            ctr::println!("Detected info:");
+            ctr::println!(
                 "Playing on {}",
                 match is_citra {
                     true => "Citra",
                     false => "Real hardware",
                 }
             );
-            pnp::println!("Update ver {}", remaster_version);
-            pnp::println!("Debug: {}", debug_info.as_deref().unwrap_or_default());
-            pnp::println!("");
-            pnp::println!("PokeReader version:");
-            pnp::println!("{} {}", VERSION, GIT_HASH);
+            ctr::println!("Update ver {}", remaster_version);
+            ctr::println!("Debug: {}", debug_info.as_deref().unwrap_or_default());
+            ctr::println!("");
+            ctr::println!("PokeReader version:");
+            ctr::println!("{} {}", VERSION, GIT_HASH);
         }
         Err(TitleError::CouldNotGetProgramInfo) => {
-            pnp::println!("Could not get program info!");
-            pnp::println!("");
-            pnp::println!("PokeReader version:");
-            pnp::println!("{} {}", VERSION, GIT_HASH);
+            ctr::println!("Could not get program info!");
+            ctr::println!("");
+            ctr::println!("PokeReader version:");
+            ctr::println!("{} {}", VERSION, GIT_HASH);
         }
         Err(TitleError::InvalidTitle) => {}
     }

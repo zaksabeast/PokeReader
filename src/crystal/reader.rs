@@ -1,6 +1,6 @@
 use super::game_lib::gb_mem;
 use super::pk2::Pk2;
-use crate::pnp;
+use crate::memory;
 
 struct Gen2Addresses {
     div_ptr: u32,
@@ -36,11 +36,11 @@ impl Gen2Reader {
     }
 
     pub fn div(&self) -> u8 {
-        pnp::read(pnp::read::<u32>(self.addrs.div_ptr))
+        memory::read(memory::read::<u32>(self.addrs.div_ptr))
     }
 
     pub fn pc_reg(&self) -> u16 {
-        pnp::read(self.addrs.pc_reg_ptr)
+        memory::read(self.addrs.pc_reg_ptr)
     }
 
     pub fn party(&self, slot: u8) -> Pk2 {

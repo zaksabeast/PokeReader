@@ -1,5 +1,6 @@
 use super::CircularCounter;
-use crate::pnp;
+use crate::ctr;
+use crate::ctr::hid::{self, Button};
 
 pub struct SubMenu {
     counter: CircularCounter,
@@ -13,9 +14,9 @@ impl SubMenu {
     }
 
     fn draw_header(&self) {
-        pnp::println!("Slot {}", self.counter.value());
-        pnp::println!("[v] Next | Prev [^]");
-        pnp::println!("");
+        ctr::println!("Slot {}", self.counter.value());
+        ctr::println!("[v] Next | Prev [^]");
+        ctr::println!("");
     }
 
     fn update_counter(&mut self, is_locked: bool) {
@@ -23,9 +24,9 @@ impl SubMenu {
             return;
         }
 
-        if pnp::is_just_pressed(pnp::Button::Ddown) {
+        if hid::is_just_pressed(Button::Ddown) {
             self.counter.increment();
-        } else if pnp::is_just_pressed(pnp::Button::Dup) {
+        } else if hid::is_just_pressed(Button::Dup) {
             self.counter.decrement();
         }
     }

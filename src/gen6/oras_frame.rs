@@ -6,7 +6,7 @@ use super::{
     rng::Gen6Rng,
 };
 use crate::{
-    pnp,
+    ctr,
     utils::{
         ShowView,
         help_menu::HelpMenu,
@@ -68,7 +68,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
 }
 
 pub fn run_oras_frame() {
-    pnp::set_print_max_len(23);
+    ctr::set_print_max_len(23);
 
     let reader = Gen6Reader::oras();
 

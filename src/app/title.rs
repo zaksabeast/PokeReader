@@ -1,5 +1,5 @@
 use crate::ctr::program::get_program_info;
-use crate::pnp;
+use crate::{ctr, memory};
 use alloc::{format, string::String};
 use num_enum::TryFromPrimitive;
 
@@ -54,7 +54,7 @@ static mut LOAD_RESULT: Result<LoadedTitle, TitleError> = Err(TitleError::Invali
 // the running game is the latest version by checking a known, unique
 // 16-byte value located at a fixed address in the game's memory.
 fn check_citra_title_version(addr: u32, expected: &'static [u8; 16], version: u16) -> UpdateInfo {
-    let version_bytes = pnp::read_array::<16>(addr);
+    let version_bytes = memory::read_array::<16>(addr);
     let version = match &version_bytes == expected {
         true => version,
         false => 0,
@@ -101,7 +101,7 @@ fn get_citra_title_version(title: LoadedTitle) -> UpdateInfo {
 }
 
 fn get_update_version(title: LoadedTitle, version: u16) -> UpdateInfo {
-    if pnp::is_citra() {
+    if ctr::is_citra() {
         return get_citra_title_version(title);
     }
 
@@ -156,7 +156,7 @@ pub fn loaded_title() -> &'static Result<LoadedTitle, TitleError> {
             (_, remaster_version) => Err(TitleError::InvalidUpdate {
                 remaster_version,
                 debug_info: update_info.debug_info,
-                is_citra: pnp::is_citra(),
+                is_citra: ctr::is_citra(),
             }),
         };
 

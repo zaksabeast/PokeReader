@@ -1,5 +1,5 @@
 use super::hook;
-use crate::pnp;
+use crate::memory;
 use chrono::NaiveDate;
 use pkm_rs::{Pk6, PokeCrypto};
 
@@ -113,15 +113,15 @@ impl Gen6Reader {
     }
 
     pub fn is_memory_ready(&self) -> bool {
-        pnp::is_memory_mapped(self.addrs.initial_seed)
+        memory::is_memory_mapped(self.addrs.initial_seed)
     }
 
     pub fn tid(&self) -> u16 {
-        pnp::read::<u16>(self.addrs.tidsid)
+        memory::read::<u16>(self.addrs.tidsid)
     }
 
     pub fn sid(&self) -> u16 {
-        pnp::read::<u16>(self.addrs.tidsid + 2)
+        memory::read::<u16>(self.addrs.tidsid + 2)
     }
 
     pub fn tsv(&self) -> u16 {
@@ -135,10 +135,10 @@ impl Gen6Reader {
     pub fn daycare1(&self) -> Daycare {
         Daycare {
             egg_seed: [
-                pnp::read(self.addrs.egg_seed_1 + 0x4),
-                pnp::read(self.addrs.egg_seed_1),
+                memory::read(self.addrs.egg_seed_1 + 0x4),
+                memory::read(self.addrs.egg_seed_1),
             ],
-            is_egg_ready: pnp::read::<u8>(self.addrs.egg_ready_1) != 0,
+            is_egg_ready: memory::read::<u8>(self.addrs.egg_ready_1) != 0,
             parent1: self.egg_parent(self.addrs.is_parent1_occupied_1, self.addrs.parent1_1),
             parent2: self.egg_parent(self.addrs.is_parent2_occupied_1, self.addrs.parent2_1),
         }
@@ -147,26 +147,26 @@ impl Gen6Reader {
     pub fn daycare2(&self) -> Daycare {
         Daycare {
             egg_seed: [
-                pnp::read(self.addrs.egg_seed_2 + 0x4),
-                pnp::read(self.addrs.egg_seed_2),
+                memory::read(self.addrs.egg_seed_2 + 0x4),
+                memory::read(self.addrs.egg_seed_2),
             ],
-            is_egg_ready: pnp::read::<u8>(self.addrs.egg_ready_2) != 0,
+            is_egg_ready: memory::read::<u8>(self.addrs.egg_ready_2) != 0,
             parent1: self.egg_parent(self.addrs.is_parent1_occupied_2, self.addrs.parent1_2),
             parent2: self.egg_parent(self.addrs.is_parent2_occupied_2, self.addrs.parent2_2),
         }
     }
 
     pub fn initial_seed(&self) -> u32 {
-        pnp::read(self.addrs.initial_seed)
+        memory::read(self.addrs.initial_seed)
     }
 
     fn mt_state_index(&self) -> u32 {
-        pnp::read(self.addrs.mt_state_index)
+        memory::read(self.addrs.mt_state_index)
     }
 
     pub fn mt_state(&self) -> u32 {
         let index = self.mt_state_index();
-        pnp::read(self.addrs.mt_start + if index != 624 { index * 4 } else { 0 })
+        memory::read(self.addrs.mt_start + if index != 624 { index * 4 } else { 0 })
     }
 
     pub fn tinymt_seed(&self) -> u32 {
@@ -175,15 +175,15 @@ impl Gen6Reader {
 
     pub fn tinymt_state(&self) -> [u32; 4] {
         [
-            pnp::read(self.addrs.tinymt_state),
-            pnp::read(self.addrs.tinymt_state + 0x4),
-            pnp::read(self.addrs.tinymt_state + 0x8),
-            pnp::read(self.addrs.tinymt_state + 0xc),
+            memory::read(self.addrs.tinymt_state),
+            memory::read(self.addrs.tinymt_state + 0x4),
+            memory::read(self.addrs.tinymt_state + 0x8),
+            memory::read(self.addrs.tinymt_state + 0xc),
         ]
     }
 
     fn read_pk6(&self, offset: u32) -> Pk6 {
-        let bytes = pnp::read_array::<{ Pk6::STORED_SIZE }>(offset);
+        let bytes = memory::read_array::<{ Pk6::STORED_SIZE }>(offset);
         Pk6::new_valid(bytes)
     }
 
@@ -198,7 +198,7 @@ impl Gen6Reader {
     }
 
     fn egg_parent(&self, is_present: u32, pkm: u32) -> Option<Pk6> {
-        let is_parent_present = pnp::read::<u8>(is_present) != 0;
+        let is_parent_present = memory::read::<u8>(is_present) != 0;
 
         if !is_parent_present {
             return None;
@@ -209,38 +209,38 @@ impl Gen6Reader {
     }
 
     pub fn radar_chain(&self) -> u8 {
-        pnp::read(self.addrs.radar_chain)
+        memory::read(self.addrs.radar_chain)
     }
 
     pub fn dex_nav_step(&self) -> u8 {
-        pnp::read(self.addrs.dex_nav_step)
+        memory::read(self.addrs.dex_nav_step)
     }
 
     pub fn dex_nav_chain(&self) -> u8 {
-        pnp::read(self.addrs.dex_nav_chain)
+        memory::read(self.addrs.dex_nav_chain)
     }
 
     pub fn seed_save_variable(&self) -> u32 {
-        pnp::read(self.addrs.seed_save_variable)
+        memory::read(self.addrs.seed_save_variable)
     }
 
     pub fn mirage_spot_id(&self) -> u16 {
-        pnp::read(self.addrs.mirage_spot_id)
+        memory::read(self.addrs.mirage_spot_id)
     }
 
     pub fn mirage_spot_seed(&self) -> u32 {
-        pnp::read(self.addrs.mirage_spot_seed)
+        memory::read(self.addrs.mirage_spot_seed)
     }
 
     pub fn time_penalty_hours(&self) -> u32 {
-        pnp::read(self.addrs.last_save_date_struct + 0x30)
+        memory::read(self.addrs.last_save_date_struct + 0x30)
     }
 
     pub fn last_save_date(&self) -> NaiveDate {
         let last_save_date = self.addrs.last_save_date_struct;
-        let year = pnp::read::<u32>(last_save_date + 0xc);
-        let month = pnp::read::<u8>(last_save_date + 0x10);
-        let day = pnp::read::<u8>(last_save_date + 0x11);
+        let year = memory::read::<u32>(last_save_date + 0xc);
+        let month = memory::read::<u8>(last_save_date + 0x10);
+        let day = memory::read::<u8>(last_save_date + 0x11);
         NaiveDate::from_ymd_opt(year as i32, month as u32, day as u32).unwrap_or_default()
     }
 }

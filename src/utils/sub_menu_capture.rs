@@ -1,5 +1,5 @@
 use super::CircularCounter;
-use crate::pnp;
+use crate::ctr::hid::{self, Button};
 
 pub struct SubMenuCapture {
     counter: CircularCounter,
@@ -19,13 +19,13 @@ impl SubMenuCapture {
             return;
         }
 
-        if pnp::is_just_pressed(pnp::Button::Ddown | pnp::Button::X) {
+        if hid::is_just_pressed(Button::Ddown | Button::X) {
             self.counter.increment();
             self.value = capture_value;
-        } else if pnp::is_just_pressed(pnp::Button::Dup | pnp::Button::X) {
+        } else if hid::is_just_pressed(Button::Dup | Button::X) {
             self.counter.decrement();
             self.value = capture_value;
-        } else if pnp::is_just_pressed(pnp::Button::Dright | pnp::Button::X) {
+        } else if hid::is_just_pressed(Button::Dright | Button::X) {
             self.counter.set(set_value);
             self.value = capture_value;
         }

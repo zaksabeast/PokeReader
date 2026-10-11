@@ -3,10 +3,6 @@ use alloc::{vec, vec::Vec};
 use binrw::{BinRead, BinWrite, BinWriterExt, io::Cursor};
 use core::mem;
 
-pub fn pa_from_va_ptr(ptr: u32) -> u32 {
-    ctr::pa_from_va_ptr(ptr)
-}
-
 pub fn is_memory_mapped(addr: u32) -> bool {
     ctr::query_memory(addr).is_ok()
 }

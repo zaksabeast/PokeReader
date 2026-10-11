@@ -1,8 +1,9 @@
 use super::hook::{add_div_tracker, measured_div, rng_advance, sub_div_tracker};
 use super::pk2::Pk2;
 use super::reader::Gen2Reader;
+use crate::ctr;
+use crate::ctr::hid::{self, Button};
 pub use crate::draw::draw_header;
-use crate::pnp::{self, Button};
 
 const WHITE: u32 = 0xffffff;
 const GREEN: u32 = 0x003c00;
@@ -26,29 +27,29 @@ fn get_shiny_color(is_shiny: bool) -> u32 {
 
 pub fn draw_rng(reader: &Gen2Reader) {
     match add_div_tracker().index() {
-        Some(index) => pnp::println!("ADIV Index {}", index),
-        None => pnp::println!("Finding ADIV Index..."),
+        Some(index) => ctr::println!("ADIV Index {}", index),
+        None => ctr::println!("Finding ADIV Index..."),
     };
     match sub_div_tracker().index() {
-        Some(index) => pnp::println!("SDIV Index {}", index),
-        None => pnp::println!("Finding SDIV Index..."),
+        Some(index) => ctr::println!("SDIV Index {}", index),
+        None => ctr::println!("Finding SDIV Index..."),
     }
-    pnp::println!("DIV {:04X}", measured_div());
-    pnp::println!("State {:04X}", reader.rng_state());
-    pnp::println!("Advances {}", rng_advance());
-    pnp::println!("");
-    pnp::println!("TID {}", reader.trainer_id());
+    ctr::println!("DIV {:04X}", measured_div());
+    ctr::println!("State {:04X}", reader.rng_state());
+    ctr::println!("Advances {}", rng_advance());
+    ctr::println!("");
+    ctr::println!("TID {}", reader.trainer_id());
 }
 
 pub fn draw_pkx(pkx: &Pk2) {
-    pnp::println!("Species: {}", pkx.species);
-    pnp::println!(color = get_shiny_color(pkx.shiny), "Shiny: {}", pkx.shiny);
-    pnp::println!("HPower: {} {}", pkx.hidden_power_type, pkx.hidden_power_base);
-    pnp::println!(color = get_iv_color(pkx.hp), "HP  DV: {}", pkx.hp);
-    pnp::println!(color = get_iv_color(pkx.atk), "Atk DV: {}", pkx.atk);
-    pnp::println!(color = get_iv_color(pkx.def), "Def DV: {}", pkx.def);
-    pnp::println!(color = get_iv_color(pkx.spc), "Spc DV: {}", pkx.spc);
-    pnp::println!(color = get_iv_color(pkx.spe), "Spe DV: {}", pkx.spe);
+    ctr::println!("Species: {}", pkx.species);
+    ctr::println!(color = get_shiny_color(pkx.shiny), "Shiny: {}", pkx.shiny);
+    ctr::println!("HPower: {} {}", pkx.hidden_power_type, pkx.hidden_power_base);
+    ctr::println!(color = get_iv_color(pkx.hp), "HP  DV: {}", pkx.hp);
+    ctr::println!(color = get_iv_color(pkx.atk), "Atk DV: {}", pkx.atk);
+    ctr::println!(color = get_iv_color(pkx.def), "Def DV: {}", pkx.def);
+    ctr::println!(color = get_iv_color(pkx.spc), "Spc DV: {}", pkx.spc);
+    ctr::println!(color = get_iv_color(pkx.spe), "Spe DV: {}", pkx.spe);
 }
 
 const DAYS: [&str; 7] = [
@@ -65,18 +66,18 @@ pub fn draw_research(reader: &Gen2Reader, frame: usize) {
     let day = DAYS.get(reader.time_day() as usize).unwrap_or(&"Invalid");
 
     draw_rng(reader);
-    pnp::println!("");
-    pnp::println!("Frame {}", frame);
-    pnp::println!("A Press {}", pnp::is_pressing(Button::A));
-    pnp::println!("DST {}", reader.dst());
-    pnp::println!("Day {}", day);
-    pnp::println!(
+    ctr::println!("");
+    ctr::println!("Frame {}", frame);
+    ctr::println!("A Press {}", hid::is_pressing(Button::A));
+    ctr::println!("DST {}", reader.dst());
+    ctr::println!("Day {}", day);
+    ctr::println!(
         "IGT {}:{:02}:{:02}",
         reader.time_hours(),
         reader.time_minutes(),
         reader.time_seconds()
     );
-    pnp::println!(
+    ctr::println!(
         "Play time {}:{:02}:{:02}",
         reader.play_hours(),
         reader.play_minutes(),

@@ -1,5 +1,5 @@
 use super::{game_lib, hook};
-use crate::pnp;
+use crate::memory;
 use core::num::{NonZeroU8, NonZeroU32};
 use pkm_rs::{Pk7, PokeCrypto};
 
@@ -110,17 +110,17 @@ impl Gen7Reader {
     }
 
     pub fn g7tid(&self) -> u32 {
-        let sidtid = pnp::read::<u32>(self.addrs.id);
+        let sidtid = memory::read::<u32>(self.addrs.id);
 
         sidtid % 1000000
     }
 
     fn tid(&self) -> u16 {
-        pnp::read::<u16>(self.addrs.id)
+        memory::read::<u16>(self.addrs.id)
     }
 
     fn sid(&self) -> u16 {
-        pnp::read::<u16>(self.addrs.id + 2)
+        memory::read::<u16>(self.addrs.id + 2)
     }
 
     pub fn tsv(&self) -> u16 {
@@ -132,29 +132,29 @@ impl Gen7Reader {
     }
 
     pub fn init_seed(&self) -> u32 {
-        pnp::read(self.addrs.initial_seed)
+        memory::read(self.addrs.initial_seed)
     }
 
     fn sfmt_state_index(&self) -> u32 {
-        pnp::read(self.addrs.sfmt_state_index)
+        memory::read(self.addrs.sfmt_state_index)
     }
 
     pub fn sfmt_state(&self) -> u64 {
         let index = self.sfmt_state_index();
-        pnp::read(self.addrs.sfmt_state + if index != 624 { index * 4 } else { 0 })
+        memory::read(self.addrs.sfmt_state + if index != 624 { index * 4 } else { 0 })
     }
 
     pub fn egg_seed(&self) -> [u32; 4] {
         [
-            pnp::read(self.addrs.egg),
-            pnp::read(self.addrs.egg + 0x4),
-            pnp::read(self.addrs.egg + 0x8),
-            pnp::read(self.addrs.egg + 0xc),
+            memory::read(self.addrs.egg),
+            memory::read(self.addrs.egg + 0x4),
+            memory::read(self.addrs.egg + 0x8),
+            memory::read(self.addrs.egg + 0xc),
         ]
     }
 
     fn sos_index(&self) -> u32 {
-        let index: u32 = pnp::read(self.addrs.sos_index);
+        let index: u32 = memory::read(self.addrs.sos_index);
         match index {
             0..=623 => index,
             _ => 0,
@@ -163,7 +163,7 @@ impl Gen7Reader {
 
     pub fn sos_state(&self) -> u32 {
         let index = self.sos_index();
-        pnp::read(self.addrs.sos_sfmt_state + if index != 624 { index * 4 } else { 0 })
+        memory::read(self.addrs.sos_sfmt_state + if index != 624 { index * 4 } else { 0 })
     }
 
     pub fn sos_seed(&self) -> u32 {
@@ -171,10 +171,10 @@ impl Gen7Reader {
     }
 
     pub fn sos_chain(&self) -> u8 {
-        pnp::read(self.addrs.sos_chain_length)
+        memory::read(self.addrs.sos_chain_length)
     }
     pub fn orb_active(&self) -> bool {
-        (pnp::read::<u8>(self.addrs.orb_active) & 0x1) > 0
+        (memory::read::<u8>(self.addrs.orb_active) & 0x1) > 0
     }
     pub fn ally_slot(&self, caller_slot: u32, correction: u32) -> u32 {
         if self.sos_chain() == 0 {
@@ -185,7 +185,7 @@ impl Gen7Reader {
     }
 
     fn read_pk7(&self, offset: u32) -> Pk7 {
-        let bytes = pnp::read_array::<{ Pk7::STORED_SIZE }>(offset);
+        let bytes = memory::read_array::<{ Pk7::STORED_SIZE }>(offset);
         Pk7::new_valid(bytes)
     }
 
@@ -195,7 +195,7 @@ impl Gen7Reader {
     }
 
     fn egg_parent(&self, is_present: u32, pkm: u32) -> Option<Pk7> {
-        let is_parent_present = pnp::read::<u8>(is_present) != 0;
+        let is_parent_present = memory::read::<u8>(is_present) != 0;
 
         if !is_parent_present {
             return None;
@@ -234,7 +234,7 @@ impl Gen7Reader {
     }
 
     pub fn is_egg_ready(&self) -> bool {
-        pnp::read::<u8>(self.addrs.egg_ready) != 0
+        memory::read::<u8>(self.addrs.egg_ready) != 0
     }
 
     fn has_item(&self, offset: u32, item_id: u32, count: u32) -> bool {
@@ -252,16 +252,17 @@ impl Gen7Reader {
     pub fn npc_count(&self) -> u8 {
         let mut npc_count: u8 = 0;
         for index in 0..35 {
-            let npc = pnp::read::<u32>(self.addrs.npc_list + (index * 4));
-            let is_present = pnp::read::<u32>(npc + 0xbc) != 0 && pnp::read::<u32>(npc + 0xc0) != 0;
-            let can_blink = pnp::read::<u32>(npc + 0xe8) == 0;
+            let npc = memory::read::<u32>(self.addrs.npc_list + (index * 4));
+            let is_present = memory::read::<u32>(npc + 0xbc) != 0 && memory::read::<u32>(npc + 0xc0) != 0;
+            let can_blink = memory::read::<u32>(npc + 0xe8) == 0;
 
             if is_present && can_blink {
-                let blink_type = NonZeroU32::new(pnp::read::<u32>(npc + self.addrs.npc_head_blinking_offset))
-                    .and_then(|struct_ptr| NonZeroU32::new(pnp::read::<u32>(struct_ptr.get() + 0x114)))
-                    .and_then(|struct_ptr| NonZeroU8::new(pnp::read::<u8>(struct_ptr.get() + 0xde)))
-                    .map(|blink_setting| blink_setting.get())
-                    .unwrap_or_default();
+                let blink_type =
+                    NonZeroU32::new(memory::read::<u32>(npc + self.addrs.npc_head_blinking_offset))
+                        .and_then(|struct_ptr| NonZeroU32::new(memory::read::<u32>(struct_ptr.get() + 0x114)))
+                        .and_then(|struct_ptr| NonZeroU8::new(memory::read::<u8>(struct_ptr.get() + 0xde)))
+                        .map(|blink_setting| blink_setting.get())
+                        .unwrap_or_default();
                 let is_blinking = blink_type == 1 || blink_type == 2;
                 if is_blinking {
                     npc_count += 1;

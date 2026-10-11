@@ -1,4 +1,4 @@
-use crate::pnp;
+use crate::memory;
 use pkm_rs::{Pk7, PokeCrypto};
 
 struct TransporterAddresses {
@@ -27,20 +27,20 @@ impl TransporterReader {
     }
 
     pub fn initial_seed(&self) -> u32 {
-        pnp::read(self.addrs.initial_seed)
+        memory::read(self.addrs.initial_seed)
     }
 
     fn mt_state_index(&self) -> u32 {
-        pnp::read(self.addrs.mt_state_index)
+        memory::read(self.addrs.mt_state_index)
     }
 
     pub fn mt_state(&self) -> u32 {
         let index = self.mt_state_index();
-        pnp::read(self.addrs.mt_start + if index != 624 { index * 4 } else { 0 })
+        memory::read(self.addrs.mt_start + if index != 624 { index * 4 } else { 0 })
     }
 
     fn read_pk7(&self, offset: u32) -> Pk7 {
-        let bytes = pnp::read_array::<{ Pk7::STORED_SIZE }>(offset);
+        let bytes = memory::read_array::<{ Pk7::STORED_SIZE }>(offset);
         Pk7::new_valid(bytes)
     }
 

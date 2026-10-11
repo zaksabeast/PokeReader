@@ -1,9 +1,9 @@
 use super::sub_menu::SubMenu;
+use crate::ctr;
 use crate::draw::{draw_controls_help, draw_misc_help};
-use crate::pnp;
 
 fn no_game_specific_help() {
-    pnp::println!("No Game-Specific info.");
+    ctr::println!("No Game-Specific info.");
 }
 
 enum HelpView {
@@ -34,9 +34,9 @@ fn view(slot: usize) -> HelpView {
 
 fn print_view(help_view: &HelpView) {
     match help_view {
-        HelpView::Controls => pnp::println!("Controls"),
-        HelpView::SpecificControls => pnp::println!("Game-Specific Controls"),
-        HelpView::Misc => pnp::println!("Additional Info"),
+        HelpView::Controls => ctr::println!("Controls"),
+        HelpView::SpecificControls => ctr::println!("Game-Specific Controls"),
+        HelpView::Misc => ctr::println!("Additional Info"),
     }
 }
 
@@ -51,8 +51,8 @@ impl HelpMenu {
     pub fn update_and_draw(&mut self, is_locked: bool) {
         let help_view = view(self.sub_menu.update_headless(is_locked));
         print_view(&help_view);
-        pnp::println!("[v] Next | Prev [^]");
-        pnp::println!("");
+        ctr::println!("[v] Next | Prev [^]");
+        ctr::println!("");
 
         match help_view {
             HelpView::Controls => draw_controls_help(),

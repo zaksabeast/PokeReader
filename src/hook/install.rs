@@ -2,7 +2,7 @@ use super::hid::map_input_hook;
 use super::present::run_hook;
 use crate::ctr::res::CtrResult;
 use crate::ctr::{pa_from_va_ptr, query_memory};
-use crate::{func_ptr, pnp};
+use crate::{func_ptr, trampoline};
 use core::slice::from_raw_parts;
 
 /// Replacement for the game's present framebuffer function.
@@ -96,7 +96,7 @@ fn hook_present_framebuffer(base_addr: u32, code: &[u8]) -> CtrResult<()> {
 
     let trampoline_addr = present_buffer_addr + (DRAW_PATCH_TRAMPOLINE_WORD as u32 * 4);
     let route_hook_addr = trampoline_addr + (TRAMPOLINE_ROUTE_HOOK_WORD as u32 * 4);
-    pnp::set_trampoline_addrs(trampoline_addr, route_hook_addr);
+    trampoline::set_trampoline_addrs(trampoline_addr, route_hook_addr);
 
     Ok(())
 }

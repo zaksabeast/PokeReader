@@ -156,3 +156,23 @@ pub fn println_impl(args: fmt::Arguments<'_>, color: u32) {
 
     state.line_count += 1;
 }
+
+/// Prints to the console screen.
+///
+/// # Examples
+/// ```ignore
+/// ctr::println!("Test: {:x}", 0xaabbccddu32);
+/// ```
+macro_rules! println {
+    () => {
+        $crate::ctr::println_impl(core::format_args!(""), 0xffffff)
+    };
+    (color = $color:expr, $($arg:tt)*) => {{
+        $crate::ctr::println_impl(core::format_args!($($arg)*), $color);
+    }};
+    ($($arg:tt)*) => {{
+        $crate::ctr::println_impl(core::format_args!($($arg)*), 0xffffff);
+    }};
+}
+
+pub(crate) use println;

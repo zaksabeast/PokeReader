@@ -1,4 +1,5 @@
-use crate::{draw::draw_version, pnp, pnp::Button, utils::CircularCounter};
+use crate::ctr::hid::{self, Button};
+use crate::{ctr, draw::draw_version, utils::CircularCounter};
 
 pub struct MenuOption<Value> {
     label: &'static str,
@@ -33,8 +34,8 @@ impl<Value: Copy> Menu<Value> {
 
     pub fn next_view(&self, main_menu: Value, current_view: Value) -> Value {
         match (self.is_locked, current_view) {
-            (false, _main_menu) if pnp::is_just_pressed(Button::Dright) => self.value(),
-            (false, _) if pnp::is_just_pressed(Button::Dleft) => main_menu,
+            (false, _main_menu) if hid::is_just_pressed(Button::Dright) => self.value(),
+            (false, _) if hid::is_just_pressed(Button::Dleft) => main_menu,
             (_, _) => current_view,
         }
     }
@@ -45,9 +46,9 @@ impl<Value: Copy> Menu<Value> {
 
     pub fn draw(&self) {
         for (index, option) in self.options.iter().enumerate() {
-            pnp::println!("{} {}", self.cursor_str(index + 1), option.label);
+            ctr::println!("{} {}", self.cursor_str(index + 1), option.label);
         }
-        pnp::println!("");
+        ctr::println!("");
         draw_version();
     }
 
@@ -56,15 +57,15 @@ impl<Value: Copy> Menu<Value> {
             return;
         }
 
-        if pnp::is_just_pressed(Button::Dup) {
+        if hid::is_just_pressed(Button::Dup) {
             self.counter.decrement();
-        } else if pnp::is_just_pressed(Button::Ddown) {
+        } else if hid::is_just_pressed(Button::Ddown) {
             self.counter.increment();
         }
     }
 
     pub fn update_lock(&mut self) -> bool {
-        if pnp::is_just_pressed(Button::X | Button::Y) {
+        if hid::is_just_pressed(Button::X | Button::Y) {
             self.is_locked = !self.is_locked;
         }
         self.is_locked

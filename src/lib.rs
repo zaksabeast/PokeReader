@@ -16,8 +16,10 @@ mod gen6;
 mod gen7;
 #[cfg(target_os = "horizon")]
 mod hook;
-mod pnp;
+mod memory;
 mod rng;
+mod time;
+mod trampoline;
 mod transporter;
 mod utils;
 
@@ -88,12 +90,12 @@ pub extern "C" fn main() {
         ctr::plgldr::start_ack_events_thread();
     }
 
-    pnp::set_game_start_ms();
+    time::set_game_start_ms();
 
     let _ = hook::install_hooks();
 
     // Game hooks need the trampoline written by install_hooks.
-    if pnp::get_trampoline_addr() != 0 {
+    if trampoline::get_trampoline_addr() != 0 {
         app::init();
     }
 

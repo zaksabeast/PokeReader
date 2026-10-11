@@ -3,7 +3,7 @@ use super::{
     reader::Gen7Reader,
 };
 use crate::{
-    pnp,
+    ctr,
     rng::{RngWrapper, Sfmt32, Sfmt64},
     utils::{
         ShowView,
@@ -16,18 +16,18 @@ use crate::{
 use once_cell::unsync::Lazy;
 
 fn gen7_specific_help() {
-    pnp::println!("SOS Controls:");
-    pnp::println!("[X] + [Right]:");
-    pnp::println!("   Set Caller slot to");
-    pnp::println!("   the current ally.");
-    pnp::println!("   Use this when you");
-    pnp::println!("   faint the caller.");
-    pnp::println!("");
-    pnp::println!("[X] + [Up]/[Down]:");
-    pnp::println!("   Manually change");
-    pnp::println!("   the caller slot.");
-    pnp::println!("   (Not recommended)");
-    pnp::println!("");
+    ctr::println!("SOS Controls:");
+    ctr::println!("[X] + [Right]:");
+    ctr::println!("   Set Caller slot to");
+    ctr::println!("   the current ally.");
+    ctr::println!("   Use this when you");
+    ctr::println!("   faint the caller.");
+    ctr::println!("");
+    ctr::println!("[X] + [Up]/[Down]:");
+    ctr::println!("   Manually change");
+    ctr::println!("   the caller slot.");
+    ctr::println!("   (Not recommended)");
+    ctr::println!("");
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -86,7 +86,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
 }
 
 fn run_frame(reader: Gen7Reader) {
-    pnp::set_print_max_len(22);
+    ctr::set_print_max_len(22);
 
     // This is safe as long as this is guaranteed to run single threaded.
     // A lock hinders performance too much on a 3ds.

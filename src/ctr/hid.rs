@@ -94,10 +94,10 @@ pub fn just_pressed() -> u32 {
 /// Convenient for one time checks.
 ///
 /// # Examples
-/// ```
-/// use pnp::{Button, is_just_pressed};
+/// ```ignore
+/// use ctr::hid::{self, Button};
 ///
-/// if is_just_pressed(Button::Dup | Button::Ddown) {
+/// if hid::is_just_pressed(Button::Dup | Button::Ddown) {
 ///   // Do something
 /// }
 /// ```

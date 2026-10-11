@@ -1,6 +1,5 @@
 use crate::alloc::string::ToString;
 use crate::app::{LoadedTitle, loaded_title};
-use crate::crystal::CRYSTAL_CYAN;
 use crate::ctr;
 use crate::{GIT_HASH, VERSION};
 use pkm_rs::{Nature, Pkx, Shiny, Species};
@@ -9,6 +8,7 @@ pub const WHITE: u32 = 0xffffff;
 pub const GREEN: u32 = 0x00cc00;
 pub const RED: u32 = 0xff0000;
 pub const MUTED_CYAN: u32 = 0x00cccc;
+pub const CRYSTAL_CYAN: u32 = 0x003c3c;
 
 fn get_shiny_color(is_shiny: bool) -> u32 {
     match is_shiny {

@@ -1,5 +1,5 @@
 use super::title::LoadedTitle;
-use crate::{crystal, gen6, gen7, transporter};
+use crate::games::{crystal, gen6, gen7, transporter};
 
 fn initialize_loaded_title(title: &LoadedTitle) {
     match title {

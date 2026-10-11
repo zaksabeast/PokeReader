@@ -1,5 +1,8 @@
 use super::title::{LoadedTitle, TitleError, loaded_title};
-use crate::{GIT_HASH, VERSION, crystal, ctr, gen6, gen7, transporter};
+use crate::{
+    GIT_HASH, VERSION, ctr,
+    games::{crystal, gen6, gen7, transporter},
+};
 
 fn run_loaded_title_frame(title: &LoadedTitle) {
     match title {

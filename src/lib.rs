@@ -9,18 +9,15 @@ extern crate alloc;
 mod allocator;
 
 mod app;
-mod crystal;
 mod ctr;
 mod draw;
-mod gen6;
-mod gen7;
+mod games;
 #[cfg(target_os = "horizon")]
 mod hook;
 mod memory;
 mod rng;
 mod time;
 mod trampoline;
-mod transporter;
 mod utils;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

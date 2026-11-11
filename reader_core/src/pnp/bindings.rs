@@ -7,6 +7,7 @@ extern "C" {
     pub fn host_get_game_title_id() -> u64;
     pub fn host_game_start_ms() -> u64;
     pub fn get_current_keys() -> u32;
+    pub fn get_previous_keys() -> u32;
     pub fn get_remaster_version() -> u16;
     pub fn osGetTime() -> u64;
     pub fn get_trampoline_addr() -> u32;
@@ -14,6 +15,8 @@ extern "C" {
     pub fn pa_from_va_ptr(ptr: u32) -> u32;
     pub fn is_citra() -> bool;
     pub fn is_memory_mapped(addr: u32) -> bool;
+    pub fn host_config_read(path_ptr: u32, path_len: u32, out_ptr: u32, out_capacity: u32) -> i32;
+    pub fn host_config_write(path_ptr: u32, path_len: u32, in_ptr: u32, in_len: u32) -> i32;
 }
 
 #[cfg(feature = "test_stubs")]
@@ -41,6 +44,23 @@ pub mod test_stubs {
     #[no_mangle]
     pub extern "C" fn get_current_keys() -> u32 {
         0
+    }
+    #[no_mangle]
+    pub extern "C" fn get_previous_keys() -> u32 {
+        0
+    }
+    #[no_mangle]
+    pub extern "C" fn host_config_read(
+        _path_ptr: u32,
+        _path_len: u32,
+        _out_ptr: u32,
+        _out_capacity: u32,
+    ) -> i32 {
+        -1
+    }
+    #[no_mangle]
+    pub extern "C" fn host_config_write(_path_ptr: u32, _path_len: u32, _in_ptr: u32, _in_len: u32) -> i32 {
+        -1
     }
     #[no_mangle]
     pub extern "C" fn osGetTime() -> u64 {

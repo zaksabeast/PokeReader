@@ -3,6 +3,7 @@ use super::{
     reader::Gen7Reader,
 };
 use crate::{
+    input::settings::InputSettingsMenu,
     pnp,
     rng::{RngWrapper, Sfmt32, Sfmt64},
     utils::{
@@ -41,6 +42,7 @@ enum Gen7View {
     Box,
     Pelago,
     Citra,
+    Controls,
     HelpMenu,
 }
 
@@ -51,6 +53,7 @@ struct PersistedState {
     view: Gen7View,
     main_menu: Menu<Gen7View>,
     help_menu: HelpMenu,
+    input_settings: InputSettingsMenu,
     wild_menu: SubMenu,
     party_menu: SubMenu,
     sos_menu: SubMenuCapture,
@@ -66,6 +69,7 @@ const MENU: &[MenuOption<Gen7View>] = &[
     MenuOption::new(Gen7View::Box, "Box"),
     MenuOption::new(Gen7View::Pelago, "Pelago"),
     MenuOption::new(Gen7View::Citra, "Citra"),
+    MenuOption::new(Gen7View::Controls, "Controls"),
     MenuOption::new(Gen7View::HelpMenu, "Help"),
 ];
 
@@ -80,6 +84,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
         wild_menu: SubMenu::new(1, 4),
         sos_menu: SubMenuCapture::new(1, 4),
         help_menu: HelpMenu::new(gen7_specific_help),
+        input_settings: InputSettingsMenu::new(),
         main_menu: Menu::new(MENU),
     });
     Lazy::force_mut(&mut STATE)
@@ -132,6 +137,7 @@ fn run_frame(reader: Gen7Reader) {
             draw_pkx(&reader.pelago_pkm((slot - 1) as u32), PkxType::Wild)
         }
         Gen7View::HelpMenu => state.help_menu.update_and_draw(is_locked),
+        Gen7View::Controls => state.input_settings.update_and_draw(is_locked),
         Gen7View::MainMenu => {
             state.main_menu.update_view();
             state.main_menu.draw();

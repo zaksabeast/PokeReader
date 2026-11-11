@@ -1,4 +1,4 @@
-use crate::pnp::{Button, is_just_pressed};
+use crate::input::{action_just_pressed, InputAction};
 
 // This is abstracted away for consistency.
 // Some logic needs to run per frame, regardless of a screen showing.
@@ -15,7 +15,7 @@ impl Default for ShowView {
 
 impl ShowView {
     pub fn check(&mut self) -> bool {
-        if is_just_pressed(Button::Start | Button::Dup) {
+        if action_just_pressed(InputAction::ToggleOverlay) {
             self.show_view = !self.show_view;
         }
 

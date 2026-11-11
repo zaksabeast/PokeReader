@@ -1,4 +1,10 @@
-use crate::{draw::draw_version, pnp, pnp::Button, utils::CircularCounter};
+use crate::{
+    draw::draw_version,
+    input::{action_just_pressed, InputAction},
+    pnp,
+    pnp::Button,
+    utils::CircularCounter,
+};
 
 pub struct MenuOption<Value> {
     label: &'static str,
@@ -68,7 +74,7 @@ impl<Value: Copy> Menu<Value> {
     }
 
     pub fn update_lock(&mut self) -> bool {
-        if pnp::is_just_pressed(Button::X | Button::Y) {
+        if action_just_pressed(InputAction::ToggleLock) {
             self.is_locked = !self.is_locked;
         }
         self.is_locked

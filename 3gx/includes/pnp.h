@@ -23,3 +23,8 @@ u32 get_route_hook_addr();
 u32 pa_from_va_ptr(u32 addr);
 bool is_citra();
 bool is_memory_mapped(u32 addr);
+s32 host_config_read(u32 path_ptr, u32 path_len, u32 out_ptr, u32 out_capacity);
+s32 host_config_write(u32 path_ptr, u32 path_len, u32 in_ptr, u32 in_len);
+u32 pokereader_should_pause();
+u32 pokereader_should_step_frame();
+u32 pokereader_should_resume();

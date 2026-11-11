@@ -6,6 +6,7 @@ use super::{
     rng::Gen6Rng,
 };
 use crate::{
+    input::settings::InputSettingsMenu,
     pnp,
     utils::{
         help_menu::HelpMenu,
@@ -27,6 +28,7 @@ enum OrasView {
     Party,
     MirageSpot,
     SeedRng,
+    Controls,
     HelpMenu,
 }
 
@@ -37,6 +39,7 @@ struct PersistedState {
     main_menu: Menu<OrasView>,
     party_menu: SubMenu,
     wild_menu: SubMenu,
+    input_settings: InputSettingsMenu,
     help_menu: HelpMenu,
     memory_ready: bool,
 }
@@ -50,6 +53,7 @@ const MENU: &[MenuOption<OrasView>] = &[
     MenuOption::new(OrasView::Party, "Party"),
     MenuOption::new(OrasView::MirageSpot, "Mirage Spot"),
     MenuOption::new(OrasView::SeedRng, "Seed RNG"),
+    MenuOption::new(OrasView::Controls, "Controls"),
     MenuOption::new(OrasView::HelpMenu, "Help"),
 ];
 
@@ -60,6 +64,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
         view: OrasView::MainMenu,
         party_menu: SubMenu::new(1, 6),
         wild_menu: SubMenu::new(1, 5),
+        input_settings: InputSettingsMenu::new(),
         help_menu: HelpMenu::default(),
         main_menu: Menu::new(MENU),
         memory_ready: false,
@@ -109,6 +114,7 @@ pub fn run_oras_frame() {
         }
         OrasView::SeedRng => draw_seed_rng(&reader, &state.rng),
         OrasView::MirageSpot => draw_mirage_spot(&reader),
+        OrasView::Controls => state.input_settings.update_and_draw(is_locked),
         OrasView::HelpMenu => state.help_menu.update_and_draw(is_locked),
         OrasView::MainMenu => {
             state.main_menu.update_view();

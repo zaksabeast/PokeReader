@@ -4,6 +4,7 @@ use super::{
     reader::Gen2Reader,
 };
 use crate::{
+    input::settings::InputSettingsMenu,
     pnp,
     utils::{
         help_menu::HelpMenu,
@@ -22,6 +23,7 @@ enum CrystalView {
     Wild,
     Egg,
     Research,
+    Controls,
     HelpMenu,
 }
 
@@ -31,6 +33,7 @@ struct PersistedState {
     view: CrystalView,
     main_menu: Menu<CrystalView>,
     party_menu: SubMenu,
+    input_settings: InputSettingsMenu,
     help_menu: HelpMenu,
 }
 
@@ -40,6 +43,7 @@ const MENU: &[MenuOption<CrystalView>] = &[
     MenuOption::new(CrystalView::Wild, "Wild"),
     MenuOption::new(CrystalView::Egg, "Egg"),
     MenuOption::new(CrystalView::Research, "Research"),
+    MenuOption::new(CrystalView::Controls, "Controls"),
     MenuOption::new(CrystalView::HelpMenu, "Help"),
 ];
 
@@ -49,6 +53,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
         show_view: ShowView::default(),
         view: CrystalView::MainMenu,
         party_menu: SubMenu::new(1, 6),
+        input_settings: InputSettingsMenu::new(),
         help_menu: HelpMenu::default(),
         main_menu: Menu::new(MENU),
     });
@@ -89,6 +94,7 @@ pub fn run_frame() {
         }
         CrystalView::Egg => draw_pkx(&reader.egg()),
         CrystalView::Research => draw_research(&reader, state.frame),
+        CrystalView::Controls => state.input_settings.update_and_draw(is_locked),
         CrystalView::HelpMenu => state.help_menu.update_and_draw(is_locked),
         CrystalView::MainMenu => {
             state.main_menu.update_view();

@@ -21,6 +21,10 @@ pub enum Button {
     L = 512,
     X = 1024,
     Y = 2048,
+    /// Only available on a New 3DS (or when Citra emulates one).
+    ZL = 0x4000,
+    /// Only available on a New 3DS (or when Citra emulates one).
+    ZR = 0x8000,
 }
 
 impl PartialEq<Button> for u32 {
@@ -70,4 +74,19 @@ pub fn is_just_pressed(io_bits: impl Into<u32>) -> bool {
 pub fn is_pressing(io_bits: impl Into<u32>) -> bool {
     let current_keys = unsafe { bindings::get_current_keys() };
     (current_keys & io_bits.into()) != 0
+}
+
+/// The raw button state read on the last frame.
+pub fn current_buttons() -> u32 {
+    unsafe { bindings::get_current_keys() }
+}
+
+/// The raw button state read on the previous frame.
+pub fn previous_buttons() -> u32 {
+    unsafe { bindings::get_previous_keys() }
+}
+
+/// Buttons that were pressed between the two last frames.
+pub fn just_pressed_buttons() -> u32 {
+    current_buttons() & !previous_buttons()
 }

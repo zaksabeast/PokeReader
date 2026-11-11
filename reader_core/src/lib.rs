@@ -11,6 +11,7 @@ mod crystal;
 mod draw;
 mod gen6;
 mod gen7;
+mod input;
 mod pnp;
 mod rng;
 mod title;
@@ -58,7 +59,10 @@ fn initialize_loaded_title(title: &LoadedTitle) {
         | LoadedTitle::CrystalDe
         | LoadedTitle::CrystalFr
         | LoadedTitle::CrystalEs
-        | LoadedTitle::CrystalIt => crystal::init_crystal(),
+        | LoadedTitle::CrystalIt => {
+            input::enable_legacy_crystal_pause();
+            crystal::init_crystal()
+        }
     }
 }
 

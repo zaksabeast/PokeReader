@@ -4,6 +4,7 @@ use super::{
     rng::Gen6Rng,
 };
 use crate::{
+    input::settings::InputSettingsMenu,
     pnp,
     utils::{
         help_menu::HelpMenu,
@@ -23,6 +24,7 @@ enum XyView {
     Radar,
     Party,
     SeedRng,
+    Controls,
     HelpMenu,
 }
 
@@ -33,6 +35,7 @@ struct PersistedState {
     main_menu: Menu<XyView>,
     party_menu: SubMenu,
     wild_menu: SubMenu,
+    input_settings: InputSettingsMenu,
     help_menu: HelpMenu,
     memory_ready: bool,
 }
@@ -44,6 +47,7 @@ const MENU: &[MenuOption<XyView>] = &[
     MenuOption::new(XyView::Radar, "Radar"),
     MenuOption::new(XyView::Party, "Party"),
     MenuOption::new(XyView::SeedRng, "Seed RNG"),
+    MenuOption::new(XyView::Controls, "Controls"),
     MenuOption::new(XyView::HelpMenu, "Help"),
 ];
 
@@ -54,6 +58,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
         view: XyView::MainMenu,
         party_menu: SubMenu::new(1, 6),
         wild_menu: SubMenu::new(1, 5),
+        input_settings: InputSettingsMenu::new(),
         help_menu: HelpMenu::default(),
         main_menu: Menu::new(MENU),
         memory_ready: false,
@@ -101,6 +106,7 @@ pub fn run_xy_frame() {
             draw_pkx(&reader.party_pkm((slot - 1) as u32), PkxType::Tame);
         }
         XyView::SeedRng => draw_seed_rng(&reader, &state.rng),
+        XyView::Controls => state.input_settings.update_and_draw(is_locked),
         XyView::HelpMenu => state.help_menu.update_and_draw(is_locked),
         XyView::MainMenu => {
             state.main_menu.update_view();

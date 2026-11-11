@@ -152,3 +152,69 @@ bool is_memory_mapped(u32 addr) {
   s32 result = svcQueryMemory(&info, &page, addr);
   return result == 0;
 }
+
+// Input configuration storage
+//
+// The plugin has no configuration API of its own, so the configuration is
+// stored as a small text file on the SD card. fsInit/fsExit are used per call,
+// matching title_info.c, to avoid keeping a session open while the game runs.
+
+s32 host_config_read(u32 path_ptr, u32 path_len, u32 out_ptr, u32 out_capacity)
+{
+  if (path_len >= 128)
+  {
+    return -1;
+  }
+
+  char path[128];
+  memcpy(path, (const void *)path_ptr, path_len);
+  path[path_len] = '\0';
+
+  if (R_FAILED(fsInit()))
+  {
+    return -1;
+  }
+
+  FILE *file = fopen(path, "rb");
+  if (file == NULL)
+  {
+    fsExit();
+    return -1;
+  }
+
+  size_t bytes_read = fread((void *)out_ptr, 1, out_capacity, file);
+  fclose(file);
+  fsExit();
+
+  return (s32)bytes_read;
+}
+
+s32 host_config_write(u32 path_ptr, u32 path_len, u32 in_ptr, u32 in_len)
+{
+  if (path_len >= 128)
+  {
+    return -1;
+  }
+
+  char path[128];
+  memcpy(path, (const void *)path_ptr, path_len);
+  path[path_len] = '\0';
+
+  if (R_FAILED(fsInit()))
+  {
+    return -1;
+  }
+
+  FILE *file = fopen(path, "wb");
+  if (file == NULL)
+  {
+    fsExit();
+    return -1;
+  }
+
+  size_t bytes_written = fwrite((const void *)in_ptr, 1, in_len, file);
+  int close_result = fclose(file);
+  fsExit();
+
+  return bytes_written == in_len && close_result == 0 ? 0 : -1;
+}

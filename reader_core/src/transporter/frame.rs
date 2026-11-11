@@ -4,6 +4,7 @@ use super::{
     rng::TransporterRng,
 };
 use crate::{
+    input::settings::InputSettingsMenu,
     pnp,
     utils::{
         help_menu::HelpMenu,
@@ -19,6 +20,7 @@ enum TransporterView {
     MainMenu,
     Pokemon,
     Rng,
+    Controls,
     HelpMenu,
 }
 
@@ -28,12 +30,14 @@ struct PersistedState {
     view: TransporterView,
     main_menu: Menu<TransporterView>,
     help_menu: HelpMenu,
+    input_settings: InputSettingsMenu,
     pokemon_menu: SubMenu,
 }
 
 const MENU: &[MenuOption<TransporterView>] = &[
     MenuOption::new(TransporterView::Rng, "RNG"),
     MenuOption::new(TransporterView::Pokemon, "Pokemon"),
+    MenuOption::new(TransporterView::Controls, "Controls"),
     MenuOption::new(TransporterView::HelpMenu, "Help"),
 ];
 
@@ -44,6 +48,7 @@ unsafe fn get_state() -> &'static mut PersistedState {
         view: TransporterView::MainMenu,
         pokemon_menu: SubMenu::new(1, 30),
         help_menu: HelpMenu::default(),
+        input_settings: InputSettingsMenu::new(),
         main_menu: Menu::new(MENU),
     });
     Lazy::force_mut(&mut STATE)
@@ -75,6 +80,7 @@ pub fn run_frame() {
             draw_pkx(&reader.transported_pkm((slot - 1) as u32), PkxType::Tame);
         }
         TransporterView::HelpMenu => state.help_menu.update_and_draw(is_locked),
+        TransporterView::Controls => state.input_settings.update_and_draw(is_locked),
         TransporterView::MainMenu => {
             state.main_menu.update_view();
             state.main_menu.draw();

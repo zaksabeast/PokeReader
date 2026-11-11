@@ -1,6 +1,7 @@
 use super::title::{loaded_title, LoadedTitle};
 use crate::alloc::string::ToString;
 use crate::crystal::CRYSTAL_CYAN;
+use crate::input::{input_manager, InputAction};
 use crate::pnp;
 use crate::{GIT_HASH, VERSION};
 use pkm_rs::{Nature, Pkx, Shiny, Species};
@@ -236,14 +237,34 @@ pub fn draw_pkx(pkx: &impl Pkx, pkx_type: PkxType) {
 }
 
 pub fn draw_controls_help() {
-    pnp::println!("[Start] + [Select]:");
+    let pause = input_manager()
+        .binding_for(InputAction::Pause)
+        .to_compact_string();
+    let step = input_manager()
+        .binding_for(InputAction::StepFrame)
+        .to_compact_string();
+    let resume = input_manager()
+        .binding_for(InputAction::Resume)
+        .to_compact_string();
+    let overlay = input_manager()
+        .binding_for(InputAction::ToggleOverlay)
+        .to_compact_string();
+    let lock = input_manager()
+        .binding_for(InputAction::ToggleLock)
+        .to_compact_string();
+
+    pnp::println!("[{}]", pause);
     pnp::println!(" - Pause Game");
-    pnp::println!("");
-    pnp::println!("[Start]/[A]:");
-    pnp::println!(" - Unpause Game");
-    pnp::println!("");
-    pnp::println!("[Select]:");
+    pnp::println!("[{}]", step);
     pnp::println!(" - Frame Advance");
+    pnp::println!("[{}]", resume);
+    pnp::println!(" - Unpause Game");
+    pnp::println!("[{}]", overlay);
+    pnp::println!(" - Show/Hide");
+    pnp::println!("[{}]", lock);
+    pnp::println!(" - Lock Controls");
+    pnp::println!("");
+    pnp::println!("Edit in Controls.");
 }
 
 pub fn draw_misc_help() {
@@ -270,13 +291,17 @@ pub fn draw_version() {
 }
 
 pub fn draw_header<T: Eq>(main_menu: T, current_view: T, is_locked: bool) {
+    let lock = input_manager()
+        .binding_for(InputAction::ToggleLock)
+        .to_compact_string();
+
     if is_locked {
-        pnp::println!("Unlock X+Y");
+        pnp::println!("Unlock {}", lock);
     } else if current_view == main_menu {
-        pnp::println!("-> Accept / Lock X+Y");
+        pnp::println!("-> Accept");
     } else {
-        pnp::println!("<- Back / Lock X+Y");
+        pnp::println!("<- Back");
     }
 
-    pnp::println!("");
+    pnp::println!("   Lock {}", lock);
 }

@@ -7,7 +7,6 @@
 #include "ov.h"
 #include "pnp.h"
 #include "pokereader.h"
-#include "title_info.h"
 #include "hid.h"
 #include "memmem.h"
 
@@ -18,31 +17,35 @@ static bool is_paused = false;
 
 void handle_freeze(bool isTopScreen)
 {
-    u64 masked_title_id = get_title_id() & 0xfff000;
-    bool is_gen_2 = masked_title_id == 0x172000 || masked_title_id == 0x173000;
-    if (host_is_just_pressed(KEY_START | KEY_SELECT) || (is_gen_2 && host_is_just_pressed(KEY_L | KEY_R)))
+    if (pokereader_should_pause())
     {
         is_paused = true;
     }
 
-    while (is_paused && !isTopScreen)
+    if (isTopScreen)
     {
-        scan_input();
+        return;
+    }
 
-        u32 just_pressed = host_just_pressed();
-
-        if (just_pressed & (KEY_SELECT | KEY_L))
+    while (is_paused)
+    {
+        // The predicates also arm the deferred step/resume actions, so they
+        // run before the next scan clears the just-pressed edge.
+        // Stepping and resuming only happen once the bound buttons have been
+        // released, so the game never receives them.
+        if (pokereader_should_step_frame())
         {
             break;
         }
 
-        if (just_pressed & (KEY_A | KEY_START | KEY_R))
+        if (pokereader_should_resume())
         {
             is_paused = false;
             break;
         }
 
         svcSleepThread(50000000);
+        scan_input();
     }
 }
 

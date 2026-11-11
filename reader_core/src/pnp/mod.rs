@@ -1,4 +1,4 @@
-mod bindings;
+pub(crate) mod bindings;
 mod hook;
 /// Tools related to input from the user.
 mod input;

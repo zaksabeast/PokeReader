@@ -47,6 +47,8 @@ pub enum Button {
     Y = 2048,
 }
 
+const BUTTON_BITS: u32 = 0x0fff;
+
 impl PartialEq<Button> for u32 {
     fn eq(&self, other: &Button) -> bool {
         *self == *other as u32
@@ -104,8 +106,8 @@ pub fn just_pressed() -> u32 {
 pub fn is_just_pressed(io_bits: impl Into<u32>) -> bool {
     let io_bits = io_bits.into();
     let just_pressed = just_pressed();
-    let curr = current_keys();
-    (just_pressed & io_bits) != 0 && io_bits == curr
+    let pressed_buttons = current_keys() & BUTTON_BITS;
+    (just_pressed & io_bits) != 0 && io_bits == pressed_buttons
 }
 
 pub fn is_pressing(io_bits: impl Into<u32>) -> bool {
